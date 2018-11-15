@@ -1,0 +1,91 @@
+<div id="edit_education" class="modal fade" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title edu_title">Add Education</h4>
+				</div>
+				<form method="post" class="form-group" id="form_Education">
+					<input type="hidden" id="id" name="id">
+					<input type="hidden" id="del_doc" name="del_doc" value="0">
+					<input type="hidden" id="old_edu_string" name="old_edu_string" value="" class="old_edu_string">
+					<input type="hidden" id="is_verify_flag" name="is_verify_flag" value="0" class="is_verify_flag">
+					<div class="modal-body">
+						<div id="form-errors"></div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="school">School or Institute Name</label>
+										<input name="school" type="text" class="form-control" id="school" required="" placeholder="Enter School or Institute Name" />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="degree">Degree Name</label>
+										<input name="degree" required="" type="text" class="form-control" id="degree" placeholder="Enter Degree Name" />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="study_field">Field of Study</label>
+										<input name="study_field" type="text" class="form-control" id="study_field" placeholder="Enter Field of Study" />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="degree_type">Degree Type</label>
+										<select name="degree_type" class="form-control" id="degree_type" >
+											<option value="">Select Degree Type</option>
+											<% if(typeof degreetypes!="undefined" && degreetypes.length>0){
+												_.each(degreetypes, function(degreetype){ %>
+													<option value="<%=degreetype.id%>"><%=degreetype.title%></option>
+											<% })
+											} %>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="edu_from_year">Starting Year</label>
+										<input type="text" placeholder="Enter Starting Year" name="from_year" id="edu_from_year" class="form-control from_year edu_from_year" required="">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="edu_to_year">Completion Year</label>
+										<input type="text" placeholder="Enter Completion Year" name="to_year" id="edu_to_year" class="form-control to_year edu_to_year">
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="description">Description</label>
+										<textarea name="description" class="form-control" id="description" rows="2" placeholder="Write Description" ></textarea>
+									</div>
+								</div>
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+									<div class="form-group general_block_url" style="display:none">
+										<a href="#" id="doc_url_link" target="_blank"><i class="fa fa-download" aria-hidden="true"></i> <span id="doc_url"></span></a>
+										<a href="javascript:;" class="del_doc" title="Delete document"><i class="fa fa-trash" aria-hidden="true"></i></a>
+									</div>
+									<div class="form-group input-upload general_block_upload">
+										<input type="file" name="doc_file" class="upload_doc_id input-upload-button">
+										<div class="upload-file-text">
+											<i class="fa fa-cloud-upload" aria-hidden="true"></i> Drag and drop file here<br>or<br><span>Browse files</span>
+										</div>
+										<span class="file_name"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary pull-left delete_btn" title="Delete Education" onclick="delete_education()" style="display:none;" ><i class="fa fa-trash" aria-hidden="true"></i></button>
+						
+						<button type="submit" class="btn btn-primary mBottom0">Save</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>

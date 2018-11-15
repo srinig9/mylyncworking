@@ -1,0 +1,122 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar nav groups Starts -->
+            <%- partial('../includes/sidebar-nav-groups.ejs') %>
+            <!-- Sidebar nav groups Ends -->
+            
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padding">
+                <div class="p_30_mc">
+                    <div class="">
+                        <form action="/group/create" method="POST" id="addGroup profileimageform" enctype="multipart/form-data">
+                            <div class="section_title"><h3>Create Group</h3></div>
+                            <div class="p28_section_content">
+                                <div class="pad20 pad_tb30 p30_2001">
+                                    <h3 class="title_18s">Name your group</h3>
+                                    <label class="label hidden" for="group_name">Group Name</label>
+                                    <input type="text" name="group_name" id="group_name" placeholder="Group Name" class="form-control" value="" required="required">
+                                    <input class="form-control" id="slug" placeholder="Group Name" name="slug" type="hidden">
+                                    <p>&nbsp;</p>
+
+                                    <h3 class="title_18s">Group Description</h3>
+                                    <label class="label hidden" for="group_description">Group Description</label>
+
+                                    <div id="editor">
+                                        <textarea class="form-control" id="group_description" placeholder="Write Blog Description" required="required" name="group_description"></textarea>
+                                    </div>
+                                    <p>&nbsp;</p>
+
+                                    <h3 class="title_18s">Add some people</h3>
+                                    <label class="label hidden" for="user_id">Add some people</label>
+                                    <select class="js-example-basic-multiple form-control" name="user_id" placeholder="" multiple="multiple">
+                                        <%=connections.length%>
+                                        <% _.each(connections, function (connection) { %>
+                                        <option value="<%=connection.id%>"><%=connection.name%></option>
+                                        <% }) %>
+
+                                    </select>
+                                </div>
+                                <div class="pad20 p30_3001">
+                                    <div class="p30_group_profile">
+                                        <div class="p30_group_profile">
+                                            <div href="JavaScript:;" id="group-profile" class="p9_1002 edit-group-img">
+                                                <input type="file" name="group_icon" id="group-profile-img">
+                                                <label for="group-profile-img" class="p9_1003"><i class="fa fa-camera" aria-hidden="true"></i></label>
+                                            </div>
+                                        </div>
+                                        <div class="p30_group_profile_1004">
+                                            <ul class="p30_group_profile_1005 blue_dots">
+                                                <li>Max 2 MB</li>
+                                                <li>Only PNG, JPG & JPEG allowed</li>
+                                                <li>Icon must be related to group</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pad20 pad_tb30 p30_13">
+                                    <h3 class="title_18s">Select Privacy</h3>
+                                    <div class="sepb20">
+                                        <label class="label hidden" for="id43">Lynk Boosts allocate to this poll/survey.</label>
+                                        <select class="form-control" name="privacy" id="id43">
+                                            <option value="1"> Public Group &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; Anyone can see the group, its members and their posts</option>
+                                            <option value="2"> Close Group &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; Anyone can find the group and see who’s in it. Only members can see posts.</option>
+                                            <option value="3"> Secret Group &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; Only members can find the group and see posts.</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group a-center">
+                                        <input type="submit" value="Create" class="btn btn-primary bc0070b2" />
+                                    </div>
+                                </div>
+                                <div class="pad20 p30_13">
+                                    <p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Maecenas faucibus mollis interdum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus.</p>
+                                    <p>&nbsp;</p>
+                                    <p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Vestibulum id ligula porta felis euismod semper. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $("input[name='group_icon']").on("change", function(e) {
+        var files = e.target.files,
+            filesLength = files.length;
+        for (var i = 0; i < filesLength; i++) {
+            var f = files[i]
+            var fileReader = new FileReader();
+            fileReader.onload = (function(e) {
+                var file = e.target;
+                $("#group-profile").css("background-image","url("+e.target.result+")");
+            });
+            fileReader.readAsDataURL(f);
+        }
+    });
+
+
+    $(function(){
+      $('#group_description').froalaEditor({
+			key: '<%-sails.config.froala_key%>'
+		});
+    });
+
+    $( "#group_name" ).blur(function() {
+        var string = $(this).val();
+        var slug = string.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-').toLowerCase();
+        $("#slug").val(slug);
+    });
+
+
+    $(document).ready(function() {
+        $("#addGroup").validate({});
+
+        $('.js-example-basic-multiple').select2({
+            minimumInputLength: 2,
+            placeholder: "Type name from your connections"
+        });
+    });
+</script>

@@ -1,0 +1,87 @@
+<div class="main-container p11_main_container">
+    <div class="p11_company_profile">
+        <div id="p11_user_id" class="p11_bg">
+            <div class="p11_bg_container">
+                <img id="" alt="Background Image" src="/themes/frontend/images/company-profile.jpg" style="left:0;top:-119.93142857142857px;width:100%;" class="">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-right">
+                <div class="p11_container p11_profile sepb20">
+
+                    <% 
+                    var image= '';
+                    if(typeof events.feedmedias[0] != 'undefined' && typeof events.feedmedias[0].image != '') { 
+                        var image = "/uploads/feeds/"+events.feedmedias[0].image;
+                    }else{
+                        var image = "/themes/frontend/images/image_not_found.jpeg"
+                    }
+
+                    %>
+                    <a href="javascript:;" class="p11_1002 p13_1002"><img src="<%=image%>" alt="name" height="150" width="150" /></a>
+                    <div class="p11_1005 p13_1005">
+                        <div class="p11_1005_r3">
+                            <div class="p11_1010"><%=events.title%></div>
+                            <div class="p11_1012"><i class="fa fa-map-marker blue" aria-hidden="true"></i> <%=events.location%></div>
+                            <div class="p11_1012 p13_1012">
+                                <table>
+                                    <tr>
+                                        <td><i class="fa fa-calendar" aria-hidden="true"></i></td>
+                                        <td>Event Start Date : </td>
+                                        <td></td>
+                                        <td><%=events.start_date%></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fa fa-calendar" aria-hidden="true"></i></td>
+                                        <td>Event End Date : </td>
+                                        <td></td>
+                                        <td><%=events.end_date%></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="p11_1005_r4">
+
+                        </div>
+                        <div class="p13_1020">
+                            <span class="f-right">Posted 2 weeks ago</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="p11_1103">
+                    <div class="section_title"><h3>Event Description</h3></div>
+                    <div class="p11_content p11_content_13_no_padd">
+                        <div class="p11_content_13 myspecialdiv">
+                            <%-events.feed_details%>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 no-left_p-sm sept20">
+                <div class="a-center">
+                    <!-- <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a> -->
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/RlWnYCc_UkA?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $( ".myspecialdiv ul li" ).css( "list-style-type", "initial" );
+        $( ".myspecialdiv ol li" ).css( "list-style-type", "number" );
+    })
+</script>

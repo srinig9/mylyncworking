@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .pdf-logo img {
+                width: 100px;
+                height: auto;
+                margin: 0 auto;
+                display: block;
+            }
+            .blueTable {
+                width: 100%;
+                border:1px solid #000;
+                border-collapse: collapse;
+                margin-top: 5px;
+            }
+
+            table, tr, td, th, tbody, thead, tfoot {
+                page-break-inside: avoid !important;
+            }
+
+            .blueTable thead {
+                background-color: #025ba2;
+                text-align: left;
+            }
+            .blueTable thead.sub {
+                background-color: transparent;
+            }
+             .blueTable thead.sub th {
+                color: black;
+                border: 1px solid #000;
+            }
+            .blueTable thead.sub2 {
+                background-color: #efefef;
+            }
+             .blueTable thead.sub2 th {
+                color: black;
+                border: 1px solid #000;
+            }
+            .blueTable thead  th {
+                padding:5px 10px;
+                color: white;
+                font-weight: bold;
+            }
+            td {
+                border:1px solid #000;
+                padding:5px 10px;
+                width: 25%;
+                font-size: 12px;
+            }
+            th {
+                font-size: 12px;
+            }
+            td.last {
+                width: 110px;
+                vertical-align: middle;
+                border:1px;
+            }
+            td.last img {
+                margin: 0 auto;
+                display: block;
+            }
+            .personal td, .identity td {
+                border:none;
+            }
+
+        </style>
+    </head>
+    <body class="pdf-formate">
+        
+        <p><a href="" class="pdf-logo"><img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-logo.png" ></a></p>
+        <%
+        if(users.usereducations.length > 0){
+
+        	var count_edu = 0;
+            _.each(users.usereducations, function(education){
+                var education_from_month = (education.from_month!=null) ? education.from_month : "";
+                var education_from_year = (education.from_year!=null) ? education.from_year : "";
+                var education_to_month = (education.to_month!=null) ? education.to_month : "";
+                var education_to_year = (education.to_year!=null) ? education.to_year : "";
+        %>
+        <% if(count_edu==0){%>
+        <table class="blueTable education">
+            <thead>
+                <tr>
+                    <th colspan="5">Education</th>
+                </tr>
+            </thead>
+            <thead class="sub2">
+                <tr>
+                    <th width="20%">School/Institute Name</th>
+                    <th width="20%">Degree</th>
+                    <th width="20%">Degree Type</th>
+                    <th width="20%">Start Year</th>
+                    <th width="20%">Completion Year</th>
+                </tr>
+            </thead>
+            <tbody>
+        	<% } %>
+                <tr>
+                    <td><div><%=education.school%></div></td>
+                    <td><div><%=education.degree%></div></td>
+                    <td><div><%=education.study_field%></div></td>
+                    <td><div><%=education_from_month+' '+education_from_year%></div></td>
+                    <td><div><%=education_to_month+' '+education_to_year%></div></td>
+                </tr>
+                <% count_edu++; }) %>
+                <tr>
+                    <td colspan="5"><div>No data found</div></td>
+                </tr>
+            </tbody>
+        </table>
+        <% }
+
+    	var count_exp = 0;
+        if(users.userexperiences.length>0){
+        _.each(users.userexperiences, function(experience) {
+            var from_month_val='';
+            var to_month_val='';
+            if(typeof experience.from_month!='undefined' && experience.from_month!=''){
+                from_month_val = moment(experience.from_month).format('MMM');
+            }
+            if(typeof experience.to_month!='undefined' && experience.to_month!=''){
+                to_month_val = moment(experience.to_month).format('MMM');
+            }
+            if(count_exp==0){%>
+        <table class="blueTable Experience">
+            <thead>
+                <tr>
+                    <th colspan="5">Experience</th>
+                </tr>
+            </thead>
+            <thead class="sub2">
+                <tr>
+                    <th width="20%">Company</th>
+                    <th width="20%">Title</th>
+                    <th width="20%">Location</th>
+                    <th width="20%">From Date</th>
+                    <th width="20%">To Date</th>
+                </tr>
+            </thead>
+            <tbody>
+        	<% } %>
+                <tr>
+                    <td>
+                        <div>
+                            <% if(typeof experience.company_id!='undefined' && typeof experience.company_id.company_name!='undefined' && experience.company_id.company_name!=''){ %>
+                            <%=experience.company_id.company_name%>
+                            <% } %>
+                        </div>
+                    </td>
+                    <td><div><%=experience.title%></div></td>
+                    <td><div><%=(experience.location)?experience.location:""%></div></td>
+                    <td><div><%=from_month_val+' '+experience.from_year%></div></td>
+                    <td><div><%=(experience.current_work != 1) ? to_month_val+' '+ experience.to_year : "Present" %></div></td>
+                </tr>
+                <% count_exp++; })%>
+            </tbody>
+        </table>
+        <% } %>
+    </body>
+</html>

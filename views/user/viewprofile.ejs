@@ -1,0 +1,1195 @@
+<%
+var login_user_id = (typeof req.user != 'undefined' && req.user!='') ? req.user.id : 0;
+
+//profile image
+var profile_image = sails.config.appUrlwPort+'/themes/frontend/images/default-user.png';
+var cover_image = sails.config.appUrlwPort+'/themes/frontend/images/company-profile.jpg';
+
+var action_flag=0;
+
+if(typeof user!='undefined'){
+    if(typeof user.profile_image!='undefined' &&  user.profile_image!=''){
+        profile_image = sails.config.appUrlwPort+'/uploads/users/'+user.profile_image;
+    }
+    if(typeof user.cover_image!='undefined' &&  user.cover_image!=''){
+        cover_image = sails.config.appUrlwPort+'/uploads/users/'+user.cover_image;
+    }
+
+    if(typeof login_id!='undefined' && login_id!=0){
+        if(typeof user.id!='undefined' && user.id==login_id){
+            action_flag=1;
+        }
+    }
+}
+
+var profile_privacy = 0;
+var userSlug 	= "/profile";
+var share_url	= '';
+
+if(user.slug != 'undefined' && user.slug!=''){
+	userSlug  = "/profile/"+user.slug+"/wall";
+	share_url = "profile/"+user.slug
+}
+
+var profileRedirectClass = "";
+if(login_user_id!=user.id){
+	var profileRedirectClass = "profileRedirect";
+
+	if(typeof userrelation!='undefined' && userrelation.length==0){
+		if(typeof user.userprivacysettings!='undefined' && user.userprivacysettings.length > 0){
+			_.each(user.userprivacysettings,function(privacy){
+				if(typeof privacy!='undefined' &&  typeof privacy.privacy_option_id!='undefined' && typeof privacy.privacy_option_id.privacy_id!='undefined') { 
+					if(typeof privacy.privacy_option_id.privacy_id.type !='undefined' && privacy.privacy_option_id.privacy_id.type=='profile'){
+						if(privacy.privacy_option_id.option_val=='Private'){
+							profile_privacy = profile_privacy+1;
+						}
+					}
+				}
+			})
+		}
+	}
+}
+%>
+<div class="main-container">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-right viewprofile">
+				<div class="p6_mc">
+					<div class="p6_profile profile-view-cover">
+						<div class="p6_background_cover"  id="CoverImage" style="background-image:url('<%=cover_image%>')">
+							<div class="p6_1230">
+								<form method="post" enctype="multipart/form-data" id="coverimagesform">
+									<input type="hidden" name="type" value="1" />
+									<input type="file" name="cover_image" id="edit-cover" />
+								</form>
+								<% if((typeof isPublic!="undefined" && isPublic==1) || (action_flag==1)) { %>
+									<label data-toggle="modal" data-target="#profileCoverModalPopovers" class="change-cover"><i class="fa fa-camera" aria-hidden="true"></i></label>
+								<% } %>
+							</div>
+						</div>
+						<div class="profile-view">
+							<div class="p9_1002 <%=profileRedirectClass%>" data-url="<%=userSlug%>">
+								<a href="<%=userSlug%>">
+									<div id="ProfileImage" class="edit-profile" style="background-image:url('<%=profile_image%>')">
+									</div>
+								</a>	
+								<form method="post" enctype="multipart/form-data" id="profileimageform">
+									<input type="file" name="profile_image" id="edit-profile">
+								</form>
+								<% if((typeof isPublic!="undefined" && isPublic==1)  || (action_flag==1)) { %>
+									<label class="p9_1003" data-toggle="modal" data-target="#profilePicModalPopovers"><i class="fa fa-camera" aria-hidden="true"></i></label>
+								<% } %>
+							</div>
+						</div>
+						<div class ="p6_1229">
+							<div class="dropdown profile-more">
+								<% if((typeof isPublic!='undefined' && isPublic==1) || (action_flag==1)) {%>
+									<a href="/profile/edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+								<% } %>
+								<% 
+									if(typeof isLogin!="undefined" && isLogin==0) {
+								%>
+								<p>&nbsp;</p>
+								<% } else {%>
+									<a href="" data-toggle="dropdown" class="dropdown-toggle" aria-expanded="false"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
+								<ul class="dropdown-menu profile-more-menu">
+									<% 
+									if(typeof isPublic!="undefined" && isPublic==0) {
+										if(typeof isLogin!="undefined" && isLogin==1){
+											 %>
+										<li><a href="javascript:;" onclick="copyShareURL('<%=share_url%>')" ><i class="fa fa-share" aria-hidden="true"></i> Share Profile</a></li>
+										<li><a href="javascript:;"><i class="fa fa-file-text" aria-hidden="true"></i>Reports</a></li>
+									<% }else{ %>
+										<li style="display:none;"><a href="javascript:;"><i class="fa fa-share" aria-hidden="true"></i> Share Profile</a></li>
+										<li style="display:none;"><a href="/profile/savepdf/<%=user.id%>"  target="_blank"><i class="fa fa-download" aria-hidden="true"></i>Save to PDF</a></li>
+									<% } } else { %>
+										<li><a href="javascript:;" onclick="copyShareURL('<%=share_url%>')" ><i class="fa fa-share" aria-hidden="true"></i> Share Profile</a></li>
+										<li><a href="/profile/savepdf/<%=user.id%>" target="_blank"><i class="fa fa-download" aria-hidden="true"></i>Save to PDF</a></li>
+										<li><a href="javascript:;"><i class="fa fa-file-text" aria-hidden="true"></i>Reports</a></li>
+									<% }
+									if(typeof req.user != 'undefined' && typeof login_user_id!='undefined' && user.id!=login_user_id) {
+										if(user.BlockTo.length>0) { %>
+											<li><a href="javascript:;" class="unblockuser" data-user_id="<%=user.BlockTo[0].id%>"><i class="fa fa-ban" aria-hidden="true"></i>Unblock User</a></li> 
+										<% } else { %>
+											<li><a href="javascript:;" class="blockuser" data-user_id="<%=user.id%>"><i class="fa fa-ban" aria-hidden="true"></i>Block User</a></li> 
+									<% }
+									} %>
+								</ul>
+								<% } %>
+							</div>
+						</div>
+						<div class="p6_1228">
+							<div class="p6_1231 p6_pro_1000 name">
+								<a href="<%=userSlug%>"><%=user.name%></a>
+								<% var verify_flag=false;
+								if(verify_flag) { %>
+									<span class="checked" data-toggle="popover" data-placement="right" id="myPopover" data-original-title=""><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+								<% } %>
+							</div>
+							<div class="p6_1232 designation">
+								<% if(typeof user!='undefined' && typeof user.userexperiences!='undefined' && user.userexperiences.length>0 &&typeof user.userexperiences[0]['title']!='undefined'){
+								%> <%=user.userexperiences[0]['title']%> <% } %>
+							</div>
+							
+							<% if(profile_privacy==0) {%>
+							<div class="p6_1233 designation">
+								<% if(typeof user!='undefined' && user.userexperiences.length>0 && typeof user.userexperiences[0].company_id!='undefined' && typeof user.userexperiences[0].company_id.company_name!='undefined'){
+								%>
+									<%=user.userexperiences[0].company_id.company_name%>
+									<span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span>
+								<% } if(typeof user!='undefined' &&  typeof user.usereducations[0]!='undefined' && typeof user.usereducations[0]['school']!='undefined'){
+								%>
+									<%=user.usereducations[0]['school']%>
+								<% } %>
+							</div>
+							<div class="p6_1234 ">
+								<% if(typeof user!='undefined' && typeof user.location!='undefined'){%>
+									<%=user.location%>
+									<span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span>
+								<% }
+								if(typeof user!='undefined' &&  typeof user.connectionCount!='undefined' && user.connectionCount>0){%>
+									<%
+										var connectionLink = "javascript:;";
+										if(login_user_id==user.id){
+											connectionLink = "/connections/list";
+										}else{
+											if(user.slug != 'undefined'){
+												connectionLink = "/connections/list/"+user.slug;
+											}										
+										}
+									%>
+									<a href="<%=connectionLink%>"><span><i class="fa fa-users" aria-hidden="true"></i></span> &nbsp;<%=user.connectionCount %> <span>connections</span></a>
+								<% }
+								var my_income =0;
+								if(typeof user!='undefined' && typeof user.wallet!='undefined'){
+									my_income = user.wallet;
+								} %>
+							</div>
+							<div class="p6_1235"><a href="/blogs">
+								Blog (<%=user.feeduser.length%>)</a><span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span><a href="/wallet">LBD ($<%=my_income.toFixed(2)%>)</a><a class="p6_1236" href="/rewards"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+							</div>
+							<% } %>
+							<div class="quick-action-buttton">
+								<%
+								if(typeof isPublic!="undefined" && isPublic==0) {
+										if(typeof isLogin!="undefined" && isLogin==1){
+											if(typeof sentRequest!="undefined" && sentRequest.length>0){
+												if(typeof sentRequest[0]["status"]!="undefined" && sentRequest[0]["status"]==0){ %>
+													<a class="cancelsent btn-primary" href="javascript:;" data-value="<%=sentRequest[0]['to_user_id']%>"><i class="fa fa-close" aria-hidden="true"></i> Cancel</a>
+												<% }
+												if(typeof sentRequest[0]['status']!='undefined' && sentRequest[0]['status']==1){
+												} 
+											} else if(typeof receiveRequest!='undefined' && receiveRequest.length>0) {
+												if(typeof receiveRequest[0]['status']!='undefined' && receiveRequest[0]['status']==0){ %>
+												<button type="button" class="btn_accept btnaccept" data-value="<%=receiveRequest[0]['user_id']%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                    			<button type="button" class="btn_reject btnreject" data-value="<%=receiveRequest[0]['user_id']%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+													
+												<% } 
+												if(typeof receiveRequest[0]['status']!='undefined' && receiveRequest[0]['status']==1){ %>
+												<% }
+											} else{ %>
+												<% if((typeof isPublic!='undefined' && isPublic==1) || (action_flag==0)) {%>
+													<a class="sendRequest userknown btn-primary" id="to_user_id" data-value="<%=user.id%>" href="javascript:;"><i class="fa fa-check-circle" aria-hidden="true"></i> Connect</a>
+												<% } %>
+											<% } %>
+											<% if(user.slug != undefined) { %>	
+												&nbsp;<a class="message_user btn-primary" href="/messages/<%- user.slug %>"><i class="fa fa-comment" aria-hidden="true"></i> Message</a>
+											<% } %>
+										<% } %>
+									<%} %>	
+							</div>
+						</div>
+					</div>
+					<% if(profile_privacy==0) {%>
+					<!--<div class="p6_pro_1000">
+						<div class="page_section_title p6_section_title"><h3>Recommendations</h3></div>
+						<div class="p6_section_content p6_recom">
+							<div class="action_recomm">
+								<div class="action_recomm_101">
+									<% var rec_given=0;
+										var rec_receive=0;
+										if(typeof recivedRecommends!='undefined'){
+											rec_receive=recivedRecommends.length;
+										}
+
+										if(typeof giveRecommends!='undefined'){
+											rec_given=giveRecommends.length;
+										} %>
+									<a class="action_recomm_104" href="#recmended-received" rel="nofollow"><span class="decorate">Received</span> <span class="count">(<%=rec_receive%>)</span></a>
+									<a class="action_recomm_102 tab-active" href="#recomended-given" rel="nofollow"><span class="decorate">Given</span> <span class="count">(<%=rec_given%>)</span></a>
+								</div>
+								<div class="action_recomm_110">
+									<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>
+										<button type="button" class="action_recomm_111 btn btn-primary btn-primary-sw recommended_popup">Ask to be recommended</button>
+									<% } %>
+								</div>
+							</div>
+							<div class="recom-tabs-content">
+								<div id="recmended-received" style="display: none;">
+									<% if(typeof recivedRecommends!='undefined' && recivedRecommends.length>0){
+									   for(var i=0; i<recivedRecommends.length; i++) {
+
+										var profileImage = '/themes/frontend/images/default-user.png';
+										var userSlug = '/';
+										var userinfo = '';
+										var company = '';
+										var position = '';
+										var displayName     = '';
+										
+										if(typeof recivedRecommends[i].user_id!='undefined'){
+											var userinfo = recivedRecommends[i].user_id;
+											
+											if(typeof userinfo.name!='undefined' && userinfo.name!=''){ 
+												displayName = userinfo.name;
+											}
+											if(typeof userinfo.profile_image!='undefined'){
+												profileImage = '/uploads/users/'+userinfo.profile_image;
+											}
+
+											if(typeof userinfo.slug!='undefined'){
+												userSlug = '/profile/'+userinfo.slug;
+											}
+
+											if(typeof userinfo.userexperiences!='undefined' && userinfo.userexperiences.length>0){
+
+												if(typeof userinfo.userexperiences[0].title!='undefined' && userinfo.userexperiences[0].title!=''){
+													position = userinfo.userexperiences[0].title;
+												}
+
+												 if(typeof userinfo.userexperiences[0].company_id!='undefined' && typeof userinfo.userexperiences[0].company_id.company_name!='undefined'){
+													if(userinfo.userexperiences[0].company_id.company_name!=''){
+
+														company = userinfo.userexperiences[0].company_id.company_name;
+														if(position!=''){
+															company = ' at '+company;
+														}
+													}
+												}
+											}
+										}
+
+									%>
+									<div class="p6_recom_profile">
+										<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 bor_right paddtb40">
+											<div class="p6_p6_recom_101">
+												<a class="p6_p6_recom_102"><img src="<%=sails.config.appUrlwPort%><%=profileImage%>" alt="name" height="95" width="95"></a>
+												<div class="p6_p6_recom_103"><a href="<%=userSlug%>"><%=displayName%></a></div>
+												<% if(position!='' || company!=''){ %>
+													<div class="p6_p6_recom_104"><%=position%><%=company%></div>
+												<% } %>
+												<div class="p6_p6_recom_105" style="display:none;">May 2, 2014, mike worked with james in the same group</div>
+											</div>
+										</div>
+										<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 paddtb40">
+											<% if(typeof isPublic!='undefined' && isPublic==1) {%>
+											<a href="javascript:;" onclick="HideRecommends('<%=recivedRecommends[i].id%>')" class="action_recomm_111 btn btn-danger btn-primary-sw">Hide</a>
+											<% }else{
+												if(typeof isLogin!='undefined' && isLogin==1 && action_flag==1){
+											%>
+												<a href="javascript:;" onclick="HideRecommends('<%=recivedRecommends[i].id%>')" class="action_recomm_111 btn btn-danger btn-primary-sw">Hide</a>
+											<% }
+											 } %>
+											<p>
+												<% if(typeof recivedRecommends[i].recommendation!='undefined'){ %>
+													 <%=recivedRecommends[i].recommendation%>
+												<% } %>
+											</p>
+										</div>
+									</div>
+									<% }
+								} %>
+								</div>
+								<div id="recomended-given" style="display: none;">
+									<% if(typeof giveRecommends!='undefined' && giveRecommends.length>0){
+									   for(var i=0; i<giveRecommends.length; i++) { 
+											var profileImage = '/themes/frontend/images/default-user.png';
+											var company = '';
+											var position = '';
+											var displayName     = '';
+											var userSlug = '/';
+											var user_data = '';
+											
+											if(typeof giveRecommends[i].recommended_id!='undefined'){
+												user_data = giveRecommends[i].recommended_id;
+
+												if(typeof user_data.name!='undefined' && user_data.name!=''){ 
+													displayName = user_data.name;
+												}
+
+												if(typeof user_data.profile_image!='undefined'){
+													profileImage = '/uploads/users/'+user_data.profile_image;
+												}
+												if(typeof user_data.slug!='undefined'){
+													userSlug = '/profile/'+user_data.slug;
+												}
+
+												if(typeof user_data.userexperiences!='undefined' && user_data.userexperiences.length>0){
+
+													if(typeof user_data.userexperiences[0].title!='undefined' && user_data.userexperiences[0].title!=''){
+														position = user_data.userexperiences[0].title;
+													}
+
+													 if(typeof user_data.userexperiences[0].company_id!='undefined' && typeof user_data.userexperiences[0].company_id.company_name!='undefined'){
+														if(user_data.userexperiences[0].company_id.company_name!=''){
+
+															company = user_data.userexperiences[0].company_id.company_name;
+															if(position!=''){
+																company = ' at '+company;
+															}
+														}
+													}
+												}
+											}
+										%>
+										<div class="p6_recom_profile">
+											<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 bor_right paddtb40">
+												<div class="p6_p6_recom_101">
+													<a class="p6_p6_recom_102"><img src="<%=sails.config.appUrlwPort%>/<%=profileImage%>" alt="name" height="95" width="95"></a>
+													<div class="p6_p6_recom_103"><a href="<%=userSlug%>"><%=displayName%></a></div>
+													 <% if(position!='' || company!=''){ %>
+														<div class="p6_p6_recom_104"><%=position%><%=company%></div>
+													<% } %>
+													<div class="p6_p6_recom_105" style="display:none;">May 2, 2014, mike worked with james in the same group</div>
+												</div>
+											</div>
+											<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 paddtb40">
+												<% if(typeof giveRecommends[i].status!='undefined' && giveRecommends[i].status=="1"){ %>
+												
+												 <% if(typeof isPublic!='undefined' && isPublic==1) {%>
+											   <a href="javascript:;" onclick="HideRecommends('<%=giveRecommends[i].id%>')" class="action_recomm_111 btn btn-danger btn-primary-sw">Hide</a>
+												<% }else{
+													if(typeof isLogin!='undefined' && isLogin==1 && action_flag==1){
+												%>
+													<a href="javascript:;" onclick="HideRecommends('<%=giveRecommends[i].id%>')" class="action_recomm_111 btn btn-danger btn-primary-sw">Hide</a>
+												<% }
+												 } %>
+
+													<p>
+														<% if(typeof giveRecommends[i].recommendation!='undefined'){ %>
+															 <%=giveRecommends[i].recommendation%>
+														<% } %>
+													</p>
+												<% } else { %>
+												 
+												 <% if(typeof isPublic!='undefined' && isPublic==1) {%>
+													<div class="p25_li_action p25_list_01">
+														<button type="button" class="allow_small accept" onclick="accept_recommendation('<%=giveRecommends[i].id%>')" id="accept_recommendation">Accept</button>
+														<a style="cursor: pointer;" id="recommendation_reject" onclick="declineRecommends('<%=giveRecommends[i].id%>')" class="deny_small">Decline</a>
+													</div>
+												<% }else{ 
+													if(typeof isLogin!='undefined' && isLogin==1 && action_flag==1){
+												%>
+													<div class="p25_li_action p25_list_01">
+														<button type="button" class="allow_small accept" onclick="accept_recommendation('<%=giveRecommends[i].id%>')" id="accept_recommendation">Accept</button>
+														<a style="cursor: pointer;" id="recommendation_reject" onclick="declineRecommends('<%=giveRecommends[i].id%>')" class="deny_small">Decline</a>
+													</div>
+												<% }
+												}%>
+													<form class="recomend-form rec_<%=giveRecommends[i].id%>" id="rec_form_<%=giveRecommends[i].id%>" method="post" style="display: none;">
+														<input type="hidden" name="accept" value="1">
+														<input type="hidden" name="id" value="<%=giveRecommends[i].id%>">
+														<div class="form-group">
+											<textarea class="form-control" placeholder="Write your comments" rows="5" required="true" name="recommendation" ></textarea>
+														</div>
+														<div class="form-group">
+															<button type="button" onclick="submit_rec_form('<%=giveRecommends[i].id%>')" class="btn btn-primary people-suggestion-btn">Submit</button>
+														</div>
+													</form>
+												<% } %>
+											</div>
+										</div>
+									<% } 
+								}%>
+								</div>
+							</div>
+						</div>
+					</div>-->
+					<div class="p6_pro_1000">
+						<div class="page_section_title p6_section_title"><h3>Experience</h3>
+							<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>
+							<button type="button" class="btn btn-primary btn-primary-sw experience_popup">Add</button>
+							<% } %>
+						</div>
+						<div class="p6_section_content p6_exp_li">
+						<% 
+						if(typeof user.userexperiences!='undefined' && user.userexperiences.length>0){
+							for(var i=0; i<user.userexperiences.length; i++) {
+								var company_name="";
+								var image_letter='';
+								var user_data='';
+								user_data = user.userexperiences[i]; 
+								if(typeof user_data.company_id!='undefined' && typeof user_data.company_id.company_name!="undefined"){
+										company_name=user_data.company_id.company_name;
+								}
+								if(company_name!=''){
+									image_letter=company_name;
+								}else{
+									image_letter=user_data.title;
+								}
+
+							%>
+							<div class="p6_sc_1001 experience_verify_block">
+								<a class="p6_sc_1002 project_img" href="" target="_blank"><span class="first-letter">
+								<%=image_letter.charAt(0).toUpperCase()%>
+								</span></a>
+								<div class="p6_sc_1003">
+									<div class="p6_sc_1004 designation"><%=user_data.title%>
+										<div class="user-profile-verification">
+											<% if(typeof user_data.experiencedocs!='undefined'){
+												if(user_data.experiencedocs.length>0){
+													%>
+													<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>
+													<a href="javascript:;" class="show_verify_data_popup2 action_recomm_111" data-id="<%=user_data.experiencedocs[0].id%>">Get Verified</a>
+													<% } %>
+													<%
+													if(typeof user_data.experiencedocs[0].verify_request_id!='undefined' && user_data.experiencedocs[0].verify_request_id.length>0){
+														var verifyUserData = '';
+														verifyUserData = user_data.experiencedocs[0].verify_request_id;
+														var count=0;
+														var count2=0;
+														_.each(verifyUserData,function(vdata){ 
+															var verify_flag=0;
+															if(typeof vdata.txnno!='undefined' && vdata.txnno!=''){
+																verify_flag=1;
+															}
+															count = count+1;
+															
+															if(typeof vdata.user_id!='undefined'){
+																var UserImage = '/themes/frontend/images/default-user.png';
+																if(typeof vdata.user_id.profile_image!='undefined' && vdata.user_id.profile_image!=''){
+																	UserImage = sails.config.appUrlwPort+'/uploads/users/'+vdata.user_id.profile_image;
+																}
+																var user_slug = '/';
+																
+																if(typeof vdata.user_id.slug!='undefined' && vdata.user_id.slug!=''){
+																	user_slug = '/profile/'+vdata.user_id.slug;
+																}
+
+															%>
+															<% if(verify_flag==1){ %>
+																<% if(count==1){%>
+																<span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+																<span style="font-size: 12px; font-weight: normal;">Verified by </span>
+																<% } %>
+																	<a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+																<% }else{ 
+																	count2=count2+1;
+																	%>
+																	<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>	
+																		<% if(count2==1){%>
+																		&nbsp;&nbsp;<span style="font-size: 12px; font-weight: normal;">Requested to </span>
+																		<% } %>
+																		<a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+																	<% } %>
+																<% } %>
+															<%
+															}
+														});
+													}
+												}
+											}%>
+									</div>
+										<% if(verify_flag){ %>
+										<span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+									<% } %>
+									</div>
+									<div class="p6_1005 Branch">
+									<%=company_name%>
+									</div>
+									<div class="p6_1006 period">
+									<%
+									var from_year   ='';
+									var year_to = '';
+									var mon='';
+									var actual_month='';
+									var to_actual_month='';
+									var exp_data = '';
+										exp_data = user.userexperiences[i];
+
+									if(typeof exp_data.from_year!='undefined'){
+										from_year=exp_data.from_year;
+										if(typeof exp_data.from_month!='undefined'){
+											mon = exp_data.from_month;
+											if(exp_data.from_month.length>2){
+													actual_month= moment().month(mon).format("MM");
+													from_year+='-'+actual_month;
+											}else{
+												actual_month=exp_data.from_month;
+												from_year+='-'+actual_month
+											}
+										}
+									}
+									%>
+									<% if(from_year!=''){
+										if(typeof exp_data.from_month!='undefined'){
+										%>
+											<%=DateDifferentService.getMonth(actual_month)%>
+										<% } %> 
+										<%=exp_data.from_year%>
+									<% } %>
+									
+									<% if(typeof exp_data.to_year!='undefined' && typeof exp_data.to_year!=''){
+
+										if(typeof exp_data.to_month!='undefined' && exp_data.to_month!=''){
+											//year_to=exp_data.to_year+'-'+exp_data.to_month;
+											year_to=exp_data.to_year;
+
+											if(exp_data.to_month.length>2){
+													to_actual_month= moment().month(exp_data.to_month).format("MM");
+													year_to+='-'+to_actual_month;
+											}else{
+												to_actual_month=exp_data.to_month;
+												year_to+='-'+to_actual_month
+											}
+									%>-
+										<%=DateDifferentService.getMonth(to_actual_month)%>
+										<%=exp_data.to_year%>
+											<% }else{%>&nbsp;- Present 
+											<%}
+									}else{ %> 
+										- Present 
+									<% } %>
+									<span class="blue_dot_mid"> <%=DateDifferentService.calculateDateDiff(from_year,year_to) %></span></div>
+									<div class="p6_1007 loction"><%=exp_data.location%></div>
+									
+								</div>
+								<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>
+									<button type="button" class="p6_sc_1099" onclick="edit_experience('<%=exp_data.id%>')"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+								<% } %>
+							</div>
+							<% }
+						}else{ %>
+						<div class="p6_sc_1001">No Experience added yet!</div>
+						<% } %>
+
+						</div>
+					</div>
+
+					<div class="p6_pro_1000">
+						<div class="page_section_title p6_section_title"><h3>Education</h3>
+						<% if((typeof isPublic!='undefined' && isPublic==1) || (action_flag==1)) {%>
+						<button type="button" class="btn btn-primary btn-primary-sw educations_popup">Add</button>
+						<% } %>
+						</div>
+						<div class="p6_section_content p6_edu_li">
+						<% 
+						if(typeof user.usereducations!='undefined' && user.usereducations.length>0){
+						for(var i=0; i<user.usereducations.length; i++) {
+							var user_info = '';
+							user_info = user.usereducations[i];
+							%>
+							<div class="p6_sc_1001 education_verify_block">
+								<a class="p6_sc_1002 project_img" href="" target="_blank"><img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/education_icon.png" alt="Education" height="70" width="70" /></a>
+								<div class="p6_sc_1003">
+									<div class="p6_sc_1004 designation"><%=user_info.school%>
+										<div class="user-profile-verification">
+											<% if(typeof user_info.educationdocs!='undefined'){
+												if(user_info.educationdocs.length>0){
+													%>
+													<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>
+													<a href="javascript:;" class="show_verify_data_popup action_recomm_111" data-id="<%=user_info.educationdocs[0].id%>">Get Verified</a>
+													<% } %>
+													<%
+													if(typeof user_info.educationdocs[0].verify_request_id!='undefined' && user_info.educationdocs[0].verify_request_id.length>0){
+														var verifyUserData = '';
+														verifyUserData = user_info.educationdocs[0].verify_request_id;
+														var count=0;
+														var count2=0;
+														_.each(verifyUserData,function(vdata){ 
+															var verify_flag=0;
+															if(typeof vdata.txnno!='undefined' && vdata.txnno!=''){
+																verify_flag=1;
+															}
+															count=count+1;
+															if(typeof vdata.user_id!='undefined'){
+																var UserImage = '/themes/frontend/images/default-user.png';
+																if(typeof vdata.user_id.profile_image!='undefined' && vdata.user_id.profile_image!=''){
+																	UserImage = sails.config.appUrlwPort+'/uploads/users/'+vdata.user_id.profile_image;
+																}
+
+																var user_slug = '/';
+																if(typeof vdata.user_id.slug!='undefined' && vdata.user_id.slug!=''){
+																	user_slug = '/profile/'+vdata.user_id.slug;
+																}
+														%>
+														<% if(verify_flag==1){ %>
+														<% if(count==1){%>
+														<span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+														<span style="font-size: 12px; font-weight: normal;">Verified by </span>
+														<% } %>
+															<a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+														
+														<% }else{ 
+															count2=count2+1;
+															%>
+															<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>	
+																<% if(count2==1){%>
+																	&nbsp;&nbsp;<span style="font-size: 12px; font-weight: normal;">Requested to </span>
+																	<% } %>
+																	<a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+																<% } %>
+															<% } %>
+															<%
+															}
+														});
+													}
+												}
+											}%>
+										</div>
+									<% if(verify_flag){ %> 
+										<span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+									<% } %>
+									</div>
+									<div class="p6_1005 Branch">
+										<%
+											var degree_field='';
+											if(typeof user_info.degree!='undefined' && user_info.degree!=''){
+												degree_field+=user_info.degree; 
+											}
+
+											if(typeof user_info.study_field!='undefined' && user_info.study_field!=''){
+												if(degree_field!=''){
+												degree_field+=', '+user_info.study_field;
+												}else{
+													degree_field+=user_info.study_field;
+												}
+											}
+										%>
+										<%=degree_field%>
+									</div>
+									<div class="p6_1006 period">
+										<%
+											var from_year   ='';
+											var to_year     ='';
+											if(typeof user_info.from_year!='undefined' && user_info.from_year!=''){
+												from_year=user_info.from_year;
+											}
+											if(typeof user_info.to_year!='undefined' && user_info.to_year!=''){
+												to_year=user_info.to_year;
+											}
+										%>
+										<% if(from_year!=''){ %> <%=from_year%> 
+										<% } %>
+										<% if(to_year!=''){ %>- <%=to_year%>
+										<% } %>
+									</div>
+								</div>
+								<% if((typeof isPublic!='undefined' && isPublic==1) || (action_flag==1)) {%>
+								<button type="button" onclick="edit_education('<%=user.usereducations[i].id%>')" class="p6_sc_1099"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+								<% } %>
+							</div>
+							<% }
+							}else{ %>
+							<div class="p6_sc_1001"> No Education added yet!</div>
+							<% }%>
+						</div>
+					</div>
+
+					<div class="p6_pro_1000">
+						<div class="page_section_title p6_section_title"><h3>Project</h3>
+						<% if((typeof isPublic!='undefined' && isPublic==1) || (action_flag==1)) {%>
+							 <button type="button" class="btn btn-primary btn-primary-sw project_popup">Add</button>
+						<% } %>
+					</div>
+						<div class="p6_section_content p6_project_li">
+							<% 
+							if(typeof user.userprojects!='undefined' && user.userprojects.length>0){
+								for(var i=0; i<user.userprojects.length; i++) {
+									var projects = user.userprojects[i];
+							%>
+							<div class="p6_sc_1001">
+								<a class="p6_sc_1002 project_img" href="" target="_blank"><span class="first-letter">
+									<%=projects.title.charAt(0).toUpperCase()%>
+								</span></a>
+								<div class="p6_sc_1003">
+									<div class="p6_sc_1004 designation"><%=projects.title%>
+										<div class="user-profile-verification">
+												<% if(typeof projects.projectdocs!='undefined'){
+													if(projects.projectdocs.length>0){
+														%>
+														<a href="javascript:;" class="show_verify_data_popup3 action_recomm_111" data-id="<%=projects.projectdocs[0].id%>">Get Verified</a>
+														<%
+														if(typeof projects.projectdocs[0].verify_request_id!='undefined' && projects.projectdocs[0].verify_request_id.length>0){
+															var verifyUserData = '';
+															verifyUserData = projects.projectdocs[0].verify_request_id;
+															var count=0;
+															var count2=0;
+															_.each(verifyUserData,function(vdata){ 
+																var verify_flag=0;
+																if(typeof vdata.txnno!='undefined' && vdata.txnno!=''){
+																	verify_flag=1;
+																}
+																count = count+1;
+																
+																if(typeof vdata.user_id!='undefined'){
+																	var UserImage = '/themes/frontend/images/default-user.png';
+																	if(typeof vdata.user_id.profile_image!='undefined' && vdata.user_id.profile_image!=''){
+																		UserImage = sails.config.appUrlwPort+'/uploads/users/'+vdata.user_id.profile_image;
+																	}
+																	var user_slug = '/';
+																	
+																	if(typeof vdata.user_id.slug!='undefined' && vdata.user_id.slug!=''){
+																		user_slug = '/profile/'+vdata.user_id.slug;
+																	}
+																%>
+																<% if(verify_flag==1){ %>
+																	<% if(count==1){%>
+																	<span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+																	<span style="font-size: 12px; font-weight: normal;">Verified by </span>
+																	<% } %>
+																		<a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+																	<% }else{ 
+																		count2=count2+1;
+																		%>
+																		<% if(count2==1){%>
+																		&nbsp;&nbsp;<span style="font-size: 12px; font-weight: normal;">Requested to </span>
+																		<% } %>
+																		<a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+																	<% } %>
+																<%
+																}
+															});
+														}
+													}
+												}%>
+										</div>
+									</div>
+									<div class="p6_1005 company">
+										<% if(typeof projects.project_url!='undefined'){ %>
+										<a href="<%=projects.project_url%>" target="_blank"><%=projects.project_url%></a>
+										<% } %>
+									</div>
+									<div class="p6_1006 period">
+									<%
+										var start_time   ='';
+										var end_time     ='';
+										var company_info ='';
+										var company_location='';
+
+										if(typeof projects.company_id!='undefined' && typeof projects.company_id.company_name!='undefined'){
+											if(projects.company_id.company_name!=''){
+												company_info= projects.company_id.company_name;
+											}
+										}
+
+										if(typeof projects.location!='undefined' && typeof projects.location!=''){
+											if(company_info!=''){
+												company_location=', '+projects.location;
+											}else{
+												company_location=projects.location;
+											}
+										}
+									if(company_info!='' || company_location!=''){
+									%>
+										<%=company_info%> <%=company_location%><br/>
+
+									<%
+									}
+										var from_actual_month='';
+										var to_actual_month='';
+
+										if(typeof projects.from_year!='undefined' && projects.from_year!=''){
+										
+											if(typeof projects.from_month!='undefined' && projects.from_month!=''){
+												//start_time=projects.from_year+'-'+projects.from_month;
+												start_time=projects.from_year;
+
+												if(projects.from_month.length>2){
+													from_actual_month= moment().month(projects.from_month).format("MM");
+													start_time+='-'+from_actual_month;
+													}else{
+														from_actual_month=projects.from_month;
+														start_time+='-'+from_actual_month
+													}
+										%>
+												<%=DateDifferentService.getMonth(from_actual_month)%>
+												<%=projects.from_year%>
+										<% }
+										}   
+										if(typeof projects.to_year!='undefined' && projects.to_year!=''){
+												if(typeof projects.to_month!='undefined' && projects.to_month!=''){
+													end_time=projects.to_year;
+
+													if(projects.to_month.length>2){
+														to_actual_month= moment().month(projects.to_month).format("MM");
+														end_time+='-'+to_actual_month;
+													}else{
+														to_actual_month=projects.to_month;
+														end_time+='-'+to_actual_month
+													}
+												%> -
+													<%=DateDifferentService.getMonth(to_actual_month)%>
+													<%=projects.to_year%>
+												<%
+												}
+											}
+										%>
+										<% if(start_time!=''){
+										 %>
+										<span class="blue_dot_mid"><%=DateDifferentService.calculateDateDiff(start_time,end_time)%></span>
+										<% } %>
+									</div>
+									<div class="p6_1007 description"><p>
+										<% if(typeof projects.description!='undefined'){%>
+										<%=projects.description%>
+										<% } %>
+									</p></div>
+								</div>
+								<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>
+								<button type="button" class="p6_sc_1099" onclick="edit_project('<%=projects.id%>')"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+								<% } %>
+							</div>
+						<% }
+						}else{ %>
+						<div class="p6_sc_1001">No Project added yet!</div>
+						<% } %>
+						</div>
+					</div>
+					<div class="p6_pro_1000">
+						<div class="section_title p6_section_title"><h3>Social Network</h3>
+						<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>
+							<button type="button" class="btn btn-primary btn-primary-sw social_popup">Add</button>
+						<% } %>
+						</div>
+						<div class="p6_section_content p6_social_net">
+							<% if((typeof social!='undefined' && social.length>0) && (typeof user.usersociallinks!='undefined' && user.usersociallinks.length>0)) {
+								for(var j=0; j < social.length; j++) {
+									if(typeof user.usersociallinks!='undefined' && user.usersociallinks.length>0){
+										for(var i=0; i<user.usersociallinks.length; i++) {
+											if(social[j].id==user.usersociallinks[i].social_id) {
+												var social_class="";
+												var icon_class="";
+												if(social[j].name=='LinkedIn'){
+													var social_class='linke';
+													var icon_class=' fa-linkedin';
+												} else if(social[j].name=='Facebook') {
+													var social_class='fb';
+													var icon_class=' fa-facebook';
+												} else if(social[j].name=='Twitter') {
+													var social_class='twit';
+													var icon_class=' fa-twitter';
+												} 
+
+												var prefix = '';
+												var social_url    = '';
+												social_url = user.usersociallinks[i].link.toLowerCase();
+												prefix = social_url.includes("http");
+
+												if(prefix==false){
+													social_url='http://'+social_url;
+												}
+												%>
+												<div class="p6_sc_1001">
+													<a class="p6_sc_1002 social <%=social_class%>" href="<%=social_url%>" title="<%=social_url%>" target="_blank"><i class="fa <%=icon_class%>" aria-hidden="true"></i></a>
+													<div class="p6_sc_1003">
+														<div class="p6_sc_1004"><%=social[j].name%></div>
+														<div class="p6_sc_1005"><a href="<%=social_url%>" title="<%=social_url%>" target="_blank"><%=user.usersociallinks[i].link%></a></div>
+													</div>
+													<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) { %>
+														<button type="button" onclick="edit_social('<%=user.usersociallinks[i].id%>')" class="p6_sc_1099"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+													<% } %>
+												</div>
+											<% }
+										}  
+									} 
+								}
+							} else {%>
+								<div class="p6_sc_1001"> No Social link added yet!</div>
+							<% } %>
+						</div>
+					</div>
+					<% } %>
+				</div>
+			</div>
+
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+				<div class="a-center">
+					<!-- <a href="" target="_blank"><img class="sepb20 img-full-lg img-full-md img-full-sm" src="<%=sails.config.appUrlwPort%>/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+					<a href="" target="_blank"><img class="sepb20 img-full-lg img-full-md img-full-sm" src="<%=sails.config.appUrlwPort%>/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a> -->
+					<div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/fRM-2dt-LIs?rel=0" height="300" allowfullscreen ></iframe>
+                    </div><br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/suvE6ZAPTDQ?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<% if((typeof isPublic!='undefined' && isPublic==1)  || (action_flag==1)) {%>    
+
+	<!-- Modal Form Start-->
+    <%- include popups/edit_profile_image.ejs %>
+    <%- include popups/edit_profile_cover_image.ejs %>
+    <%- include popups/education.ejs %>
+    <%- include popups/project.ejs %>
+    <%- include popups/experience.ejs %>
+    <%- include popups/social.ejs %>
+	<%- include popups/recommendation.ejs %>
+	
+	<!-- Select verifier user Modal pop up -->
+	<%- include ../verification/send-authenticate-popup.ejs %>
+
+		<!-- Select verifier user Modal pop up -->
+	<%- include ../verification/verify_authentication_popup.ejs %>
+	
+	<script type="text/javascript" src="/themes/frontend/js/verify_authentication_popup.js"></script>
+
+<% } %>
+<!-- Modal Form End-->
+<script type="text/javascript">
+    $(document).on("click",".blockuser",function(){
+        var id = $(this).data("user_id");
+
+	    $.confirm({content:"ARE YOU SURE TO BLOCK USER?",
+	        header: "Block",
+	        confirm:function () {
+	            window.location.href = '/blockuser/'+id;
+	        },
+	        cancel:function () {
+	            console.log('confirm')
+	        }
+	    });
+    });
+
+    $(document).on("click",".unblockuser",function(){
+        var id = $(this).data("user_id");
+	    $.confirm({content:"Are you sure to unblock user?",
+	        header: "Unblock",
+	        confirm:function () {
+	            window.location.href = '/unblockuser/'+id;
+	        },
+	        cancel:function () {
+	            console.log('confirm')
+	        }
+	    });
+    });
+</script>
+
+<script src="/themes/frontend/js/ajax_functions.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/send-request-authenticate.js"></script>
+
+<script type="text/javascript">
+	$(document).on("click",".show_verify_data_popup",function(){
+		var id = $(this).data("id");
+		show_verify_data_popup(id);
+	});
+
+	$(document).on("click",".show_verify_data_popup2",function(){
+		var id = $(this).data("id");
+		show_verify_data_popup(id);
+	});
+
+	$(document).on("click",".show_verify_data_popup3",function(){
+		var id = $(this).data("id");
+		show_verify_data_popup(id);
+	});
+	
+	/* Selected file name display */
+	$(".input-upload-button").on("change", function() {
+		$(this).parent().find(".file_name").html("<b>Selected File:</b> " + this.files[0].name);
+	});
+	
+	$('form#form_verify_request').submit(function (event) {
+		$('#connection_input').val($('#connection').val());
+		
+		var ajax_url  = '/store_user_verify_request';
+		var source_id = '';
+		var form_id  = '#form_verify_request';
+		if($('input[name="to_verify_data"]').is(':checked')) {
+			$('#to_verify_data').val('1');
+		} else {
+			$('#to_verify_data').val('');
+		}
+		if($('input[name="to_verify_doc"]').is(':checked')) {
+			$('#to_verify_doc').val('1');
+		} else {
+			$('#to_verify_doc').val('');
+		}
+
+		StoreModalData(ajax_url,source_id,form_id,"");
+		event.preventDefault();
+	});
+
+    $('#edit-cover').change(function(e){
+        var files = e.target.files,
+        filesLength = files.length;
+        for (var i = 0; i < filesLength; i++) {
+            var f = files[i]
+            var fileReader = new FileReader();
+            fileReader.onload = (function(e) {
+                var file = e.target;
+                $("#CoverImage").css("background-image","url("+e.target.result+")");
+            });
+            fileReader.readAsDataURL(f);
+            }
+
+        var action_url ="/update_profile_cover";
+        ajaxChangeProfileCoverImage('coverimagesform',action_url);
+    });
+
+    $('#edit-profile').change(function(e){
+        var files = e.target.files,
+        filesLength = files.length;
+        for (var i = 0; i < filesLength; i++) {
+            var f = files[i]
+            var fileReader = new FileReader();
+            fileReader.onload = (function(e) {
+                var file = e.target;
+                $("#ProfileImage").css("background-image","url("+e.target.result+")");
+            });
+            fileReader.readAsDataURL(f);
+            }
+
+        var action_url ="/update_profile_image";
+        ajaxChangeProfileCoverImage('profileimageform',action_url);
+    });
+
+    function ajaxChangeProfileCoverImage(form_id,action_url){
+        var form = $('#'+form_id)[0]; // You need to use standard javascript object here
+        var formData = new FormData(form);
+        $.ajax({
+            type: 'POST',
+            url: action_url,
+            data:  formData,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            success: function (response)
+            {
+                if (response.status=='OK')
+                {
+                    $.bootstrapGrowl(response.msg, {type: 'success', delay: 1000});
+                    setTimeout(function() { location.reload(); }, 1000);
+                } else
+                {
+                    $.bootstrapGrowl(response.msg, {type: 'danger', delay: 1000});
+                }
+            }
+        });     
+    }
+
+    // Change tab class and display content
+    $('.action_recomm_101 a').on('click', function (event) {
+        event.preventDefault();
+        
+        $('.tab-active').removeClass('tab-active');
+        $(this).addClass('tab-active');
+        $('.recom-tabs-content>div').hide();
+        $($(this).attr('href')).show();
+    });
+
+    $('.action_recomm_101 a:first').trigger('click'); // Default
+
+    $(document).on("click",".btnaccept",function(){
+        var user_id =  $(this).data('value');
+        $.ajax({
+            url: '/acceptRequest/'+user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+					user_id = results.user_id;
+					send_notification(user_id);
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 1000});
+                    setTimeout(function() { location.reload(); }, 1000);
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 1000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click",".btnreject",function(){
+        var user_id =  $(this).data('value');
+        $.ajax({
+            url: '/rejectRequest/'+user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 1000});
+                    setTimeout(function() { location.reload(); }, 1000);
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 1000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click",".cancelsent",function(){
+        var to_user_id =  $(this).data('value');
+        $.ajax({
+            url: '/cancelsentRequest/'+to_user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 1000});
+                    setTimeout(function() { location.reload(); }, 1000);
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 1000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click", ".userknown", function (event) {
+        event.preventDefault();
+        var _id = $(this).data('value');
+        if(_id!=''){
+            var formData = {to_user_id:_id};
+            $.ajax({
+                url: '/sendRequest',
+                method: 'POST',
+                data:  formData,
+                success: function(results)
+                {
+                    var json_obj = results;
+                    if(json_obj.status == 'OK'){
+						user_id = json_obj.user_id;
+						send_notification(user_id);
+                        $.bootstrapGrowl(json_obj.message, {type: 'success', delay: 1000});
+                        setTimeout(function() { location.reload(); }, 1500);
+                    }
+                    else{
+                       $.bootstrapGrowl(json_obj.message, {type: 'success', delay: 1000});
+                       setTimeout(function() { location.reload(); }, 1000);
+                    }
+                }
+            });
+        }else{
+             $.bootstrapGrowl('Fail to send request', {type: 'danger', delay: 1000});
+        }
+    });
+
+	$('input[name="to_verify_data"]').on("change", function() {
+		if ($(this).prop( 'checked' ) === false && $('input[name="to_verify_doc"]').prop( 'checked' ) === false) {
+			$('input[name="to_verify_doc"]').prop('checked', true);
+		}
+	});
+	
+	$('input[name="to_verify_doc"]').on("change", function() {
+		if ($(this).prop( 'checked' ) === false && $('input[name="to_verify_data"]').prop( 'checked' ) === false) {
+			$('input[name="to_verify_data"]').prop('checked', true);
+		}
+	});
+
+	$(document).on("click",".showMyModal",function(e){
+		var id = $(this).data("id");
+		$('#current_verifier_block').hide();
+		showMyModal(id);
+		e.preventDefault();
+	});
+
+	$(document).on("click",".profileRedirect",function(){
+		var url = $(this).data("url");
+        window.location.href = url;
+	});
+
+</script>

@@ -1,0 +1,51 @@
+<%
+    var user_id = (req.user != undefined && req.user.id != undefined) ?  req.user.id : 0;
+
+    _.each(searchcompanies,function(company){
+        var img_text='';
+        img_text =company.company_name;
+        var slug = "javascript:;";
+        if(typeof company.slug!='undefined' && company.slug!=''){
+            slug = "/company/"+company.slug;
+        }
+%>
+<li class="first">
+    <div class="p32_1011">
+        <% if(typeof company.companydata != 'undefined' && company.companydata.length > 0 && company.companydata[0].profile_image != 'undefined') { %>
+            <a href="/company/<%- company.slug %>"><img src="<%- sails.config.appUrlwPort + sails.config.profile_image_url + company.companydata[0].profile_image %>" alt="<%=img_text%>" /> </a>
+        <% } else { %>
+        <a class="p6_sc_1002 project_img" href="/company/<%- company.slug %>" target="_blank">
+             <span class="first-letter">
+                <%=img_text.charAt(0).toUpperCase()%>
+            </span>
+        </a>
+        <% } %>
+        <div class="p32_1012">
+            <div class="p32_1013 name"><a href="<%=slug%>" class="p16_2004"><%=company.company_name%></a></div>
+            <div class="p32_1016 location_city"><% if(company.companydata.length>0 && typeof company.companydata[0].address!='undefined'){%><%=company.companydata[0].address%><% } %>
+                <% if(typeof company.company_size!='undefined'){%>
+                    <br><span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <%=company.company_size%>
+                <% } %>
+            </div>
+        </div>
+
+        <%
+            var follow = 0;
+            _.each(company.followers,function(follower){
+                if(follower.user_id == user_id){
+                    console.log(follower);
+                    follow = follow+1;
+                }
+            })
+        %>
+        <% 
+        if(typeof req.user !='undefined' && req.user.id!=''){
+        if(follow > 0) { %>
+        <button type="submit" class="btn btn-primary p32_message btnfollow" value="<%=company.id%>">UnFollow</button>
+        <% } else { %>
+        <button type="submit" class="btn btn-primary p32_message btnfollow" value="<%=company.id%>">Follow</button>
+        <% } } %>
+    </div>
+</li>
+<% }) %>

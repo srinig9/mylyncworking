@@ -1,0 +1,462 @@
+<style>
+.pac-container {
+    z-index: 1051 !important;
+}
+</style>
+
+<div id="re-login" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Verify OTP</h4>
+            </div>
+            <div class="modal-body text-center">
+    			<p>Your password has been changed. Please re-login.</p>        	
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<footer>
+	<div class="footer-nav">
+		<div class="container">
+			<div class="footer-nav-border">
+				<div class="row"> 
+					<div class="col-md-9 col-sm-9 col-xs-12 pad10-top">
+						<div class="footer-inner">
+							<ul>
+								<li>
+									<a href="/about-us">About Us</a>
+								</li>
+								<li>
+									<a href="/privacy-policy">Privacy Policy</a>
+								</li>
+								<li>
+									<a href="/user-agreement">User Agreement</a>
+								</li>
+								<li>
+									<a href="/terms-and-conditions">Terms &#38; Conditions</a>
+								</li>
+								<li>
+									<a href="/cookie-policy">Cookie Policy</a>
+								</li>
+								<li>
+									<a href="/rewards">Rewards</a>
+								</li>
+								<li>
+									<a href="/faq">FAQ</a>
+								</li>
+								<li>
+									<a href="/contact-us">Contact Us</a>
+								</li> 
+							</ul>
+						</div>
+					</div>
+					<!-- <div class="col-md-2 col-sm-5 col-xs-12 pad10-top">
+						<div class="footer-inner">
+							<ul class="businesssolutionlinks">
+								<li>
+									<a href="/business-solutions">Business Solutions</a>
+								</li>
+								<li>
+									<a href="/job-posting">Jobs</a>
+								</li> 
+							</ul>
+						</div>
+					</div> -->
+					<div class="col-md-3 col-sm-12 col-xs-12">
+						<div class="footer-inner footer-inner-last">  
+							<ul class="socialmedia-links">
+								<li>
+									<a href="https://lynked.world/company/lynkedworld" target="_blank">
+										<i class="fa fa-sociallink" aria-hidden="true"></i>
+									</a>
+								</li>
+								<li>
+									<a href="https://www.facebook.com/LynkedW/" target="_blank">
+										<i class="fa fa-facebook" aria-hidden="true"></i>
+									</a>
+								</li>
+								<li>
+									<a href="https://twitter.com/LynkedW" target="_blank">
+										<i class="fa fa-twitter" aria-hidden="true"></i>
+									</a>
+								</li>
+								<li>
+									<a href="https://www.youtube.com/channel/UCfi3HFpLbIifFYmRUncV5PQ/videos" target="_blank">
+										<i class="fa fa-youtube-play" aria-hidden="true"></i>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div> 
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="footer-copyright">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-sm-6 col-xs-12">
+					<p class="text-center">Copyright &#169; 2018 Lynked.World <a href="http://koinworx.com/" target="_blank">(KoinWorx BV, Netherlands)</a>. All Rights Reserved</p>
+				</div>
+				<!-- <div class="col-md-6 col-sm-6 col-xs-12">
+					<ul>
+						<li>
+							<a href="javascript:;">English</a>
+						</li>
+					</ul>	
+				</div> -->
+			</div>
+		</div>
+	</div>
+</footer>
+	
+	
+
+	
+	<!-- Model Popup for Add Organization -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYHb1ljt_PnxyphDw-3966xTSlpOAJBbw&libraries=places"></script>
+
+
+	<%- include ../ajax/addorganization_popup.ejs %>
+	<%- include ../ajax/linkorganization_popup.ejs %>
+	<%- include ../ajax/thanks_popup.ejs %>
+
+	<% if(req.path == "/wallet" || req.path == "/") { %>
+	<!-- start Modal -->
+	<%- include ../ajax/verify_popup.ejs %>
+	<%- include ../verification/otp_popup.ejs %>
+	<%- include ../verification/email_otp_popup.ejs %>
+	<!-- end Modal -->
+	<script type="text/javascript" src="/themes/frontend/js/otp_request.js"></script>
+	<% if(typeof req.user != "undefined") {
+		if(req.user.is_verify_phone!=1 && req.user.is_verify_email!=1){ %>
+			<script type="text/javascript">
+				$(window).on('load',function(){
+					if("<%- req.path %>" == "/wallet"  || localStorage.getItem("user_id") == undefined || localStorage.getItem("user_id") == "" || localStorage.getItem("user_id") != "<%=(typeof req.user != 'undefined' ? req.user.id : 0)%>"){
+						$('#verifyModel').modal('show');
+						localStorage.setItem("user_id",  "<%=(typeof req.user != 'undefined' ? req.user.id : 0)%>" );
+					}
+				});
+			</script>
+		<% }
+	} 
+} %>
+
+<script type="text/javascript">
+
+	$('#organized_thanks_popup').on('hidden.bs.modal', function () {
+		// $(document).on("submit", "#swichUserForm", function (e) {});
+		$("#swichUserForm").submit();
+		// location.reload();
+	})
+
+	$(document).on("click","#allowenablebtn",function(){
+		if($('#allowenablebtn').prop('checked')) {
+			$("#btnorgadd").prop("disabled", false);
+		} else {
+			$("#btnorgadd").prop("disabled", true);
+		}
+	});
+
+	$(document).on("click","#allowenablelinkbtn",function(){
+		if($('#allowenablelinkbtn').prop('checked')) {
+			$("#btnorglink").prop("disabled", false);
+		} else {
+			$("#btnorglink").prop("disabled", true);
+		}
+	});
+
+	$(document).on("click",".addOrganization",function(){
+		$('#addOrganization').modal({
+		    show: true
+		});
+	});
+
+	$(document).on("click",".linkOrganization",function(){
+		$('#linkOrganization').modal({
+		    show: true
+		});
+	});
+
+    $( "#OrganizationCompanyName" ).blur(function() {
+        var string = $(this).val();
+        var slug = string.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-').toLowerCase();
+        $("#OrganizationCompanyslug").val(slug);
+    });
+
+	$("#form_linkOrganization").submit(function(event) {
+     	ajaxindicatorstart('LOADING');
+		event.preventDefault();
+		var formData = new FormData( this );
+		$.ajax({
+			url: '/linkOrganization',
+			method: 'POST',
+			data:  formData,
+			mimeType:"multipart/form-data",
+			processData: false,
+			contentType: false,
+			success: function(results)
+			{
+				var json_obj = jQuery.parseJSON( results );
+				if(json_obj.status=='OK'){
+					$('#linkOrganization').modal('hide');
+					location.reload();
+				}else{
+					$.bootstrapGrowl(json_obj.msg, { type: 'danger', width: 'auto' });
+				}
+				ajaxindicatorstop();
+			}
+		});
+	});
+
+	$("#form_addOrganization").submit(function(event) {
+     	ajaxindicatorstart('LOADING');
+		event.preventDefault();
+		var formData = new FormData( this );
+		$.ajax({
+			url: '/addorganization',
+			method: 'POST',
+			data:  formData,
+			mimeType:"multipart/form-data",
+			processData: false,
+			contentType: false,
+			success: function(results)
+			{
+				var json_obj = jQuery.parseJSON( results );
+				if(json_obj.status=='OK'){
+					$('#addOrganization').modal('hide');
+
+					$('#organized_thanks_popup').find("input[name='loginid']").val(json_obj.users.loginid);
+					$('#organized_thanks_popup').find("input[name='password']").val(json_obj.users.password);
+					$('#organized_thanks_popup').modal('show');
+				}else{
+					$.bootstrapGrowl(json_obj.msg, { type: 'danger', width: 'auto' });
+				}
+                ajaxindicatorstop();
+			}
+		});
+	});
+
+    $(document).on("click",".swipeuser",function(e){
+    	var company_id = $(this).data("company_id");
+    	var loginid = $(this).data("loginid");
+    	var password = $(this).data("password");
+     	ajaxindicatorstart('LOADING');
+    	$.ajax({
+			url: '/swipeuser',
+			method: 'POST',
+			data : {loginid:loginid,password:password },
+			success: function(json_obj)
+			{
+				// var json_obj = jQuery.parseJSON( results );
+				if(json_obj.status=='OK'){
+					$.bootstrapGrowl(json_obj.message, { type: 'success', width: 'auto' });
+					// location.reload();
+					window.location.href="/";
+				}else{
+					$.bootstrapGrowl(json_obj.message, { type: 'danger', width: 'auto' });
+				}
+                ajaxindicatorstop();
+			}
+		});
+    });
+
+    var csocket = io('<%=sails.config.appUrl+":"+sails.config.portSoketIo%>');
+    var user_id = "<%=(typeof req.user != 'undefined' ? req.user.id : 0)%>";
+    var socket_id = '';
+    csocket.on('connect', function (sockete_data) {
+		socket_id = csocket.id;
+		if(user_id != 0) {
+			/*$.ajax({
+				url: '/updateSocketId',
+				method: 'POST',
+				data : {socket_id : socket_id },
+				success: function(results)
+				{
+					
+				}
+			});*/
+			csocket.emit('connect_io',{user_id:user_id,socket_id:socket_id});
+		}
+    });
+	
+	$ (function(){
+		getnewnotification();
+        //receiving notification.
+        csocket.on('NOTIFY',function(msg){
+        	if(msg > 0){
+				$("#notificationCount").append('<span class="mt_notification">'+msg+'</span>');
+			}else{
+				$("#notificationCount").append('');
+			}
+        });
+    });
+
+	function getnewnotification(){
+		$.ajax({
+			url: '/unreadNotificationCount',
+			method: 'GET',
+			success: function(results)
+			{
+				if(results!=0){
+					$("#notificationCount").append('<span class="mt_notification">'+results+'</span>');
+				}
+			}
+		});
+	};
+
+	if('index'!="<%-req.options.action%>" && 'messages'!="<%-req.options.controller%>") {
+		$.ajax({
+			url: '/getUnreadmessage',
+			method: 'GET',
+			success: function(results)
+			{
+				if(results.status == 'OK'){
+					if(results.count!=0){
+						$(".mt_h_messages").append('<span class="mt_notification">'+results.count+'</span>');
+					}
+				}
+			}
+		});
+	}
+
+	function send_notification(user_id) {
+		csocket.emit('send_notification',user_id);
+	}
+
+    // This example displays an address form, using the autocomplete feature
+    // of the Google Places API to help users fill in the information.
+
+    // This example requires the Places library. Include the libraries=places
+    // parameter when you first load the API. For example:
+    // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+    var placeSearch, autocomplete;
+    var componentForm = {
+        locality: 'long_name',
+        administrative_area_level_1: 'long_name',
+        country: 'long_name'
+    };
+
+    initialize("autocomplete");
+    initialize("autocomplete2");
+    initialize("autocomplete3");
+    initialize("location_autocomplete");   
+
+    function initialize(out) {
+        var  autocomplete = new google.maps.places.Autocomplete(
+        (document.getElementById(out)),
+        {types: ['geocode']});
+
+        google.maps.event.addListener(autocomplete, 'place_changed', 
+        function () {
+        // document.getElementById(out+'Pc').value='';
+        fillInAddress(out,autocomplete);
+        });
+    }
+
+    function fillInAddress(out,autocomplete) {
+    	// Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+
+		for (var component in componentForm) {
+            // document.getElementById(component).value='';
+            // document.getElementById(component).disabled = false;
+        }
+
+        // Get each component of the address from the place details
+        // and fill the corresponding field on the form.
+        
+        for (var i = 0; i < place.address_components.length; i++) {
+            var addressType = place.address_components[i].types[0];
+            if (componentForm[addressType]) {
+                var val = place.address_components[i][componentForm[addressType]];
+                if(out=="autocomplete2"){
+                    if(addressType=="country"){
+                        document.getElementById("identity_country").value = val;
+                    }
+					
+                    if(addressType=="administrative_area_level_1"){
+                        document.getElementById("administrative_area_level_1").value = val;
+                    }
+                    if(addressType=="locality"){
+                        document.getElementById("locality").value = val;
+                    }
+                }else if(out=="autocomplete3"){
+                	if(addressType=="country"){
+                        document.getElementById("organization_country").value = val;
+                    }
+                    if(addressType=="administrative_area_level_1"){
+                        document.getElementById("organization_state").value = val;
+                    }
+                    if(addressType=="locality"){
+                        document.getElementById("organization_city").value = val;
+                    }
+                }else{
+                	document.getElementById(addressType).value = val;
+                }
+            }
+        }
+    }
+    // Bias the autocomplete object to the user's geographical location,
+    // as supplied by the browser's 'navigator.geolocation' object.
+    function geolocate() {}
+
+	function copyShareURL(slug_url) {
+        // Create an auxiliary hidden input
+        var aux = document.createElement("input");
+        // Get the text from the element passed into the input
+        var copy_url = '<%=sails.config.appUrlwPort%>/'+slug_url;
+        copy_url = copy_url;
+
+        aux.setAttribute("value",copy_url);
+        // Append the aux input to the body
+        document.body.appendChild(aux);
+        // Highlight the content
+        aux.select();
+        // Execute the copy command
+        document.execCommand("copy");
+        // Remove the input from the body
+        document.body.removeChild(aux);
+        $.bootstrapGrowl("URL copy successfully", {type: 'success', delay: 1000});
+    }
+
+    //deep link for mobile
+	function CheckMobileOS() {
+	  var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+	      // Windows Phone must come first because its UA also contains "Android"
+	    if (/windows phone/i.test(userAgent)) {
+	        return "Windows Phone";
+	    }
+
+	    if (/android/i.test(userAgent)) {
+	        return "Android";
+	    }
+
+	    // iOS detection from: http://stackoverflow.com/a/9039885/177710
+	    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+	        return "iOS";
+	    }
+
+	    return "unknown";
+	}
+</script>
+<% if(typeof req.user=="undefined") {%>
+	<script type="text/javascript">
+		if(window.location.pathname == '/') {
+			var checkOS = CheckMobileOS();
+			if(checkOS=="Android"){
+				window.location.href='<%=sails.config.android_app_url%>';
+			}else if(checkOS=="iOS"){
+				window.location='<%=sails.config.iso_app_url%>';
+			}
+		}
+	</script>
+<% } %>

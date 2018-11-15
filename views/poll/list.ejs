@@ -1,0 +1,320 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar nav polls Starts -->
+            <%- partial('../includes/sidebar-nav-polls.ejs') %>
+            <!-- Sidebar nav polls Ends -->
+            
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-left">
+                <div class="p_29_mc">
+                    <div class="">
+                        <div class="section_title"><h3>List Poll/ Survey <span>(5)</span></h3></div>
+                        <div class="p29_section_content">
+                            <% if(polls.length> 0){%>
+                            <% _.each(polls, function (_feed) { %>
+
+                            <div class="list_connection">
+                                <div class="p29_li pad20 pad_tb30 feed_list" data-id="<%=_feed.id%>">
+                                    <div class="p29_li_check">
+                                        <input class="input_check p29_li_input_check" type="checkbox" value="" checked="checked" name="selection1" id="selection1" />
+                                        <label class="input_check_label" for="selection1"><%-_feed.feed_details%></label>
+                                        <div class="p29_l1_button">
+                                            <button type="button" class="p29_li_1101 btnPollEdit"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+                                            <button type="button" class="p29_li_1102 btnPollDelete"><i class="fa fa-trash" aria-hidden="true"></i> </button>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="p29_li_option row no-margin">
+                                        <%
+                                            var total_ans =  _feed.pollanswers.length;
+
+                                            _.each(_feed.polloptions, function (polloption) {
+                                                var total_option_ans = 0;
+                                                var avg = 0;
+                                                var checked = "";
+                                                if(polloption.pollanswers.length > 0){
+                                                    total_option_ans = polloption.pollanswers.length;
+                                                    avg = (total_option_ans * 100)/total_ans;
+                                                    checked = polloption.pollanswers.filter(function (person) { 
+                                                        return person.user_id == req.user.id;
+                                                    });
+                                                }
+                                        %>                                    
+                                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <div class="form-group">
+                                                <input name="answer_<%=polloption.feed_id%>[]" id="option_<%=polloption.id%>" class="input_radio form-inline answer_poll" value="<%=polloption.id%>" type="radio" <% if(checked!='') { %> checked="checked" <% } %> >
+                                                <label class="label" for="id1"><%=polloption.poll_option%></label>
+                                                <div class="p29_02112017">
+                                                    <div class="meter">
+                                                        <span class="poll_meter_<%=polloption.id%>" style="width: <%=avg%>%"></span>
+                                                    </div>
+                                                    <div class="poll_count poll_count_<%=polloption.id%>"">
+                                                        <%=avg.toFixed(2)%>% <span class="count">(<%=total_option_ans%>)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                    </div>
+
+                                    <% 
+                                        var totalLikes = 0;
+                                        var totaldislikes = 0;
+                                        var isliked = 0;
+                                        var isdisliked = 0;
+                                        feedlikes = _feed.feedlikes;
+
+                                        _.each(feedlikes, function (feedlike) {
+                                            temp2 = [];
+                                            temp2 = feedlike;
+                                            if(feedlike.status==1){
+                                                totalLikes = totalLikes+1;
+                                            }
+                                            if(feedlike.status==2){
+                                                totaldislikes = totaldislikes+1;
+                                            }
+                                            if(feedlike.status==2 && feedlike.user_id==req.user.id){
+                                                isdisliked = 1;
+                                            }
+                                            if(feedlike.status==1 && feedlike.user_id==req.user.id){
+                                                isliked = 1;
+                                            }
+                                        })
+                                        totalLikes = totalLikes;
+                                        totaldislikes = totaldislikes;
+                                        isliked = isliked;
+                                        isdisliked = isdisliked;
+                                    %>
+
+                                    <div class="p51_feed_post_feed_not">
+                                        <div class="pull-left p51_feed_pfn1 p51_feed_pfn3"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="total_likes"> &nbsp; <%=totalLikes%> Likes</span></div>
+
+                                        <div class="pull-left p51_feed_pfn1 p51_feed_pfn2"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="total_dislikes"> &nbsp; <%=totaldislikes%> Disikes</span></div>
+
+                                        <div class="pull-right p51_feed_pfn2 total_comments"><%=_feed.feedcomments.length%> Comments</div>
+                                        
+                                        <div class="pull-right p51_feed_pfn3">0 Shares</div>
+                                    </div>
+
+                                    <div class="p51_feed_post_action bloglist">
+                                        <button type="button" class="p51_feed_world_share_lynked"><img src="/themes/frontend/images/color-logo.svg" class="" width="25" height="25" alt="share with lynked"><span class=""> &nbsp; 55 Lynk ($3)</span> &nbsp; <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+
+                                        <button type="button" class="active-action p51_fw12 marlr8 btnlike <% if(isliked==1){ %> active <% } %>" title="Like"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Like</span></button>
+
+                                        <button type="button" class="active-action p51_fw12 btndislike <% if(isdisliked==1){ %> active <% } %>" title="Dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Dislike</span></button>
+
+                                        <button type="button" class="p51_fw12 marlr8" title="Comment"><i class="fa fa-comment" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Comment</span></button>
+
+                                        <button type="button" class="p51_fw12" title="Share"><i class="fa fa-share" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Share</span></button>
+
+                                        <div class="row">
+                                            <div class="">
+                                                <div class="comment-form">
+                                                <div class="comments mycomments">
+                                                <% if(_feed.feedcomments.length > 3 ){ %>
+                                                <a href="javascript:;" class="see-more">
+                                                    <i class="fa fa-repeat"></i> Load Previous Comments
+                                                </a>
+                                                <% } %>
+
+                                                    <% 
+                                                    if(_feed.feedcomments.length > 0 ){
+                                                        var feedcomments =  _feed.feedcomments;
+                                                        for(var _cindex=0; _cindex < feedcomments.length; _cindex++) {
+                                                            var _feedcomment = feedcomments[_cindex];
+
+                                                    %>
+                                                    <div class="comment-wrap" data-fid="<%=_feedcomment.feed_id%>">
+                                                        <div class="photo">
+                                                            <div class="avatar" style="background-image: url('/themes/frontend/images/default-user.png')"></div>
+                                                        </div>
+                                                        <div class="comment-block">
+                                                            <p class="comment-user"><a href="/"><%=_feedcomment.user_id.name%></a></p>
+                                                            <p class="comment-text"><%=_feedcomment.comments%></p>
+                                                            <div class="p6_comment_count pull-left">
+                                                                <a href="javascript:;" class="btncommentlike" data-cid="<%=_feedcomment.id%>">Like</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_feedcomment.commentlikes.length%></span></a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> <%=_feedcomment.commentreply.length%></a>
+                                                            </div>
+                                                            <% 
+                                                            if(_feedcomment.commentreply.length > 0 ){
+                                                                var commentreply =  _feedcomment.commentreply;
+                                                                for(var _crindex=0; _crindex < commentreply.length; _crindex++) {
+                                                                    var _commentreply = commentreply[_crindex];
+
+                                                            %>
+                                                            <div class="comment-wrap ember-mode" style="display: block;">
+                                                                <div class="photo">
+                                                                    <div class="avatar" style="background-image: url('/themes/frontend/images/default-user.png')">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="comment-block">
+                                                                    <p class="comment-user"><a href="http://local.lynked.world/profile/anil"><%=_commentreply.user_id.name%></a></p>
+                                                                    <p class="comment-text"><%=_commentreply.comments%></p>
+                                                                    <div class="p6_comment_count pull-left">
+                                                                        <a href="javascript:;"  class="btncommentlike" data-cid="<%=_commentreply.id%>">Like</a> 
+                                                                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                        <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                                        &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                        <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_commentreply.commentlikes.length%></span></a>
+                                                                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                        <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> 0</a>
+                                                                    </div>
+                                                                    <div class="bottom-comment">
+                                                                        <div class="comment-date">
+                                                                            <%=DateDifferentService.time_ago(_commentreply.createdAt)%>
+                                                                            <% if(_commentreply.user_id.id == req.user.id) { %>
+                                                                            <div class="bottom-comment-action">
+                                                                                <a href="javascript:;" class="editComment" data-comment_id="<%=_commentreply.id%>"><i class="fa fa-pencil"></i></a>
+                                                                                <a href="javascript:;" class="deleteComment" data-comment_id="<%=_commentreply.id%>"  data-text="reply"><i class="fa fa-trash"></i></a>
+                                                                            </div>
+                                                                            <% } %>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% } } %>
+                                                            
+                                                            <form method="post" class="form-comment formReply commentForm" style="display: none;">
+                                                                <div class="form-group">
+                                                                    <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                                    <input name="parent_id" value="<%=_feedcomment.id%>" class="parent_id" type="hidden">
+                                                                    <input name="feed_id" value="" type="hidden">
+                                                                    <button type="submit" class="send-comment" value="replyform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                                </div>
+                                                            </form>
+
+
+
+                                                            <div class="bottom-comment">
+                                                                <div class="comment-date">
+                                                                    <%=DateDifferentService.time_ago(_feedcomment.createdAt)%>
+                                                                    <% if(_feedcomment.user_id.id == req.user.id) { %>
+                                                                    <div class="bottom-comment-action">
+                                                                        <a href="javascript:;" class="editComment" data-comment_id="<%=_feedcomment.id%>"><i class="fa fa-pencil"></i></a>
+                                                                        <a href="javascript:;" class="deleteComment" data-comment_id="<%=_feedcomment.id%>" data-text="main"><i class="fa fa-trash"></i></a>
+                                                                    </div>
+                                                                    <% } %>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } } %>
+                                                </div>
+                                                    <form method="post" class="form-comment commentForm">
+                                                        <div class="form-group">
+                                                            <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                            <input name="parent_id" class="parent_id" value="" type="hidden">
+                                                            <input name="feed_id" value="<%=_feed.id%>" type="hidden">
+                                                            <button type="submit" class="send-comment" value="mainform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <% }) %>
+                            <% } else { %>
+                            <div class="p29_li pad20 pad_tb30">
+                                <div class="p29_li_check">
+                                  <p>No data found</p>  
+                                </div>
+                            </div>
+                            <% } %>
+                            <% if(totalpoll > 1){%>
+                                <div class="p51_p61 a-center load-feed">
+                                    <input type="hidden" name="event_page_no" value="1" class="feed_page_no">
+                                    <a href="javascript:;" id="load_more_blog">Load More</a> 
+                                    <span class="load_more refresh"></span> 
+                                    <i class="fa fa-spin fa-refresh hide" aria-hidden="true"></i>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/themes/frontend/js/like_comment.js"></script>
+
+<script type="text/javascript">
+    /* Poll Answer */
+    $(document).on("click",".answer_poll",function(e){
+        var poll_option_id = $(this).val();
+        var parents = $(this).parents('.feed_list');
+        var poll_id = parents.data('id');
+        $.ajax({
+            type: "GET",
+            url: "/pollanswer/"+poll_id+"/"+poll_option_id,
+            success: function (results) {
+                if(results.status=="OK"){
+                    jQuery.each(results.response, function(key, val) {
+                        $('.poll_meter_'+val.id).css("width",val.avg + "%");
+                        $('.poll_count_'+val.id).html(val.avg.toFixed(2) + " % "+ "<span class='count'>("+ val.total_option_ans +")</span>");
+                    });
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click","#load_more_blog",function(){
+        var pages = $('input[name="event_page_no"]').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('input[name="event_page_no"]').val(page_no);
+
+        $.ajax({
+            type: "GET",
+            url: "/load_more_poll/"+page_no,
+            success: function (data) {
+                if(data.polls!=undefined && data.polls==false){
+                    $('.load-feed').hide();
+                }else{
+                    $(data).insertBefore('.load-feed');
+                }
+            }
+        });
+    });
+
+    $(document).on("click",".btnPollEdit",function(){
+        var parents = $(this).parents(".list_connection");
+        var poll_id = parents.find(".feed_list").data("id");
+
+        $.confirm({content:"Are you sure to edit?",
+            header: "Edit",
+            confirm:function () {
+                var url = "/poll/edit/"+poll_id;
+                window.location.href = url;
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+
+    $(document).on("click",".btnPollDelete",function(){
+        var parents = $(this).parents(".list_connection");
+        var poll_id = parents.find(".feed_list").data("id");
+        $.confirm({content:"Are you sure you want to delete the post?",
+            header: "Delete",
+            confirm:function () {
+                var url = "/poll/delete/"+poll_id;
+                window.location.href = url;
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+
+</script>

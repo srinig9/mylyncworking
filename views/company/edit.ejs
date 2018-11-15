@@ -1,0 +1,276 @@
+<%
+    var loginID = '';
+    if(typeof userdata!='undefined' && typeof userdata.companydata!='undefined')
+    {
+        if(typeof userdata.companydata[0].loginid!='undefined'){
+            loginID = userdata.companydata[0].loginid;
+        }
+
+        if(typeof userdata.is_organized!='undefined'){
+            if(typeof userdata.companydata[0].parent_id!='undefined' && typeof userdata.companydata[0].parent_id.loginid!='undefined'){
+                loginID = userdata.companydata[0].parent_id.loginid;
+            }
+        }    
+    }
+%>
+
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <%- include ./company-left-sidebar.ejs %>
+
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+			<form method="post" action="/job-posting/edit" id="editProfile">
+                <div class="p9_container p9_main_form">
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Company Name<span class="required">*</span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input type="text" name="company_name" id="" placeholder="Company Name" class="form-control" value="<%=userdata.company_name%>" title="" required="required">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Login ID<span class="required">*</span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input type="text" name="loginid" id="" placeholder="Login ID" class="form-control" value="<%=loginID%>" title="" required="required" disabled="disabled">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Digital Address<span class="required">*</span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input type="text" name="loginid" id="" placeholder="Digital Address" class="form-control" value="<% if(typeof userdata.companydata[0].ethaddress!='undefined'){%><%=userdata.companydata[0].ethaddress%><% } %>"    required="required" disabled="disabled">
+                        </div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Full Name<span class="required"> *</span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input type="text" name="name" id="" placeholder="Full Name" class="form-control" value="<%=userdata.companydata[0].name%>" title="" required="required">
+                        </div>
+                    </div> -->
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Industry</label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <select id="industry_id" name="industry_id" class="form-control">
+                            <option value="">Select One</option>
+                            <%
+                            for(var _index=0; _index < industry.length; _index++) {
+                                var ins = industry[_index];
+                                var selected='';
+                                if(user.industry_id != undefined && ins.id==user.industry_id) {
+                                    var selected='selected';
+                                }
+                            %>
+                            <option <%=selected%> value="<%=ins.id%>"><%=ins.name%></option>
+                            <% } %>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Language Prefered</label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <select id="language_id" name="language_id" class="form-control">
+                            <option value="">Select One</option>
+                            <%
+                            for(var _index=0; _index < language.length; _index++) {
+                                var lan = language[_index];
+                                var selected='';
+                                if(lan.id==user.language_id){
+                                    var selected='selected';
+                                }
+                            %>
+                            <option <%=selected%> value="<%=lan.id%>"><%=lan.name%></option>
+                            <%}%>
+                            </select>
+                        </div>
+                    </div>
+                    <%
+                        var readonly='';
+                        var email_val='';
+                        var email_btn='Verify';
+                        var phone_val='';
+                        var phone_read='';
+                        var phone_btn = 'Verify';
+                        var dial_disable = '';
+
+                        if(typeof userverify!='undefined'){
+                            if(typeof userverify.email!='undefined' && userverify.email!=''){
+                                email_val = userverify.email;
+                                if(userverify.is_email_verify==1){
+                                    readonly = 'readonly';
+                                }
+                                email_btn = 'Verify';
+                            }
+                            if(typeof userverify.phone!='undefined' && userverify.phone!=''){
+                                phone_val = userverify.phone;
+                                phone_btn = 'Verify';
+                                if(userverify.is_phone_verify==1){
+                                    phone_read = 'readonly';
+                                    dial_disable = 'disabled';
+                                }
+                            }
+                        }
+                    %>
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Email<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+                            <input type="text" name="email" <%=readonly%> id="verify_email" placeholder="Your Email" class="form-control" value="<%=email_val%>">
+                        </div>
+                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <% if(typeof userverify!='undefined' && typeof userverify.is_email_verify!='undefined' && userverify.is_email_verify==0) {%>
+                            <a href="javscript:;" id="verify_email_btn" class="btn btn-primary btn-primary-b30" title="Resend"><i class="fa fa-repeat" aria-hidden="true"></i></a>
+                            &nbsp; <a href="javascipt:;" data-target="#email_otpModal" data-toggle="modal" class="text_underline">I have OTP</a> &nbsp;
+                            <% } else if(typeof userverify!='undefined' && typeof userverify.is_email_verify!='undefined' && userverify.is_email_verify==1) { %>
+                            <span class="green-checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                        <% }else{ %>
+                            <a href="javscript:;" id="verify_email_btn" class="btn btn-primary btn-primary-b30" title="Verify">
+                                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                </a>
+                                &nbsp; <a href="javascipt:;" data-target="#email_otpModal" data-toggle="modal" class="text_underline">I have OTP</a>
+                        <% } %>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Phone<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+							<select <%=dial_disable%> class="form-control" name="dial_code" id="dial_code">
+								<option value="">Country Code</option>
+								<% if(typeof dial_code!="undefined" && dial_code.length>0){
+									_.each(dial_code,function(code){ 
+										var selected="";
+										if(typeof userverify!="undefined" && typeof userverify.dial_code!="undefined" && userverify.dial_code==code.dial_code) { selected = "selected"; } %>
+										<option <%=selected%> value="<%=code.dial_code%>"><%=code.name + " (" +code.dial_code + ")"%></option>
+									<% }) 
+								} %>
+							</select>
+                        </div>
+                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                            <input type="text" name="phone" id="verify_phone" <%=phone_read%> placeholder="Phone Number" class="form-control" value="<%=phone_val%>">
+                        </div>
+                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                            <% if(typeof userverify!='undefined' && typeof userverify.is_phone_verify!='undefined' && userverify.is_phone_verify==0) {%>
+                                <a href="javascript:;" id="verify_phone_btn" class="btn btn-primary btn-primary-b30" title="Resend"><i class="fa fa-repeat" aria-hidden="true"></i></a> | 
+                                <a href="javascipt:;" data-target="#otpModal" data-toggle="modal" >I have OTP</a>
+                            <% } else if(typeof userverify!='undefined' && typeof userverify.is_phone_verify!='undefined' && userverify.is_phone_verify==1) { %>
+                                <span class="green-checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                            <% }else{%>
+                                <a href="javascript:;" id="verify_phone_btn" class="btn btn-primary btn-primary-b30" title="Verify"><i class="fa fa-paper-plane" aria-hidden="true"></i></a> | 
+                                <a href="javascipt:;" data-target="#otpModal" data-toggle="modal" >I have OTP</a>
+                            <% } %>
+                        </div>
+                    </div> -->
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Website<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input class="form-control" id="" name="website" value="<%= (userdata.website==undefined) ? '' : userdata.website %>" placeholder="Website">
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Skype<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input class="form-control" id="" name="skype" value="<%= (userdata.skype==undefined) ? '' : userdata.skype %>" placeholder="Skype">
+                        </div>
+                    </div> -->
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Location<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input type="text" name="address" id="autocomplete" placeholder="Enter your city name" class="form-control" value="<%= (userdata.companydata[0].address==undefined) ? '' : userdata.companydata[0].address %>" title="" onFocus="geolocate()">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Country<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-3 col-lg-3 sepb15">
+                            <input class="form-control" name="country_id" id="country" value="<%= (userdata.companydata[0].country_id==undefined) ? '' : userdata.companydata[0].country_id %>" readonly="true">
+                        </div>
+
+                        <div class="col-xs-12 col-sm-4 col-md-2 col-lg-2"><label class="label" for="">Province/State<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-3 col-lg-3">
+                            <input class="form-control" name="state_id" id="administrative_area_level_1" readonly="true" value="<%= (userdata.companydata[0].state_id==undefined) ? '' : userdata.companydata[0].state_id%>">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">City/District<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input class="form-control" id="locality" name="city_id" readonly="true" value="<%= (userdata.companydata[0].city_id==undefined) ? '' : userdata.companydata[0].city_id%>">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Year Founded<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input type="text" name="year_founded" id="from_year" class="form-control" placeholder="From Year" value="<%= (userdata.year_founded==undefined) ? '' : userdata.year_founded%>">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Company Size<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <select id="company_size" name="company_size" class="form-control">
+                            <option value="">Select One</option>
+                            <option value="1- 100" <%= (userdata.company_size=="1- 100") ? selected='selected' : "" %>>1- 100</option>
+                            <option value="100-500" <%= (userdata.company_size=="100-500") ? selected='selected' : "" %>>100-500</option>
+                            <option value="500-1000"  <%= (userdata.company_size=="500-1000") ? selected='selected' : "" %>>500-1000</option>
+                            <option value="Above 1000"  <%= (userdata.company_size=="Above 1000") ? selected='selected' : "" %>>Above 1000</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">About Company<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <div id="editor">
+                                <textarea class="form-control" id="about_me" placeholder="Write Blog Description" required="required" name="about_me"><%= (userdata.about_me==undefined) ? "" : userdata.about_me %></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="">Specialties<span class="required"></span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <textarea name="specialties" id="" class="form-control" placeholder="Specialties" rows="8" ><%= (userdata.specialties==undefined) ? "" : userdata.specialties %></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group a-center p9_submit_button">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">&nbsp;</div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <button type="submit" class="btn btn-primary">Save</button>&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-primary">Discard</button>
+                        </div>
+                    </div>
+                </div>
+				</form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<%- include ../verification/otp_popup.ejs %>
+<%- include ../verification/email_otp_popup.ejs %>
+
+<script type="text/javascript">
+    $(function(){
+        $('#about_me').froalaEditor({
+			key: '<%-sails.config.froala_key%>'
+		});
+    });
+
+
+    $(document).ready(function(){
+        $("#editProfile").validate({});
+
+        //datepicker
+         $('#from_year').datepicker({
+            // language:  'fr',
+            minViewMode: 2,
+            format: 'yyyy',
+            autoclose: true 
+        });
+
+    });
+</script>
+<script type="text/javascript" src="/themes/frontend/js/otp_request.js"></script>

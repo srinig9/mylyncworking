@@ -1,0 +1,59 @@
+<%
+if(pendingsent.length > 0){
+for(var _index=0; _index < pendingsent.length; _index++) {
+    var _pendingsent = pendingsent[_index].to_user_id;
+    var requestInfo  = pendingsent[_index];
+
+    var UserImage1 = '/themes/frontend/images/default-user.png';
+    if(_pendingsent.profile_image &&  _pendingsent.profile_image!=''){
+        UserImage1 = '/uploads/users/'+_pendingsent.profile_image;
+    }
+
+    var profile_slug1 ='/profile/';
+     var displayname1 ='';
+    if(typeof _pendingsent.company_id!='undefined' && typeof _pendingsent.company_id.slug!='undefined'){
+        if(_pendingsent.company_id.slug!=''){
+             profile_slug1='/company/'+_pendingsent.company_id.slug;
+        }
+    }else{
+        if(typeof _pendingsent.slug!='undefined' && _pendingsent.slug!=''){
+            profile_slug1='/profile/'+_pendingsent.slug+'/wall';
+        }
+    }
+
+    if(typeof _pendingsent.company_id!='undefined' && typeof _pendingsent.company_id.company_name!='undefined' && _pendingsent.company_id.company_name!='')
+    {
+        displayname1 = _pendingsent.company_id.company_name;
+    }
+    else if(typeof _pendingsent.name!='undefined' && _pendingsent.name!=''){
+        displayname1=_pendingsent.name;
+    }   
+
+    var position='';
+    if(typeof _pendingsent.userexperiences[0]!='undefined' && typeof _pendingsent.userexperiences[0]['title']!='undefined'){
+        position = _pendingsent.userexperiences[0]['title'];
+    }
+    var company_name ='';
+    if(typeof _pendingsent.userexperiences[0]!='undefined' && typeof _pendingsent.userexperiences[0]['company_id']!='undefined' && typeof _pendingsent.userexperiences[0]['company_id']['company_name']!='undefined'){
+        company_name = ' at '+_pendingsent.userexperiences[0]['company_id']['company_name'];
+    }
+
+%>
+<li class="first pending_sent_li">
+    <div class="p16_1011">
+        <a href=""><img src="<%=UserImage1%>" width="65" height="65" alt="Michele Show"></a>
+        <div class="p16_1012">
+            <div class="p16_1013"><a href="/profile/<%=_pendingsent.slug%>" class="p16_1014"><%=_pendingsent.name%></a></div>
+            <div class="p16_1015"><%=position%> <%=company_name%></div>
+            <div class="p16_1016">
+                <% if(typeof requestInfo.createdAt!='undefined' && requestInfo.createdAt!=''){%>
+                Invited <%=DateDifferentService.time_ago_full(requestInfo.createdAt)%> ago
+                <% } %>
+            </div>
+        </div>
+        <div class="p16_1021">
+            <button type="button" class="p16_1023 cancelsent" value="<%=_pendingsent.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+        </div>
+    </div>
+</li>
+<% } } %>

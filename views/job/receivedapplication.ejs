@@ -1,0 +1,145 @@
+<div class="p25_list_02 sepb20">
+	<div class="p7_content">
+        <div id="data_table_wrapper" class="data_table_wrapper data_table">
+        	<div class="row minus-10-margin-xs">
+                <div class="col-sm-12">
+                    <div class="table-responsive">
+                        <table id="upload_history" class="table table-striped dataTable table-expandable" cellspacing="0" width="100%">
+                            <thead>
+                                <tr role="row">
+                                    <th>Sr No</th>
+                                    <th>Job Post Date</th>
+                                    <th>Title</th>
+                                    <th>Total Applied</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            	<% 
+                            	if(appliedJobs.length > 0){
+                            	var i = 1;	
+                            	_.each(appliedJobs,function(appliedJob){
+                            		if(appliedJob.applyjob.length > 0){
+                            			var formatedDate = moment(appliedJob.createdAt).format('DD-MMM-YYYY');
+                            	%>
+                            	<tr class="odd">
+                            		<td><%=i%></td>
+                            		<td><%=formatedDate%></td>
+                            		<td><%=appliedJob.title%></td>
+                            		<td><%=appliedJob.applyjob.length%></td>
+                            		<td><a href="javascript:;">Details</a></td>
+                            	</tr>
+                            	<tr class="authorize-access" style="display: none;">
+                            		<td colspan="5">
+                            			<div class="table-responsive">
+                            				<table class="table table-bordered">
+                            					<thead>
+                            						<tr>
+                            							<th>Sr No</th>
+                            							<th>Applied Date</th>
+                            							<th>Applicant Name</th>
+                            							<th>Current Company</th>
+                                                        <th>Location</th>
+                            							<th>Resume</th>
+                            						</tr>
+                            					</thead>
+                            					<tbody>
+                            						<%
+                            							var j=1; 
+                            							var applyjobs = appliedJob.applyjob;
+                            							_.each(applyjobs,function(applyjob){
+                            								var applyjobDate = moment(applyjob.createdAt).format('DD-MMM-YYYY');
+
+                            								var username = "";
+                            								var location = "";
+                            								var current_position = "";
+                                                            var current_company = "";
+                                                            var resume = "";
+                                                            var applicant_id = '';
+
+                                                            var slugUrl ="/profile";
+                                                            if(typeof applyjob.user_id!="undefined" && typeof applyjob.user_id.slug!="undefined" && typeof applyjob.user_id.slug!=""){
+                                                                slugUrl = "/profile/"+applyjob.user_id.slug+"/wall";
+                                                            }
+
+                                                            var profile_image = "/themes/frontend/images/default-user.png";
+
+                                                            if(typeof applyjob.user_id!="undefined" && typeof applyjob.user_id.profile_image!="undefined" && typeof applyjob.user_id.profile_image!=""){
+                                                                profile_image = "/uploads/users/"+applyjob.user_id.profile_image;
+                                                            }
+
+                                                           if(typeof applyjob.user_id!='undefined' && typeof applyjob.user_id.id!='undefined'){
+                                                                applicant_id = applyjob.user_id.id;
+                                                            }
+
+
+                            								if(applyjob.user_id && applyjob.user_id.name){
+                            									username = applyjob.user_id.name;
+                            								}
+
+                            								if(applyjob.user_id && applyjob.user_id.location){
+                            									location = applyjob.user_id.location;
+                            								}
+
+                            								if(typeof applyjob.user_id!="undefined" && typeof applyjob.user_id.userexperiences[0]!="undefined") {
+                            									var experience = applyjob.user_id.userexperiences[0];
+                            									if(typeof experience["title"]!="undefined"){
+																	current_position = experience["title"];
+																}
+
+                                								if( typeof experience["company_id"] != "undefined" && typeof experience["company_id"]["company_name"] != "undefined" ) {
+																	if(experience["company_id"]["company_name"] != "") {
+																		if(current_position != "") {
+																			current_company = experience["company_id"]["company_name"];
+																		} else {
+																			current_company = experience["company_id"]["company_name"];
+																		}
+																	}
+																}
+                            								}
+
+                                                            if(applyjob.resume){
+                                                                resume = sails.config.appUrlwPort+"/uploads/applyjob/"+applyjob.resume;
+                                                            }
+                            						%>
+                            						<tr>
+                            							<td><%=j%></td>
+                            							<td><%=applyjobDate%></td>
+
+                            							<td><a href="<%=slugUrl%>"><img src="<%=profile_image%>" class="img-circle img-responsive applicant-img" width="20" height="20">&nbsp;&nbsp;<%=username%></a></td>
+
+                            							<td>
+                            								<% if(current_position != "") { %>
+                            								<%=current_position%><br>
+                            								<% } if(current_company != "") { %>
+                            									<%=current_company%>
+                            								<% } %>
+                        								</td>
+                                                        <td><%=location%></td>
+                            							<td>
+                                                            <% if(resume){%>
+                                                                <a href="<%=resume%>" target="_blank">Resume</a>
+                                                            <% }else{%>
+                                                                <a href="/profile/savepdf/<%=applicant_id%>" target="_blank">Resume</a>
+                                                            <% } %>
+                                                        </td>
+                            						</tr>
+                            						<% j++; }) %>
+                            					</tbody>
+                            				</table>
+                            			</div>
+                            		</td>
+                            	</tr>
+                            	<% i++; } }) }else{ %>
+                                <tr>
+                                    <td colspan="5">No Record Found</td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

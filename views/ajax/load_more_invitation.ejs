@@ -1,0 +1,44 @@
+<%
+if(peopleyouknow.length > 0){
+for(var _index=0; _index < peopleyouknow.length; _index++) {
+    var _peopleyouknow = peopleyouknow[_index];
+
+    var UserImage = '/themes/frontend/images/default-user.png';
+        if(_peopleyouknow.profile_image &&  _peopleyouknow.profile_image!=''){
+            UserImage = '/uploads/users/'+_peopleyouknow.profile_image;
+        }
+    var profile_slug ='/profile/';
+    var displayname ='';
+    var company_id='';
+    if(typeof _peopleyouknow.company_id!='undefined' && typeof _peopleyouknow.company_id.slug!='undefined'){
+        company_id = _peopleyouknow.company_id.id; 
+        if(_peopleyouknow.company_id.slug!=''){
+             profile_slug='/company/'+_peopleyouknow.company_id.slug;
+        }
+    }else{
+        if(typeof _peopleyouknow.slug!='undefined' && _peopleyouknow.slug!=''){
+            profile_slug='/profile/'+_peopleyouknow.slug+"/wall";
+        }
+    }
+%>
+<li class="p16_2000_li col-lg-4 col-md-4 col-sm-6 col-xs-12 first">
+    <div class="p16_2001">
+        <a href="<%=profile_slug%>"><img src="<%=UserImage%>" width="90" height="90" alt="<%=_peopleyouknow.name%>"></a>
+        <div class="p16_2002">
+            <div class="p16_2003 name"><a href="<%=profile_slug%>" class="p16_2004"><%=_peopleyouknow.name%></a></div>
+            <div class="p16_2005 designation">
+            <% if(typeof _peopleyouknow.userexperiences[0]!='undefined' && typeof _peopleyouknow.userexperiences[0]['title']!='undefined'){%>
+                <%=_peopleyouknow.userexperiences[0]['title']%>
+            <% } %>
+            </div>
+            <div class="p16_2007 location_city"><%=typeof _peopleyouknow.location == 'undefined' ? '' : _peopleyouknow.location%></div>
+        </div>
+        <div class="p16_2010">
+            <form method="post" class="userknown">
+                <input type="hidden" name="to_user_id" value="<%=_peopleyouknow.id%>">
+                <button type="submit" class="p16_2011 btn-primary">Connect</button>
+            </form>
+        </div>
+    </div>
+</li>
+<% } } %>

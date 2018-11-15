@@ -1,0 +1,125 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar nav groups Starts -->
+            <%- partial('../includes/sidebar-nav-groups.ejs') %>
+            <!-- Sidebar nav groups Ends -->
+            
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-left">
+                <div class="p_31_mc">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            <div class="section_title"><h3>My Created</h3></div>
+                            <ul class="p31_1010">
+                                <% if(mygroups.length > 0) { %>
+                                <% _.each(mygroups, function (mygroup) { %>
+                                <li class="first" data-id="<%=mygroup.id%>">
+                                    <div class="p31_1011">
+                                        <% 
+                                            if(mygroup.group_icon == '') { 
+                                                var  mygroup_group_icon = "/themes/frontend/images/p32_placeholder.jpg";
+                                            } else { 
+                                                var  mygroup_group_icon = "/uploads/groups/"+mygroup.group_icon;
+                                            }
+                                        %>
+                                        <a href="/group/<%=mygroup.slug%>"><img src="<%=mygroup_group_icon%>" width="65" height="65" alt="<%=mygroup.group_name%>" /> </a>
+                                        <div class="p31_1012">
+                                            <div class="p31_1013"><a href="/group/<%=mygroup.slug%>" class="p31_1014"><%=mygroup.group_name%></a></div>
+                                            <div class="p31_1015"><%=mygroup.groupusers.length%> Members</div>
+                                        </div>
+                                        <!-- <button type="submit" class="btn btn-primary p31_message"><i class="fa fa-sign-out" aria-hidden="true"></i> Leave Group</button> -->
+                                    </div>
+                                </li>
+                                <% }) %>
+                                <% } else { %>
+                                <li class="first" data-id="">
+                                    <div class="p31_1011">
+                                        <p>No data found</p>
+                                    </div>
+                                </li>
+                                <% } %>
+                            </ul>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            <div class="section_title"><h3>My Joined</h3></div>
+                            <ul class="p31_1010">
+                                <% if(myjoins.length > 0) { %>
+                                <% _.each(myjoins, function (myjoin) { %>
+
+                                <li class="first" data-id="<%=myjoin.id%>">
+                                    <div class="p31_1011">
+                                        <% 
+                                            if(myjoin.group_icon == '') { 
+                                                var  myjoin_group_icon = "/themes/frontend/images/p32_placeholder.jpg";
+                                            } else { 
+                                                var  myjoin_group_icon = "/uploads/groups/"+myjoin.group_icon;
+                                            }
+                                        %>
+
+                                        <a href="/group/<%=myjoin.slug%>"><img src="<%=myjoin_group_icon%>" width="65" height="65" alt="<%=myjoin.group_name%>" /> </a>
+                                        <div class="p31_1012">
+                                            <div class="p31_1013"><a href="/group/<%=myjoin.slug%>" class="p31_1014"><%=myjoin.group_name%></a></div>
+                                            <div class="p31_10443">3 Connections  <span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span> <%=myjoin.groupusers.length%> Members</div>
+                                            <div class="p31_1016">
+                                                <a href="">
+                                                    <img src="https://placehold.it/65x65/71CFEB/025ba2" width="25" height="25" alt="user name" class="p31_1016_li" />
+                                                </a>
+                                                <a href="">
+                                                    <img src="https://placehold.it/65x65/71CFEB/025ba2" width="25" height="25" alt="user name" class="p31_1016_li" />
+                                                </a> 
+                                                <a href="">
+                                                    <img src="https://placehold.it/65x65/71CFEB/025ba2" width="25" height="25" alt="user name" class="p31_1016_li" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary p31_message btnLeftGroup"><i class="fa fa-sign-out" aria-hidden="true"></i> Leave Group</button>
+                                    </div>
+                                </li>
+                                <% }) %>
+                                <% } else { %>
+                                <li class="first" data-id="">
+                                    <div class="p31_1011">
+                                        <p>No data found</p>
+                                    </div>
+                                </li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).on("click",".btnLeftGroup",function(){
+        var parents = $(this).parents('li');
+        var group_id = parents.data("id");
+
+        $.confirm({content:"Are you sure to exit / left group?",
+            header: "Delete",
+            confirm:function () {
+                $.ajax({
+                    url: '/leftgroup/'+group_id,
+                    method: 'GET',
+                    success: function(results)
+                    {
+                        if(results.status=="OK")
+                        {
+                            parents.remove();
+                        }
+                        else
+                        {
+                            $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                        }
+                    }
+                });
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+</script>

@@ -1,0 +1,69 @@
+<!-- <style type="text/css">
+	.mainnav-main { margin-top: 40px; }
+</style> -->
+<style type="text/css">
+	.marq-title {	
+		position: fixed;
+		float: left; 
+		background-color: #025ba2;
+		color: #fff;
+		display: block;
+    	z-index: 11;
+    	padding-right: 10px;"
+		-webkit-box-shadow: 3px -3px 6px -4px rgba(0,0,0,0.75);
+		-moz-box-shadow: 3px -3px 6px -4px rgba(0,0,0,0.75);
+		box-shadow: 3px -3px 6px -4px rgba(0,0,0,0.75);
+	}
+	.news-section .left {
+		margin-left: 144px;
+		/*width: calc(100% - 347px);*/
+	} 
+	.marque1, .marque2 {
+		position: absolute;
+		/*width: calc(100% - 180px);*/
+	}
+</style>
+
+<div class="news-section"> 
+	<div class="container">
+		<a href="/about-us" class="btn btn-md white-btn pull-right" style="margin-top: 8px;">About Us</a>
+		<b class="marq-title"><i class="fa fa-bullhorn" aria-hidden="true"></i> Breaking News:</b>
+		
+		<!-- <span class="left">
+		<em>Lynked.World is Awarded by World HRD Congress...</em>&nbsp;&nbsp;
+		<a class="btn btn-md white-btn" href="/awards">know More</a>
+		</span>
+		<span class="left">
+		<em>Lynked.World is Inaugurated at 58th National Cost Convention 2018...</em>&nbsp;&nbsp;
+		<a class="btn btn-md white-btn" href="/about-us">know More</a>
+		</span>	 -->
+		<div class="marque1">
+			<div class="left">	
+				<a href="/awards"><em>Lynked.World is Awarded by World HRD Congress...</em></a>
+			</div>
+			<div class="right">
+				<a class="btn btn-md white-btn" href="/awards">know More</a>
+			</div>
+		</div> 
+		<div class="marque2" style="display: none;">
+			<div class="left">	
+				<a href="/inauguration"><em>Lynked.World is Inaugurated at 58th National Cost Convention 2018...</em></a>
+			</div>
+			<div class="right">
+				<a class="btn btn-md white-btn" href="/inauguration">know More</a>
+			</div>
+		</div>
+
+		
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {  
+    var continuous = function () {
+        $(".marque1").fadeToggle(1400);
+        $(".marque2").fadeToggle(1400);   
+    };
+    $(".marque2").hide();
+    setInterval(continuous,4000); 
+});
+</script>

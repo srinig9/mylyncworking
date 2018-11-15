@@ -1,0 +1,135 @@
+<%
+    var profile_image = "/themes/frontend/images/default-user.png";
+
+    if(typeof userData!="undefined" && typeof userData.profile_image!="undefined" &&  userData.profile_image!=""){
+        profile_image = "/uploads/users/"+userData.profile_image;
+    }
+
+    var slugUrl ="/profile";
+%>
+
+<div class="p51_sidebar first">
+    <div class="p51_title_container hidden"><span class="p51_title_icon"><i class="fa fa-check-circle" aria-hidden="true"></i></span> Verification <span class="open"></span></div>
+    <div class="p51_content">
+        <div class="p51_user_info">
+            <div class="p51_user_img"><a href="<%=slugUrl%>"><img src="<%=profile_image%>" alt='<%=req.user.name%>' width="95" height="95" /></a></div>
+            <div class="p51_user_name">
+				<a href="<%=slugUrl%>">
+					<% if(typeof userData!='undefined' && typeof userData.name!='undefined' && typeof userData.name!=''){
+					%>
+						<%=userData.name%>
+					<% } else { %>
+						<%=req.user.name%>
+					<% } %>
+				</a>
+			</div>
+			<% var user_position = "";
+			var user_company = "";
+			if(typeof userData!="undefined" && typeof userData.userexperiences[0]!="undefined") {
+				var experience = userData.userexperiences[0];
+				if(typeof experience["title"]!="undefined"){
+					user_position = experience["title"];
+				}
+				if( typeof experience["company_id"] != "undefined" && typeof experience["company_id"]["company_name"] != "undefined" ) {
+					if(experience["company_id"]["company_name"] != "") {
+						if(user_position != "") {
+							//user_company = " <br/> "+experience["company_id"]["company_name"];
+							user_company = experience["company_id"]["company_name"];
+						} else {
+							user_company = experience["company_id"]["company_name"];
+						}
+					}
+				}
+			} if(user_position != "") { %>
+				<div class="p51_user_designation"><%=user_position%></div>
+			<% } if(user_company != "") { %>
+				<div class="p51_user_company"><%=user_company%></div>
+			<% } %>
+			<div class="p51_user_location"><%=typeof req.user.location == "undefined" ? "" : req.user.location%></div>
+			<% var my_income = 0;
+			if(typeof userData != "undefined" && typeof userData.wallet != "undefined") {
+				my_income = userData.wallet;
+			} %>
+			<div class="p51_user_total_lynked"><a href="/blogs"><span class="lynked_bal">Blog (<% if(typeof userData!='undefined' && typeof userData.blogCount!='undefined'){ %><%=userData.blogCount %><% } %>)</span></a><span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span><a href="/wallet"><span class="lynked_bal"> LBD ($<%=my_income.toFixed(2)%>)</span></a> <a href="/rewards"><span class="p51_user_info_i"><i class="fa fa-info-circle" aria-hidden="true"></i></span></a></div>
+        </div>
+    </div>
+</div>
+
+<div class="p51_sidebar">
+    <div class="p51_title_container"><span class="p51_title_icon"><i class="fa fa-check-circle" aria-hidden="true"></i></span> <a href="/scan-to-get-verified">Verification </a><span class="closed"></span></div>
+    <div class="p51_content" style="">
+        <ul class="p51_sidebar_menu">
+            <% if(typeof req.user.company_id!='undefined' && req.user.company_id!=''){%>
+                <li class="first"><a href="<%=sails.config.appUrlwPort%>/get-verified">Get Verified</a></li>
+                <li><a href="<%=sails.config.appUrlwPort%>/authenticate">Verify Others Data 
+                    <span class="count-badge">
+                        <%= (typeof userData.VerifyRequestReceiver!='undefined') ? userData.VerifyRequestReceiver.length : 0 %>
+                    </span>
+                </a> </li>
+                <li><a href="<%=sails.config.appUrlwPort%>/data-access-request">Request Data Access</a></li>
+            <% } else { %>
+                <li class="first"><a href="<%=sails.config.appUrlwPort%>/get-verified">Get Verified</a></li>
+                <li><a href="<%=sails.config.appUrlwPort%>/authenticate">Verify Others Data 
+                    <span class="count-badge">
+                        <%= (typeof userData.VerifyRequestReceiver!='undefined') ? userData.VerifyRequestReceiver.length : 0 %>
+                    </span>
+                </a> </li>
+                <li><a href="<%=sails.config.appUrlwPort%>/data-access-request">Request Data Access</a></li>
+                <li><a href="<%=sails.config.appUrlwPort%>/authorize">Authorize Data Access <span class="count-badge"><%= (typeof userData.DataRequestReceiver!='undefined') ? userData.DataRequestReceiver.length : 0 %></span></a></li>
+                <li><a href="<%=sails.config.appUrlwPort%>/verification-history">Verification History</a></li>
+            <% } %>
+        </ul>
+    </div>
+</div>
+
+<div class="p51_sidebar">
+    <div class="p51_title_container"><span class="p51_title_icon"><i class="fa fa-briefcase" aria-hidden="true"></i></span> 
+        <a href="<%- sails.config.appUrlwPort %>/jobs">Job</a> <span class="open"></span></div>
+    <div class="p51_content" style="display: none;">
+        <ul class="p51_sidebar_menu">
+
+            <% if(req.user.company_id) {%>
+              <li class="first"><a href="<%- sails.config.appUrlwPort %>/job-post">Post Job</a></li>
+              <li class=""><a href="<%- sails.config.appUrlwPort %>/jobs/receivedapplication">Received Applications</a></li>
+              <li class="last"><a href="<%- sails.config.appUrlwPort %>/jobs/myjob">Posted Jobs</a></li>
+            <% } else {%>
+              <li class="first"><a href="<%- sails.config.appUrlwPort %>/job-post">Post Job</a></li>
+              <li class=""><a href="<%- sails.config.appUrlwPort %>/jobs/myapplication">My Applications</a></li>
+              <li class=""><a href="<%- sails.config.appUrlwPort %>/jobs/receivedapplication">Received Applications</a></li>
+              <li class=""><a href="<%- sails.config.appUrlwPort %>/jobs/myjob">Posted Jobs</a></li>
+              <li class="last"><a href="<%- sails.config.appUrlwPort %>/jobs/bookmark">Bookmarked Jobs</a></li>
+            <% } %>
+        </ul>
+    </div>
+</div>
+
+<!--<div class="p51_sidebar">
+    <div class="p51_title_container"><span class="p51_title_icon"><i class="fa fa-users" aria-hidden="true"></i></span> <a href="/group/discover">Group</a> <span class="open"></span></div>
+    <div class="p51_content" style="display: none;">
+        <ul class="p51_sidebar_menu">
+            <li class="first"><a href="/group">List My Group</a></li>
+            <li><a href="/group/discover">Discover Group</a></li>
+            <li class="last"><a href="/group/create">Create Group</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="p51_sidebar">
+    <div class="p51_title_container"><span class="p51_title_icon"><i class="fa fa-calendar" aria-hidden="true"></i></span> <a href="/event">Event</a> <span class="open"></span></div>
+    <div class="p51_content" style="display: none;">
+        <ul class="p51_sidebar_menu">
+            <li class="first"><a href="/event/create">Create Event</a></li>
+            <li><a href="/event">My Events</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="p51_sidebar last">
+    <div class="p51_title_container"><span class="p51_title_icon"><i class="fa fa-bar-chart" aria-hidden="true"></i></span> <a href="/polls">Poll/ Survey</a> <span class="open"></span></div>
+    <div class="p51_content" style="display: none;">
+        <ul class="p51_sidebar_menu">
+            <li class="first"><a href="/polls">List My Poll/ Survey</a></li>
+            <li class="last"><a href="/polls/create">Create Poll/ Survey</a></li>
+        </ul>
+    </div>
+</div>-->

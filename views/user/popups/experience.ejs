@@ -1,0 +1,132 @@
+	<div id="edit_experience" class="modal fade" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title ex_title">Add Experience</h4>
+				</div>
+				<form method="post" class="form-group" id="form_experience">
+					<input type="hidden" id="id" name="id">
+					<input type="hidden" id="del_doc" name="del_doc" value="0">
+					<input type="hidden" id="old_exp_string" name="old_exp_string" value="" class="old_exp_string">
+					<input type="hidden" id="is_verify_flag" name="is_verify_flag" value="0" class="is_verify_flag">
+					<div class="modal-body">
+						<div id="form-errors"></div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="title">Title or Position</label>
+										<input type="text" name="title" id="title" class="form-control" required="true" placeholder="Enter Title or Position" />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="company_name">Company or Organization</label>
+										<select class="ex_company_name form-control" required="true" name="company_id" id="company_id">
+											<% if(typeof companylist!="undefined" && companylist.length>0){ %>
+												<% _.each(companylist, function (company) { %>
+													<option value="<%=company.id%>"><%=company.company_name%></option>
+												<% }) %>
+											<% } %>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="Location">Location</label>
+										<input type="text" name="location" id="autocomplete" placeholder="Enter Company Location/Address" onFocus="geolocate()" class="form-control" required="true">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="from_month">From</label>
+										<select name="from_month" id="from_month" class="form-control" required="true">
+											<option value="">From Month</option>
+											<% for(var i=0;i<12;i++) { 
+												var k=i+1;
+												if(k<10){
+													k = '0'+k;
+												}
+												%>
+												<option value="<%=k%>"><%=DateDifferentService.monthList(i)%></option>
+											<%}%>
+										</select>
+										<input type="text" name="from_year" id="ex_from_year" class="form-control from_year" placeholder="From Year" required="true">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="to_month">To</label>
+										<select name="to_month" class="form-control" id="to_month">
+											<option value="">To Month</option>
+											<% for(var i=0;i<12;i++) {
+												var k=i+1;
+												if(k<10){
+													k = '0'+k;
+												}
+												%>
+												<option value="<%=k%>"><%=DateDifferentService.monthList(i)%></option>
+											<%}%>
+										</select>
+										<input type="text" name="to_year" placeholder="To Year" id="ex_to_year" class="form-control to_year">
+									</div>
+								</div>
+								<div class="col-md-12">
+									<!-- <div class="form-group">
+										<label for="current_work_status">Curremt Work Status</label>
+										<input type="checkbox" name="current_work" value="1" class="form-control" id="current_work">
+									</div> -->
+									<div class="form-group">
+										<div class="label-block">
+											<label for="ex_current_work"><input type="checkbox" value="1" class="form-inline" id="ex_current_work" name="current_work"> I currently work here</label>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="description">Description</label>
+										<textarea name="description" id="description" class="form-control" rows="2" placeholder="Write Description" ></textarea>
+									</div>
+								</div>
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+									<div class="form-group general_block_url" style="display:none">
+										<a href="#" id="doc_url_link" target="_blank"><i class="fa fa-download" aria-hidden="true"></i> <span id="doc_url"></span></a>
+										<a href="javascript:;" class="del_doc" title="Delete document"><i class="fa fa-trash" aria-hidden="true"></i></a>
+									</div>
+									<div class="form-group input-upload general_block_upload">
+										<input type="file" name="doc_file" class="upload_doc_id input-upload-button">
+										<div class="upload-file-text">
+											<i class="fa fa-cloud-upload" aria-hidden="true"></i> Drag and drop file here<br>or<br><span>Browse files</span>
+										</div>
+										<span class="file_name"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary pull-left delete_btn" title="Delete Experience" onclick="delete_experience()" style="display:none;"><i class="fa fa-trash" aria-hidden="true"></i></button>
+						
+						<button type="submit" class="btn btn-primary mBottom0">Save</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$(document).on("click","#ex_current_work",function(){
+			var checkVal = $(this).val();
+			if($(this).prop('checked') == true){
+				$("form#form_experience").find("input[name='to_year']").val("");
+				$("form#form_experience").find("input[name='to_year']").attr('disabled', true);
+				$("form#form_experience").find("select[name='to_month']").attr('disabled', true);
+				$("form#form_experience").find("select[name='to_month'] option[value='']").attr('selected', true);
+			}else{
+				$("form#form_experience").find("input[name='to_year']").removeAttr('disabled');
+				$("form#form_experience").find("select[name='to_month']").removeAttr('disabled');
+			}
+		});
+	</script>

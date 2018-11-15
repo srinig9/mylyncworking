@@ -1,0 +1,77 @@
+<div class="main-container">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                    <div class="p9_left_sidebar">
+                        <ul class="p9_ls_1001">
+                            <% if(req.user.company_id) {%>
+                              <li class="first <%- (page_type == 'post_job' || page_type=='edit_post_job') ? 'active' : '' %>"><a href="<%- sails.config.appUrlwPort %>/job-post">Post Job</a><span class="open"></span></li>
+                              <li class="first <%- (page_type == 'receivedapplication') ? 'active' : '' %>"><a href="<%- sails.config.appUrlwPort %>/jobs/receivedapplication">Received Applications</a><span class="open"></span></li>
+                              <li class="first <%- (page_type == 'my_jobs') ? 'active' : '' %>"><a href="<%- sails.config.appUrlwPort %>/jobs/myjob">Posted Jobs</a></li>
+                            <% } else {%>
+                              <li class="first <%- (page_type == 'post_job' || page_type=='edit_post_job') ? 'active' : '' %>"><a href="<%- sails.config.appUrlwPort %>/job-post">Post Job</a><span class="open"></span></li>
+                              <li class="first <%- (page_type == 'my_application') ? 'active' : '' %>"><a href="<%- sails.config.appUrlwPort %>/jobs/myapplication">My Applications</a><span class="open"></span></li>
+                              <li class="first <%- (page_type == 'receivedapplication') ? 'active' : '' %>"><a href="<%- sails.config.appUrlwPort %>/jobs/receivedapplication">Received Applications</a><span class="open"></span></li>
+                              <li class="first <%- (page_type == 'my_jobs') ? 'active' : '' %>"><a href="<%- sails.config.appUrlwPort %>/jobs/myjob">Posted Jobs</a></li>
+                              <li class="last <%- (page_type == 'bookmarks') ? 'active' : '' %>"><a href="<%- sails.config.appUrlwPort %>/jobs/bookmark">Bookmarked Jobs</a></li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right job-list">
+                    <% if(page_type == 'post_job') { %>
+                      <%- partial('./postjob.ejs') %>
+                    <% } else if(page_type == 'edit_post_job') { %>
+                    <%- partial('./edit_job.ejs') %>
+                    <% } else if(page_type == 'my_application') { %>
+                        <%- partial('./my_application.ejs') %>
+                    <% } else if(page_type == 'receivedapplication') { %>                        
+                        <%- partial('./receivedapplication.ejs') %>
+                    <% } else { %>  
+                        <%- partial('./job_list.ejs') %>    
+                    <% } %>
+                </div>
+
+            </div>
+        </div>
+    </div>
+<script src="/js/job.js"></script>
+<script src="/themes/frontend/js/like_comment.js"></script>
+
+<% if(typeof page_type!='undefined' && (page_type == 'my_jobs' || page_type == 'bookmarks')){%>
+   <%- partial('./popup/easyApply.ejs') %>
+<% } %>
+<script type="text/javascript">
+  function job_delete(id){
+
+    $.confirm({content:"Are you sure you want to delete the Job?",
+        header: "Delete",
+        confirm:function () {
+          if(id==''){
+            $.bootstrapGrowl('ID can not blank', {type: 'danger', delay: 1000});
+          }
+
+          var ajax_url = '/job/delete/'+id;
+          $.ajax({
+            type: "GET",
+            url: ajax_url,
+            data: {status:1},
+            cache: false,
+            success: function(result){
+              if(result.status=="OK"){
+                $.bootstrapGrowl(result.msg, {type: 'success', delay:700});
+                setTimeout(function() {window.location.href='/jobs/myjob'; }, 1000);
+              }else{
+                $.bootstrapGrowl(result.msg, {type: 'danger', delay: 1000});
+              }
+            }
+          });
+        },
+        cancel:function () {
+            console.log('confirm')
+        }
+    });
+ }
+</script>

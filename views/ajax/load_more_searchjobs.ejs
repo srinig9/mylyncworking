@@ -1,0 +1,52 @@
+<% _.each(jobs,function(Job){ %> 
+<li class="first" data-id="<%=Job.id%>">
+    <div class="p32_1011">
+            <% 
+            var job_profile_image = '';
+
+            if(typeof Job.company_id == 'undefined') {
+                if(typeof Job.user_id.profile_image != 'undefined' && Job.user_id.profile_image != ''){
+                    job_profile_image = sails.config.appUrlwPort + sails.config.profile_image_url + Job.user_id.profile_image;
+                }
+            } else {
+                if(typeof Job.company_id.companydata[0].profile_image != 'undefined' && Job.company_id.companydata[0].profile_image != ''){
+                    job_profile_image = sails.config.appUrlwPort + sails.config.profile_image_url + Job.company_id.companydata[0].profile_image;
+                }
+            }
+             %>
+        <% if(job_profile_image != ''){ %> 
+        <a href="/jobs/<%=Job.slug%>">
+            <img src="<%-job_profile_image%>" /> 
+        </a>
+        <% } else { %>
+            <a class="p6_sc_1002 project_img" href="/company/<%- Job.company_id.slug %>" target="_blank">
+                <span class="first-letter">
+                   <%=Job.company_id.company_name[0].toUpperCase()%>
+               </span>
+           </a>
+        <% } %>
+        <div class="p32_1012">
+            <div class="p32_1013 name"><a href="/jobs/<%=Job.slug%>" class="p16_2004"><%- Job.title %></a></div>
+            <% if(Job.company_id != undefined && Job.company_id.company_name != undefined) { %>
+            <div class="p32_1014 company_name"><%- Job.company_id.company_name %></div>
+            <% } %>
+            
+            <div class="p32_1016 location_city">
+                <% if(typeof Job.location != 'undefined' && Job.location != '') { %>
+                    <%- Job.location + '<br>' %>
+                <% } %>
+                <% if(typeof Job.experience_id != 'undefined' && typeof Job.experience_id.title != 'undefined'){ %>
+                    <%- Job.experience_id.title %>
+                <% } %>
+                <% if(typeof Job.job_type_id != 'undefined' && typeof Job.job_type_id.title != 'undefined'){ %>
+                    <span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                    <%- Job.job_type_id.title %>
+                <% } %>
+            </div>
+        </div>
+        <% if(typeof req.user !='undefined' && req.user!=''){%>
+        <button type="button" class="btn btn-primary p32_message btnEasyApply" data-toggle="modal">Instant Apply</button>
+        <% } %>
+    </div>
+</li>
+<% }); %>

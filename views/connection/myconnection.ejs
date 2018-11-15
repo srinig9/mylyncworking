@@ -1,0 +1,294 @@
+<%
+    var requestSearch = "";
+    if(typeof req.param("search")!="undefined"){
+        requestSearch = req.param("search");
+    }
+%>
+
+<style type="text/css">
+    .typeahead { 
+    border-radius: 4px;
+    padding: 8px 12px;
+    max-width: 255px;
+    min-width: 255px;
+    background: #fff;
+    color: #025ba2;
+    border: none;
+    }
+    .tt-menu { width:300px; }
+    ul.typeahead{margin:0px;padding:0px;}
+    ul.typeahead.dropdown-menu li a {padding: 10px !important;  border-bottom:#e3eeef 1px solid;color:#025ba2;}
+    ul.typeahead.dropdown-menu li:last-child a { border-bottom:0px !important; }
+    .bgcolor {max-width: 550px;min-width: 290px;max-height:340px;background:url("world-contries.jpg") no-repeat center center;padding: 100px 10px 130px;border-radius:4px;text-align:center;margin:10px;}
+    .demo-label {font-size:1.5em;color: #686868;font-weight: 500;color:#FFF;}
+    ul.typeahead.dropdown-menu>.active>a, ul.typeahead.dropdown-menu>.active>a:focus, ul.typeahead.dropdown-menu>.active>a:hover {
+        text-decoration: none;
+        background-color: #025ba2;
+        outline: 0;
+        color: white;
+    }
+</style>
+
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+			<!-- Sidebar nav connections Starts -->
+			<%- partial('../includes/sidebar-nav-connections.ejs') %>
+			<!-- Sidebar nav connections Ends -->
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 no-padding myconnection">
+                <div class="p16_main1000">
+                    <div class="p16_main1001">
+                        <div class="p16_section_title p15_section_title">
+                            <div class="p15_search-fun">
+                                <form class="form-horizontal" method="get">
+                                    <div class="col-sm-6 col-xs-6">
+                                        <div class="p15_3010">
+                                            <label for="">Sort by : </label>
+                                            <select id="" name="sort_by" class="form-control p15_select">
+                                                <option value="1">Recently Added</option>
+                                                <option value="2">2 weeks</option>
+                                                <option value="3">1 month</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6  col-xs-6">
+                                        <div class="p15_3011">
+                                        <label for=""><input type="search" name="search" class="form-control" value="<%=requestSearch%>" id="search_name" placeholder="Search from connections" autocomplete="off"></label>
+                                        <button type="submit" class="search_button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <ul class="p16_1010">
+                            <% if(connections.length > 0) { 
+                                for(var _index=0; _index < connections.length; _index++) {
+                                    var _connection = connections[_index];
+
+                                    var userimage = '/themes/frontend/images/default-user.png';
+                                    if(typeof _connection.profile_image!='undefined' && _connection.profile_image!=''){
+                                        userimage = '/uploads/users/'+_connection.profile_image;
+                                    }
+
+                                    var position        = '';
+                                    var location        = '';
+                                    var userSlug        = '';
+                                    var displayname     ='';
+                                    var message_slug    ='/messages/';
+                                    var user_position   = "";
+                                    var user_company    = "";
+
+                                    if(typeof _connection.userexperiences[0]!="undefined") {
+                                        var experience = _connection.userexperiences[0];
+                                        if(typeof experience["title"]!="undefined"){
+                                            user_position = experience["title"];
+                                        }
+                                        if( typeof experience["company_id"] != "undefined" && typeof experience["company_id"]["company_name"] != "undefined" ) {
+                                            if(experience["company_id"]["company_name"] != "") {
+                                                if(user_position != "") {
+                                                    //user_company = " <br/> "+experience["company_id"]["company_name"];
+                                                    user_company = experience["company_id"]["company_name"];
+                                                } else {
+                                                    user_company = experience["company_id"]["company_name"];
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if(typeof _connection.company_id!='undefined' && typeof _connection.company_id.slug!='undefined' && _connection.company_id.slug!='')
+                                    {
+                                        userSlug ='/company/'+_connection.company_id.slug;
+                                        message_slug+=_connection.company_id.slug;
+                                    }
+                                    else if(typeof _connection.slug!='undefined' &&  typeof _connection.slug!=''){
+                                        userSlug ='/profile/'+_connection.slug+"/wall";
+                                        message_slug+=_connection.slug;
+                                    }
+
+                                    if(typeof _connection.company_id!='undefined' && typeof _connection.company_id.company_name!='undefined' && _connection.company_id.company_name!='')
+                                    {
+                                        displayname = _connection.company_id.company_name;
+                                    }
+                                    else if(typeof _connection.name!='undefined' && _connection.name!=''){
+                                        displayname=_connection.name;
+                                    }
+                                %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <a href="<%=userSlug%>"><img src="<%=userimage%>" width="55" height="55" alt="Michele Show"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=userSlug%>" class="p16_1014"><%=displayname%></a></div>
+                                        <div class="p16_1015">
+                                            <%=user_position%>
+                                            <% if(user_company!=''){ %>
+                                            at <%=user_company%>
+                                            <%}%>
+                                        </div>
+                                        <div class="p16_1016">
+                                        <%
+                                        var time_ago = '1 sec';
+                                        if(typeof _connection.receiverequest!='undefined' && _connection.receiverequest.length>0){
+
+                                            if(typeof _connection.receiverequest[0]['updatedAt']!='undefined' && _connection.receiverequest[0]['updatedAt']!=''){
+                                            %>
+                                            Connected <%=DateDifferentService.time_ago_full(_connection.receiverequest[0]['updatedAt'])%> ago
+                                            <%
+                                            }
+                                        }else if(typeof _connection.sendrequest!='undefined' && _connection.sendrequest.length>0){
+                                            if(typeof _connection.sendrequest[0]['updatedAt']!='undefined' && _connection.sendrequest[0]['updatedAt']!=''){
+                                            %>
+                                            Connected <%=DateDifferentService.time_ago_full(_connection.sendrequest[0]['updatedAt'])%> ago
+                                            <%
+                                            }
+                                        }
+                                        %>
+                                        </div>
+                                    </div>
+                                    <a href="<%=message_slug%>" data-id="1" class="btn btn-primary p15_message">Message
+                                    </a>
+                                </div>
+                            </li>
+                            <% } } else { %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% } %>
+                        </ul>
+                        <input type="hidden" class="page_no" value="1">
+                    </div>
+                </div>
+                <div class="p16_main1000">
+                    <div class="p16_main1001">
+                        <div class="p16_section_title">
+                            Your Follow list (<%=total_follow%>)
+                        </div>
+                        <ul class="p16_1010">
+                            <% 
+                            if(follows.length > 0) {
+                                _.each(follows,function(_follow){
+
+                                    var userimage = '/themes/frontend/images/default-user.png';
+                                    var userSlug    = '/profile';
+                                    var displayname ='/';
+                                    var company_id ='';
+                                    
+                                    if(typeof _follow.company_id!='undefined'){
+                                        company_id = _follow.company_id.id;
+                                        
+                                        if(typeof _follow.company_id.slug!='undefined' &&  typeof _follow.company_id.slug!=''){
+                                            userSlug ='/company/'+_follow.company_id.slug;
+                                        }
+
+                                        if(typeof _follow.company_id.company_name!='undefined' && _follow.company_id.company_name!=''){
+                                            displayname=_follow.company_id.company_name;
+                                        }
+                                        if(_follow.company_id.companydata && _follow.company_id.companydata.length>0 && _follow.company_id.companydata[0].profile_image){
+                                            userimage = "/uploads/users/"+_follow.company_id.companydata[0].profile_image;
+                                        }
+                                    }
+
+                            %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <a href="<%=userSlug%>"><img src="<%=userimage%>" width="55" height="55" alt="Michele Show"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=userSlug%>" class="p16_1014"><%=displayname%></a></div>
+                                        <div class="p16_1016">
+                                            Connected <%=DateDifferentService.time_ago_full(_follow.createdAt)%> ago
+                                        </div>
+                                    </div>
+                                    <button type="button" value="<%=company_id%>" class="btn btn-primary p15_message Unfollow_company">Unfollow</a>
+                                </div>
+                            </li>
+                            <% }) %>
+
+                            <% if(total_follow > 3){%>
+                            <li class="a-center last" id="get_more_follows">
+                                <input type="hidden" name="request_page_no" class="request_page_no" value="1">
+                                <input type="hidden" name="request_search" class="request_search" value="<%=requestSearch%>">
+                                <a href="javascript:void(0);" class="p16_1031">More</a>
+                            </li>
+                            <% }} else { %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% } %>
+                        </ul>
+                        <input type="hidden" class="page_no" value="1">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/suvE6ZAPTDQ?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                    <br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/2sEj0_9jlIs?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#search_name').typeahead({
+            source: function (query, result) {
+                $.ajax({
+                    url: "/searchmyconnection",
+                    data: 'query=' + query,            
+                    dataType: "json",
+                    type: "POST",
+                    limit: 10,
+                    success: function (data) {
+                        result($.map(data, function (item) {
+                            return item;
+                        }));
+                    }
+                });
+            }
+        });
+    });
+    $(document).on("click",".Unfollow_company",function(){
+        var parents = $(this).parents('li');
+        var company_id = $(this).val();
+        $.ajax({
+            url: '/followCompany/'+company_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    parents.remove();
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                    setTimeout(function() { window.location.href = '/connections/list'; },3000);
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+    $(document).on("click","#get_more_follows",function(){
+        var pages = $('.request_page_no').val();
+        var request_search = $('.request_search').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('.request_page_no').val(page_no);
+        $.ajax({
+            type: "GET",
+            url: "/load_more_follows",
+            data: "page_no="+page_no+"&search="+request_search,
+            success: function (data) {
+                if(data.follows!=undefined && data.follows==false){
+                    $('#get_more_follows').hide();
+                }else{
+                    $(data).insertBefore('#get_more_follows');
+                }
+            }
+        });
+    });
+</script>

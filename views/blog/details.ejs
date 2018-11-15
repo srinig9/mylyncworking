@@ -1,0 +1,334 @@
+<%
+var user_slug = "/profile";
+var userimage = "/themes/frontend/images/default-user.png";
+var postedBy  = "";
+var my_position =  '';
+var my_company = '';
+var bloginfo = '';
+var createAt = '';
+var login_user_id=0;
+var share_url   = '';
+
+if(typeof req.user!='undefined' && req.user!=''){
+    login_user_id = req.user.id;
+}
+
+
+if(typeof blogs!="undefined" && blogs.length>0)
+{
+    if(typeof blogs[0].slug!='undefined'){
+        share_url = 'blogs/'+blogs[0].slug;
+    }
+
+    createdAt = blogs[0].createdAt;
+    if(typeof blogs[0].user_id!='undefined'){
+        bloginfo =  blogs[0].user_id;
+
+        if(typeof bloginfo.company_id!="undefined" && typeof bloginfo.company_id.slug!="undefined" && bloginfo.company_id.slug!=""){
+            user_slug = "/company/"+bloginfo.company_id.slug;
+        }else{
+            if(typeof bloginfo.slug!="undefined" && bloginfo.slug!=""){
+                user_slug = "/profile/"+bloginfo.slug+"/wall";
+            }
+        }
+
+        if(typeof bloginfo.profile_image!="undefined" && bloginfo.profile_image!=""){
+            userimage = "/uploads/users/"+bloginfo.profile_image;
+        }
+
+        if(typeof bloginfo.company_id!="undefined" && typeof bloginfo.company_id.company_name!="undefined" && bloginfo.company_id.company_name!=""){
+            postedBy = bloginfo.company_id.company_name;
+        }else{
+            postedBy = bloginfo.name;
+        }
+
+        if(typeof bloginfo.userexperiences!='undefined' && bloginfo.userexperiences.length>0){
+            if(typeof bloginfo.userexperiences[0]['title']!='undefined' && bloginfo.userexperiences[0]['title']!=''){
+                my_position = bloginfo.userexperiences[0]['title'];
+            }
+            if(typeof bloginfo.userexperiences[0]['company_id']!='undefined' && typeof bloginfo.userexperiences[0]['company_id']['company_name']!='undefined'){
+                if(bloginfo.userexperiences[0]['company_id']['company_name']!=''){
+                    if(my_position!=''){
+                        my_company = ' at '+bloginfo.userexperiences[0]['company_id']['company_name'];
+                    }else{
+                        my_company = bloginfo.userexperiences[0]['company_id']['company_name'];
+                    }
+                }
+            }
+        }
+    }
+}
+%>
+<div class="main-container">
+    <div class="container">
+		<div class="row">
+		    <% var profile_image = "/themes/frontend/images/default-user.png";
+			if(typeof userData!="undefined" && typeof userData.profile_image!="undefined" &&  userData.profile_image!="") {
+			    profile_image = "/uploads/users/" + userData.profile_image;
+			} %>
+		    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <%- partial("./includes/left-sidebar.ejs") %>
+		    </div>
+
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-left">
+				<div class="p51_feed">
+					<div class="p51_feed_title p6_3_feed_title"><h3><%=blogs[0].title%></h3> <span class="p51_earn"> &nbsp; <!--Earn 158 Lynks ($52) --></span></div>
+				</div>
+				<div class="list_connection">
+					<div class="p51_feed post p6_feed_post feed_list" dataAccessRequestList="<%=blogs[0].user_id.id%>" data-owner_id="<%=blogs[0].user_id.id%>" data-id="<%=blogs[0].id%>">
+						<div class="p51_feed_post">
+							<div class="p51_feed_post_user_block dropdown_selection">
+								<% if(typeof isLogin!='undefined' && isLogin==1){%>
+                                <div class="dropdown p51_feed_post_more_info">
+									<button class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+									<ul class="dropdown-menu p51_feed_fpa">
+                                        <% if(blogs[0].user_id.id == login_user_id){ %>
+                                        <li><a href="/blogs/edit/<%=blogs[0].id%>" class="p51_feed_fpa1">Edit my post</a></li>
+                                        <li><button class="p51_feed_fpa1 btnDeleteFeed" type="button">Delete my post</button></li>
+                                        <% } else {%>
+                                        <li><button class="p51_feed_fpa1 btnHide" type="button">Hide this post</button></li>
+                                        <li class="dropdown-submenu"><button class="p51_feed_fpa2" type="button">Report this post</button>
+                                            <ul class="dropdown-menu">
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's spam</button></li>
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's fake or scam</button></li>
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's abusive or harmful</button></li>
+                                            </ul>
+                                        </li>
+                                        <li><button class="p51_feed_fpa3 btnBlockUser" type="button">Block this user</button></li>
+                                        <% } %>
+									</ul>
+								</div>
+                                <% } %>
+								<div class="p51_feed_post_user_info">
+									<a href="<%=user_slug%>"><img class="p51_feed_post_user_img" src='<%=userimage%>' alt='' width="65" height="65" /></a>
+									<div class="p51_feed_post_user_feed_info">
+										<div class="fmc5001"><%=blogs[0].title%></div>
+										<div class="fmc5002">Posted by - <a href="<%=user_slug%>"><%=postedBy%></a></div>
+										<div class="fmc5003">
+                                            <% if(my_company!='' || my_position!=''){%>
+                                            <span style="font-size:12px;"><%=my_position%> <%=my_company%></span>
+                                            <% } if(createdAt!=''){%>
+                                            &nbsp;&nbsp; <%=DateDifferentService.time_ago(blogs[0].createdAt)%> <i class="fa fa-globe" aria-hidden="true"></i>
+                                            <% } %>
+                                        </div>
+									</div>
+								</div>
+							</div>
+
+							<div class="p51_feed_post_feeds">
+								<% 
+									if(blogs[0].feedmedias.length > 0) { 
+		                                var feedmedias =  blogs[0].feedmedias;
+		                                for(var _mindex=0; _mindex < feedmedias.length; _mindex++) {
+		                                    var _media = feedmedias[_mindex];
+
+								%>
+								<img src="<%=sails.config.appUrlwPort%>/uploads/feeds/<%=_media.image%>" class="img-full img-responsive" width="150">
+								<% } } %>
+								<p></p>
+                                <div class="myspecialdiv">
+								    <%-blogs[0].feed_details%>
+                                </div>
+							</div>
+
+							<div class="p51_feed_post_feed_not">
+                                <div class="pull-left p51_feed_pfn1 p51_feed_pfn2"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="total_likes"> &nbsp; <%=blogs[0].totalLikes%> Likes</span></div>
+
+                                <!-- <div class="pull-left p51_feed_pfn1 p51_feed_pfn2"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="total_dislikes"> &nbsp; <%=blogs[0].totaldislikes%> Disikes</span></div> -->
+
+                                <div class="pull-right p51_feed_pfn2 total_comments"><%=blogs[0].feedcomments.length%> Comments</div>
+                                
+                                <div class="pull-right p51_feed_pfn3">0 Shares</div>
+
+							</div>
+							<div class="p51_feed_post_action">
+                                <button type="button" class="p51_feed_world_share_lynked"><img src="/themes/frontend/images/color-logo.svg" class="" width="25" height="25" alt="share with lynked"><span class=""> &nbsp; LBD ($3)</span> &nbsp; <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+                                <% if(typeof isLogin!='undefined' && isLogin==1){%>
+                                <button type="button" class="active-action p51_fw12 marlr8 btnlike <% if(blogs[0].isliked==1){ %> active <% } %>" title="Like"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Like</span></button>
+
+                                <!-- <button type="button" class="active-action p51_fw12 btndislike <% if(blogs[0].isdisliked==1){ %> active <% } %>" title="Dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Dislike</span></button> -->
+
+                                <button type="button" class="p51_fw12 marlr8" title="Comment"><i class="fa fa-comment" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Comment</span></button>
+
+                                <button type="button" class="p51_fw12"  onclick="copyShareURL('<%=share_url%>')" title="Share"><i class="fa fa-share" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Share</span></button>
+                                <% } %>
+							</div>
+
+                            <% if(typeof isLogin!='undefined' && isLogin==1){%>
+
+                            <div class="row-fluid">
+                                    <div class="">
+                                        <div class="comment-form">
+                                        <div class="comments mycomments">
+                                        <% if(blogs[0].feedcomments.length > 3 ){ %>
+                                        <a href="javascript:;" class="see-more">
+                                            <i class="fa fa-repeat"></i> Load Previous Comments
+                                        </a>
+                                        <% } %>
+
+                                            <% 
+                                            if(blogs[0].feedcomments.length > 0 ){
+                                                var feedcomments =  blogs[0].feedcomments;
+                                                for(var _cindex=0; _cindex < feedcomments.length; _cindex++) {
+                                                    var _feedcomment = feedcomments[_cindex];
+
+                                            %>
+                                            
+                                            <%  
+                                                var userimage = '/themes/frontend/images/default-user.png';
+                                                var user_slug   ='/profile/';
+                                                var postedBy    = '';
+
+                                                if(typeof _feedcomment.user_id!='undefined' && typeof _feedcomment.user_id.profile_image!='undefined' && _feedcomment.user_id.profile_image!=''){
+                                                    userimage = '/uploads/users/'+_feedcomment.user_id.profile_image;
+                                                }
+
+                                                if(typeof _feedcomment.user_id.company_id!='undefined' && typeof _feedcomment.user_id.company_id.company_name!='undefined' && _feedcomment.user_id.company_id.company_name!=''){
+                                                    postedBy = _feedcomment.user_id.company_id.company_name;
+                                                }else{
+                                                     postedBy = _feedcomment.user_id.name;
+                                                }
+
+
+                                                if(typeof _feedcomment.user_id.company_id!='undefined' && typeof _feedcomment.user_id.company_id.slug!='undefined' && _feedcomment.user_id.company_id.slug!=''){
+                                                    user_slug = '/company/'+_feedcomment.user_id.company_id.slug;
+                                                }else{
+                                                    if(typeof _feedcomment.user_id!='undefined' && typeof _feedcomment.user_id.slug!='undefined' && _feedcomment.user_id.slug!=''){
+                                                        user_slug = '/profile/'+_feedcomment.user_id.slug+"/wall";
+                                                    }
+                                                }
+
+                                            %>
+                                            <div class="comment-wrap" data-fid="<%=_feedcomment.feed_id%>">
+                                                <div class="photo">
+                                                    <div class="avatar" style="background-image: url('<%=userimage%>')"></div>
+                                                </div>
+                                                <div class="comment-block">
+                                                    <p class="comment-user"><a href="<%=user_slug%>"><%=postedBy%></a></p>
+                                                    <p class="comment-text"><%=_feedcomment.comments%></p>
+                                                    <div class="p6_comment_count pull-left">
+                                                        <a href="javascript:;" class="btncommentlike" data-cid="<%=_feedcomment.id%>">Like</a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                        <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                        <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_feedcomment.commentlikes.length%></span></a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> <%=_feedcomment.commentreply.length%></a>
+                                                    </div>
+                                                    <% 
+                                                    if(_feedcomment.commentreply.length > 0 ){
+                                                        var commentreply =  _feedcomment.commentreply;
+                                                        for(var _crindex=0; _crindex < commentreply.length; _crindex++) {
+                                                            var _commentreply = commentreply[_crindex];
+
+                                                    %>
+
+                                                    <%  
+                                                    var userimage2 = '/themes/frontend/images/default-user.png';
+                                                    var user_slug2   ='/profile/';
+                                                    var postedBy2    = '';
+
+                                                    if(typeof _commentreply.user_id!='undefined' && typeof _commentreply.user_id.profile_image!='undefined' && _commentreply.user_id.profile_image!=''){
+                                                        userimage2 = '/uploads/users/'+_commentreply.user_id.profile_image;
+                                                    }
+
+                                                    if(typeof _commentreply.user_id.company_id!='undefined' && typeof _commentreply.user_id.company_id.company_name!='undefined' && _commentreply.user_id.company_id.company_name!=''){
+                                                        postedBy2 = _commentreply.user_id.company_id.company_name;
+                                                    }else{
+                                                         postedBy2 = _commentreply.user_id.name;
+                                                    }
+
+
+                                                    if(typeof _commentreply.user_id.company_id!='undefined' && typeof _commentreply.user_id.company_id.slug!='undefined' && _commentreply.user_id.company_id.slug!=''){
+                                                        user_slug2 = '/company/'+_commentreply.user_id.company_id.slug;
+                                                    }else{
+                                                        if(typeof _commentreply.user_id!='undefined' && typeof _commentreply.user_id.slug!='undefined' && _commentreply.user_id.slug!=''){
+                                                            user_slug2 = '/profile/'+_commentreply.user_id.slug+"/wall";
+                                                        }
+                                                    }
+
+                                                %>
+
+                                                    <div class="comment-wrap ember-mode" style="display: block;">
+                                                        <div class="photo">
+                                                            <div class="avatar" style="background-image: url('<%=userimage2%>')">
+                                                            </div>
+                                                        </div>
+                                                        <div class="comment-block">
+                                                            <p class="comment-user"><a href="<%=user_slug2%>"><%=postedBy2%></a></p>
+                                                            <p class="comment-text"><%=_commentreply.comments%></p>
+                                                            <div class="p6_comment_count pull-left">
+                                                                <a href="javascript:;"  class="btncommentlike" data-cid="<%=_commentreply.id%>">Like</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_commentreply.commentlikes.length%></span></a>
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> 0</a>
+                                                            </div>
+                                                            <div class="bottom-comment">
+                                                                <div class="comment-date">
+                                                                    <%=DateDifferentService.time_ago(_commentreply.createdAt)%>
+                                                                    <% if(_commentreply.user_id.id == login_user_id) { %>
+                                                                    <div class="bottom-comment-action">
+                                                                        <a href="javascript:;" class="editComment" data-comment_id="<%=_commentreply.id%>"><i class="fa fa-pencil"></i></a>
+                                                                        <a href="javascript:;" class="deleteComment" data-comment_id="<%=_commentreply.id%>"  data-text="reply"><i class="fa fa-trash"></i></a>
+                                                                    </div>
+                                                                    <% } %>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } } %>
+                                                    
+                                                    <form method="post" class="form-comment formReply commentForm" style="display: none;">
+                                                        <div class="form-group">
+                                                            <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                            <input name="parent_id" value="<%=_feedcomment.id%>" class="parent_id" type="hidden">
+                                                            <input name="feed_id" value="" type="hidden">
+                                                            <button type="submit" class="send-comment" value="replyform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </form>
+
+                                                    <div class="bottom-comment">
+                                                        <div class="comment-date">
+                                                            <%=DateDifferentService.time_ago(_feedcomment.createdAt)%>
+                                                            <% if(_feedcomment.user_id.id == login_user_id) { %>
+                                                            <div class="bottom-comment-action">
+                                                                <a href="javascript:;" class="editComment" data-comment_id="<%=_feedcomment.id%>"><i class="fa fa-pencil"></i></a>
+                                                                <a href="javascript:;" class="deleteComment" data-comment_id="<%=_feedcomment.id%>" data-text="main"><i class="fa fa-trash"></i></a>
+                                                            </div>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } } %>
+                                        </div>
+                                            <form method="post" class="form-comment commentForm">
+                                                <div class="form-group">
+                                                    <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                    <input name="parent_id" class="parent_id" value="" type="hidden">
+                                                    <input name="feed_id" value="<%=blogs[0].id%>" type="hidden">
+                                                    <button type="submit" class="send-comment" value="mainform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }%>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<script src="/themes/frontend/js/like_comment.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $( ".myspecialdiv ul li" ).css( "list-style-type", "initial" );
+        $( ".myspecialdiv ol li" ).css( "list-style-type", "number" );
+    });
+</script>

@@ -1,0 +1,82 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p9_left_sidebar">
+                    <ul class="p9_ls_1001">
+                        <li class="first"><a href="/profile/edit/">Basic Info</a><span class="open"></span></li>
+                        <li class="active"><a href="/profile/privacy">Privacy</a></li>
+                        <li><a href="/change-password">Change Password</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <div class="p16_main1002">
+                    <div class="p16_section_title">Block User List <span>(<%=blockusers.length%>)</span></div>
+                    <ul class="p16_1010">
+                        <% 
+                        if(blockusers.length > 0) {
+                            _.each(blockusers,function(blockuser){
+
+                                //profile image
+                                var profile_image = sails.config.appUrlwPort+'/themes/frontend/images/default-user.png';
+                                
+                                if(typeof blockuser.to_user_id != 'undefined'){
+									if(typeof blockuser.to_user_id.profile_image != 'undefined' &&  blockuser.to_user_id.profile_image!=''){
+										profile_image = sails.config.appUrlwPort+'/uploads/users/'+blockuser.to_user_id.profile_image;
+									}
+								}
+                        %>
+                        <li class="first">
+                            <div class="p16_1011">
+                                <a href="/profile/manashi-kothari"><img src="<%=profile_image%>" alt="<%=blockuser.to_user_id.name%>" width="65" height="65"></a>
+                                <div class="p16_1012">
+                                    <div class="p16_1013"><a href="/profile/<%=blockuser.to_user_id.slug%>" class="p16_1014"><%=blockuser.to_user_id.name%></a></div>
+                                    <div class="p16_1015"><%=DateDifferentService.time_ago(blockuser.createdAt)%></div>
+                                    <div class="p16_1016"></div>
+                                </div>
+                                <div class="p16_1021">
+                                    <button type="button" class="p16_1022 unblockuser" value="<%=blockuser.id%>"><i class="fa fa-unlock" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </li>
+                        <% }) }else{ %>
+                        <li>
+                            <div class="p16_1011">
+                                <p>No Data Found</p>
+                            </div>
+                        </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 no-left_p-sm">
+                <div class="a-center">
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).on("click",".unblockuser",function(){
+        var id = $(this).val();
+        $.confirm({content:"Are you sure to unblock user?",
+            header: "Unblock",
+            confirm:function () {
+                var redirect_url = '/unblockuser/'+id;
+                window.location.href = redirect_url;
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+</script>

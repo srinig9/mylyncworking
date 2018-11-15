@@ -1,0 +1,248 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+			
+			<!-- Sidebar nav connections Starts -->
+			<%- partial('../includes/sidebar-nav-connections.ejs') %>
+			<!-- Sidebar nav connections Ends -->
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <% if(referralUsed_flag) { %>
+					<div class="p16_main1000">
+						<div class="p16_main1001">
+							<div class="p51_feed p51_feed_post_feeds">
+                                <p>Enter a referral code and earn LBD ($5) in reward.</p>
+								<div class="p15_search-fun">
+									<form action="/import-from-mail" method="post" class="ajax-call-form max_width525">
+										<input type="text" name="referral" id="referral" class="form-control" value="" title="" placeholder="Enter Referral Code" required="required">
+										<button type="submit" class="btn btn-primary referral_submit">Submit</button>
+										<input type="hidden" name="from_data" value="myconnection">
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				<% } %>
+				
+                <div class="p16_main1000">
+                    <div class="p16_main1001">
+						<div class="p16_section_title">
+							Your referral (<%- tier1_count %>)
+                        </div>
+                        <ul class="p16_1010">
+                            <% if(connections_tier1.length > 0) {
+                                for(var _index=0; _index < connections_tier1.length; _index++) {
+                                    var _connection = connections_tier1[_index].user_id;
+									var _referral	= connections_tier1[_index];
+									var _slug_url	= "/profile";
+									var _msg_url	= '/messages';
+									var _image		= '/themes/frontend/images/default-user.png';
+									
+									if(typeof _connection.slug!="undefined" && _connection.slug!=""){
+										_slug_url += "/" + _connection.slug;
+										_msg_url  += "/" + _connection.slug;
+									}
+									if(typeof _connection.profile_image!="undefined" && _connection.profile_image!=""){
+										_image = sails.config.profile_image_url+_connection.profile_image;
+									}
+									%>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <a href="<%=_slug_url%>"><img src="<%=_image%>" width="65" height="65" alt="Michele Show"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=_slug_url%>" class="p16_1014"><%=_connection.name%></a></div>
+                                        <!-- <div class="p16_1015">Sr Software Engineer at Ahmedabad Gujarat India </div> -->
+                                        <div class="p16_1016">Used <%=DateDifferentService.time_ago_full(_referral.createdAt)%> ago</div>
+                                    </div>
+                                    <a href="<%=_msg_url%>"><button type="submit" data-id="1" class="btn btn-primary p15_message">Message</button></a>
+                                </div>
+                            </li>
+                            <% }
+							%>
+							<li class="a-center last" id="get_more_user_first_tier">
+                                <input type="hidden" name="request_page_no" class="request_page_no" value="1">
+                                <a href="javascript:void(0);" class="p16_1031">More</a>
+                            </li>
+							<%
+							} else { %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% } %>
+                        </ul>
+                        <input type="hidden" class="page_no" value="1">
+                    </div>
+                </div>
+				<% if(tier2_count > 0) { %>
+				<div class="p16_main1000">
+                    <div class="p16_main1001">
+						<div class="p16_section_title">
+							Your 2nd tier referral (<%- tier2_count %>)
+                        </div>
+                        <ul class="p16_1010">
+                            <% if(connections_tier2.length > 0) {
+                                for(var _index=0; _index < connections_tier2.length; _index++) {
+                                    var _connection = connections_tier2[_index].user_id;
+									var _referral	= connections_tier2[_index];
+									var _slug_url	= '/profile';
+									var _msg_url	= '/messages';
+									var _image		= '/themes/frontend/images/default-user.png';
+									
+									if(typeof _connection.slug!="undefined" && _connection.slug!=""){
+										_slug_url += "/" + _connection.slug;
+										_msg_url  += "/" + _connection.slug;
+									}
+									if(typeof _connection.profile_image!="undefined" && _connection.profile_image!=""){
+										_image = sails.config.profile_image_url+_connection.profile_image;
+									}
+							%>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <a href="<%=_slug_url%>"><img src="<%=_image%>" width="65" height="65" alt="Michele Show"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=_slug_url%>" class="p16_1014"><%=_connection.name%></a></div>
+                                        <!-- <div class="p16_1015">Sr Software Engineer at Ahmedabad Gujarat India </div> -->
+                                        <div class="p16_1016">Used <%=DateDifferentService.time_ago_full(_referral.createdAt)%> ago</div>
+                                    </div>
+                                    <a href="<%=_msg_url%>"><button type="submit" data-id="1" class="btn btn-primary p15_message">Message</button></a>
+                                </div>
+                            </li>
+                            <% } %>
+							<li class="a-center last" id="get_more_user_second_tier">
+                                <input type="hidden" name="request_page_no2" class="request_page_no2" value="1">
+                                <a href="javascript:void(0);" class="p16_1031">More</a>
+                            </li>
+							<%
+							} else { %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% } %>
+                        </ul>
+                        <input type="hidden" class="page_no" value="1">
+                    </div>
+                </div>
+				<% } if(tier3_count > 0) { %>
+				<div class="p16_main1000">
+                    <div class="p16_main1001">
+						<div class="p16_section_title">
+							Your 3rd tier referral (<%- tier3_count %>)
+                        </div>
+                        <ul class="p16_1010">
+                            <% if(connections_tier3.length > 0) {
+                                for(var _index=0; _index < connections_tier3.length; _index++) {
+                                    var _connection = connections_tier3[_index].user_id;
+									var _referral	= connections_tier3[_index];
+									var _image		= '/themes/frontend/images/default-user.png';
+									var _slug_url	= '/profile';
+									var _msg_url	= '/messages';
+									
+									if(typeof _connection.slug!="undefined" && _connection.slug!=""){
+										_slug_url += "/" + _connection.slug;
+										_msg_url  += "/" + _connection.slug;
+									}
+									if(typeof _connection.profile_image!="undefined" && _connection.profile_image!=""){
+										_image = sails.config.profile_image_url+_connection.profile_image;
+									}
+							%>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <a href="<%=_slug_url%>"><img src="<%=_image%>" width="65" height="65" alt="Michele Show"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=_slug_url%>" class="p16_1014"><%=_connection.name%></a></div>
+                                        <!-- <div class="p16_1015">Sr Software Engineer at Ahmedabad Gujarat India </div> -->
+                                        <div class="p16_1016">Used <%=DateDifferentService.time_ago_full(_referral.createdAt)%> ago</div>
+                                    </div>
+                                    <a href="<%=_msg_url%>"><button type="submit" data-id="1" class="btn btn-primary p15_message">Message</button></a>
+                                </div>
+                            </li>
+                            <% } %>
+							<li class="a-center last" id="get_more_user_third_tier">
+                                <input type="hidden" name="request_page_no3" class="request_page_no3" value="1">
+                                <a href="javascript:void(0);" class="p16_1031">More</a>
+                            </li>
+							<%
+							} else { %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% } %>
+                        </ul>
+                        <input type="hidden" class="page_no" value="1">
+                    </div>
+                </div>
+				<% } %>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 no-left_p-sm">
+                <div class="a-center">
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include referral-script.ejs %>
+
+<script type="text/javascript">
+    /* Pagination*/
+
+    $(document).on("click","#get_more_user_first_tier",function(){
+        var pages = $('.request_page_no').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('.request_page_no').val(page_no);
+        $.ajax({
+            type: "GET",
+            url: "/load_more_referral/"+page_no,
+            success: function (data) {
+                if(data.connections_tier1!=undefined && data.connections_tier1==false){
+                    $('#get_more_user_first_tier').hide();
+                }else{
+                    $(data).insertBefore('#get_more_user_first_tier');
+                }
+            }
+        });
+    });
+	
+	$(document).on("click","#get_more_user_second_tier",function(){
+        var pages = $('.request_page_no2').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('.request_page_no2').val(page_no);
+        $.ajax({
+            type: "GET",
+            url: "/load_more_referral_second/"+page_no,
+            success: function (data) {
+                if(data.connections_tier2!=undefined && data.connections_tier2==false){
+                    $('#get_more_user_second_tier').hide();
+                }else{
+                    $(data).insertBefore('#get_more_user_second_tier');
+                }
+            }
+        });
+    });
+	
+	$(document).on("click","#get_more_user_third_tier",function(){
+        var pages = $('.request_page_no3').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('.request_page_no3').val(page_no);
+        $.ajax({
+            type: "GET",
+            url: "/load_more_referral_third/"+page_no,
+            success: function (data) {
+                if(data.connections_tier3!=undefined && data.connections_tier3==false){
+                    $('#get_more_user_third_tier').hide();
+                }else{
+                    $(data).insertBefore('#get_more_user_third_tier');
+                }
+            }
+        });
+    });
+</script>

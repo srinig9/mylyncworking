@@ -1,0 +1,33 @@
+<div class="warning-section"> 
+	<div class="container">
+        <div class="row">
+        	<div class="col-md-12 col-xs-12 col-sm-12">
+	            <div class="pull-left note-text">	
+					<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+					<% var msg_flag = " Please verify your email and phone.";
+					var is_verify_flag = 0;
+					if(typeof req.user.id != "undefined") {
+						if(req.user.is_verify_phone==1 || req.user.is_verify_email==1){
+							is_verify_flag=1;
+							if(typeof req.user.is_verify_phone == "undefined" || req.user.is_verify_phone == 0){
+								msg_flag = " Please verify your Phone to use wallet features";
+							} else if(typeof req.user.is_verify_email == "undefined" && req.user.is_verify_email == 0){
+								msg_flag = " Please verify your Email features";
+							}
+						}
+						if(is_verify_flag==0 || (req.path == "/wallet" && req.user.is_verify_phone!=1)){ %>
+						  <b>Note:</b> <em><%=msg_flag%></em>
+						<% }
+					} %>
+				</div>
+				<div class="pull-right note-btn">
+					<% if(req.path == "/" || req.path == "/wallet"){ %>
+						<a href="javascipt:;" data-target="#verifyModel" data-toggle="modal" class="btn btn-md white-btn"> Click to Verify</a>
+					<% } else { %>
+						<a href="/get-verified" class="btn btn-md white-btn"> Click to Verify</a>
+					<% } %>
+				</div>
+			</div> 
+		</div>
+	</div>
+</div>

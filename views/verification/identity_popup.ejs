@@ -1,0 +1,343 @@
+<div id="identity_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title identity_modal_title">Add Personal Information</h4>
+            </div>
+
+            <form method="post" id="form_identity_info" class="ajax-call-form form-group" accept-charset="UTF-8">
+                <input type="hidden" id="id" name="id">
+                <input type="hidden" id="tab_type" name="tab_type" value="identity">
+                <input type="hidden" id="identity_del_doc" name="identity_del_doc" value="0">
+                <input type="hidden" id="identity_doc_type" name="identity_doc_type" value="">
+                <input type="hidden" id="identity_login_user" name="identity_login_user" value="<%=req.user.name%>">
+                <input type="hidden" id="old_identity_string" class="old_identity_string" name="old_identity_string" value="">
+                <input type="hidden" id="is_verify_flag" name="is_verify_flag" value="0" class="is_verify_flag">
+
+                 <div class="myfileuploads"></div>
+                    <div class="modal-body">
+                        <div id="form-errors"></div>
+                        <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-6" style="display:none;">
+                                <div class="form-group">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" value="1" name="identity_info_val" id="identity_info_val">Identity
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="identity_dob_val" id="identity_dob_val" value="1">Date of Birth
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="identity_address_val" value="1" id="identity_address_val">Address
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="identity_info2">
+                                 <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="country">Country</label>
+                                        <select name="doc_country" id="doc_country" class="form-control doc_country_option">
+                                            <option value="">Select Country</option>
+                                            <%  if(typeof country!='undefined' && country.length>0){
+                                                _.each(country,function(country){%>
+                                                <option value="<%=country.id%>"><%=country.name%></option>
+                                                <% }) 
+                                            }%>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="National-ID">National ID</label>
+                                       <select name="doc_type_id" id="doc_type_id" class="form-control doc_type_options">
+                                        <option value=""> Select National ID </option>
+                                        <%  if(typeof doc_type_id!='undefined' && doc_type_id.length>0){
+                                            _.each(doc_type_id,function(doc_type){ 
+                                                var selected = '';
+
+                                                if(doc_type.title=='Passport'){
+                                                    selected="selected";
+                                                }
+                                            %>
+                                            <option <%=selected%> value="<%=doc_type.id%>"><%=doc_type.title%></option>
+                                        <% 
+                                        }) 
+                                    }%>
+                                       </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="passport_identity_fields" style="display:none;">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label  for="legal_first_name">First Name</label>
+                                        <input name="first_name" id="legal_first_name" placeholder="Enter Given/First Name"  type="text" class="form-control" value="" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="legal_last_name">Last Name</label>
+                                        <input name="last_name" id="legal_last_name" placeholder="Enter Last/Surname Name"  type="text" class="form-control" value="" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="passport_identity_country">Issuing Country/Authority</label>
+                                        <input name="issue_country" id="passport_identity_country" placeholder="Enter Country/Authority that Issued Passport"  type="text" class="form-control" value="" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="passport_identity_issue_place">Place of issue</label>
+                                        <input name="issue_place" id="passport_identity_issue_place" placeholder="Where was the Passport Issued"  type="text" class="form-control" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="identity_info">
+                                <div class="col-md-6 other_identity_name">
+                                    <div class="form-group">
+                                        <label id="identity_legal_name" for="identity_legal_name">Name</label>
+                                        <input name="legal_name" id="legal_name" required="" placeholder="Enter Name"  type="text" class="form-control" value="<%=req.user.name%>" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="state-location">State/location</label>
+                                        <input type="text" name="state_location" id="state_location" placeholder="Province/State" class="p7_input form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="documentnum" id="identity_document_no">Document Number</label>
+                                        <input type="text" name="doc_num" required="" id="documentnum" placeholder="Document Number" class="p7_input form-control" value="" title="">
+                                    </div>
+                                </div>
+                                 <div class="col-md-6 issuedate_block">
+                                    <div class="form-group">
+                                        <label for="birth_place">Issuance Date</label>
+                                        <input type="text" placeholder="Enter Issuance Date" required="" name="issue_date" id="issuedate" class="form-control identity_date_pickert identity_issue_date">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 expirydate_block">
+                                    <div class="form-group">
+                                        <label for="birth_place">Expiration Date</label>
+                                        <input type="text" placeholder="Enter Expiration Date" required="" name="expiry_date" id="expirydate" class="form-control identity_date_pickert">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="identity_from_year">Date of Birth</label>
+										<div class="">
+											<select required="" name="identity_dob_date" id="identity_dob_date" class="form-control identity_dob_date_input col-md-3" style="width: 80px; margin-right: 10px;">
+												<% for(var _index=1; _index < 32; _index++) { 
+                                                    var days='';
+                                                    days = _index;
+                                                    if(_index<10){
+                                                        days = '0'+_index;
+                                                    }
+                                                %>
+													<option value="<%-days%>"><%-_index%></option>
+												<% } %>
+											</select>
+											<select required="" name="identity_dob_month" id="identity_dob_month" class="form-control identity_dob_month_input col-md-5" style="width: 180px; margin-right: 10px;">
+												<% var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+												var month_index = 1;
+												_.each(months, function(month) {
+                                                    var month_val='';
+                                                    month_val = month_index;
+                                                    if(month_index<10){
+                                                       month_val = '0'+month_index; 
+                                                    }
+                                                %>
+													<option value="<%-month_val%>"><%-month%></option>
+												<% month_index++;
+												}) %>
+											</select>
+											<select name="identity_dob_year" id="identity_dob_year" class="form-control identity_dob_year_input col-md-4" style="width: 123px;">
+												<% for(var _index=moment().format('YYYY')-sails.config.age_restrict; _index > moment().format('YYYY')-(100+sails.config.age_restrict); _index--) { %>
+													<option><%-_index%></option>
+												<% } %>
+											</select>
+										</div>
+                                        <!--<input type="text" required="" placeholder="Enter Date of Birth" name="identity_dob" id="identity_dob" class="form-control identity_dob_input">-->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="identity_gender">Sex</label>
+                                        <select name="gender" id="identity_gender" class="form-control">
+                                            <option value="">Select Sex</option>
+                                            <option value="1">Male</option>
+                                            <option value="2">Female</option>
+                                            <option value="3">Not Specified</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="identity_dob">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="country">Country</label>
+                                        <select name="birth_doc_country" id="birth_country" class="form-control dob_country_option">
+                                            <option value="">Select Country</option>
+                                            <%  if(typeof country!='undefined' && country.length>0){
+                                                _.each(country,function(country){%>
+                                                <option value="<%=country.id%>"><%=country.name%></option>
+                                                <% }) 
+                                            }%>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="school">Legal Name</label>
+                                        <input name="dob_legal_name" id="dob_legal_name" placeholder="Enter Name"  type="text" class="form-control" value="<%=req.user.name%>" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="identity_from_year">Date of Birth</label>
+										<div class="">
+											<select required="" name="dob_date" id="dob_date" class="form-control dob_date_input col-md-3" style="width: 80px; margin-right: 10px;">
+												<% for(var _index=1; _index < 32; _index++) { 
+                                                    var days='';
+                                                    days = _index;
+                                                    if(_index<10){
+                                                        days = '0'+_index;
+                                                    }
+                                                %>
+													<option value="<%=days%>"><%-_index%></option>
+												<% } %>
+											</select>
+											<select required="" name="dob_month" id="dob_month" class="form-control dob_month_input col-md-5" style="width: 180px; margin-right: 10px;">
+												<% var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+												var month_index = 1;
+												_.each(months, function(month) {
+                                                    var month_val='';
+                                                    month_val = month_index;
+                                                    if(month_index<10){
+                                                       month_val = '0'+month_index; 
+                                                    }
+                                                 %>
+													<option value="<%-month_val%>"><%-month%></option>
+												<% month_index++;
+												}) %>
+											</select>
+											<select required="" name="dob_year" id="dob_year" class="form-control dob_year_input col-md-4" style="width: 123px;">
+												<% for(var _index=moment().format('YYYY')-sails.config.age_restrict; _index > moment().format('YYYY')-(100+sails.config.age_restrict); _index--) { %>
+													<option><%-_index%></option>
+												<% } %>
+											</select>
+										</div>
+                                        <!-- <input type="text" placeholder="Enter Date of Birth" name="dob" id="dob" class="form-control identity_dob_input"> -->
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="birth_place">Place of Birth</label>
+                                        <input type="text" placeholder="Birthplace" name="birth_place" id="birth_place" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                             
+                            <div class="identity_address">
+                                <div class="col-md-12">
+                                    <label for="address">Address</label>
+                                </div>
+                                <div class="col-md-6">    
+                                    <div class="form-group">
+                                        <label for="addressline1" class="hide">Address line 1</label>
+                                        <input type="text" name="address_line_1" id="addressline1" placeholder="Address line 1" class="p7_input form-control" value="" title="" >
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="addressline2" class="hide">Address line 2</label>
+                                        <input type="text" name="address_line_2" id="addressline2" placeholder="Address line 2" class="p7_input form-control" value="" title="" >
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="zipcode" class="hide">Zipcode</label>
+                                        <input type="text" name="zip" id="zipcode" placeholder="Zipcode" class="p7_input form-control" value="" title="" >
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="autocomplete2" class="hide">Location</label>
+                                        <input type="text" id="autocomplete2" placeholder="Enter your city name" class="form-control address_location" value="">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="locality" class="hide">City/District</label>
+                                        <input type="text" name="city" id="locality" placeholder="City / District" class="p7_input form-control" value="" readonly="true">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="administrative_area_level_1" class="hide">Province/State</label>
+                                        <input type="text" name="state" id="administrative_area_level_1" placeholder="Province/State" class="p7_input form-control address_state" value="" readonly="true">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="country" class="hide">Country</label>
+                                        <input type="text" name="country" id="identity_country" placeholder="Country" class="p7_input form-control" readonly="true">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="description">Notes</label>
+                                    <textarea name="comment" class="form-control comment_data" id="comment" rows="2" placeholder="Write Notes"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="form-group identity_general_block_url" style="display:none">
+                                        <a href="#" id="identity_doc_url_link" target="_blank"><i class="fa fa-download" aria-hidden="true"></i> <span id="identity_doc_url"></span></a>
+                                        <a href="javascript:;" class="identity_del_doc" title="Delete document"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                </div>
+                                <div class="form-group input-upload identity_general_block_upload pull-right">
+                                    <input type="file" name="doc_file" class="upload_doc_id input-upload-button">
+                                    <div class="upload-file-text">
+                                        <i class="fa fa-cloud-upload" aria-hidden="true"></i> Drag and drop file here<br>or<br><span>Browse files</span>
+                                    </div>
+                                    <span class="file_name"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-primary pull-left" title="Delete Identity" onclick="delete_identity()"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    <button type="submit" class="btn btn-primary mBottom0">Save</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('form#form_identity_info .dob_country_option').select2({
+            minimumInputLength: 2,
+            placeholder: "Select Country",
+            dropdownParent: $("#identity_modal"),
+            allowClear:true
+        });
+
+
+        $('form#form_identity_info .doc_country_option').select2({
+            minimumInputLength: 2,
+            placeholder: "Select Country",
+            dropdownParent: $("#identity_modal"),
+            allowClear:true
+        });
+    });
+</script>
+

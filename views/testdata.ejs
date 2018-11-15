@@ -1,0 +1,46 @@
+<div class="main-container" style="padding-top: 50px">
+	<div class="container">
+		<div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 feed_main_container no-padding">
+                <div class="p51_feed">
+                    <div class="p51_feed_title">Create Post and earn rewards</div>
+                    <div class="p51_feed_post">
+						<form method="POST" id="testdata">
+                            <div class="myfileuploads"></div>
+                            <textarea name="link_data" id="link_data" class="hide"></textarea>
+							<div id="output"></div>
+                            <textarea name="feed_details" id="feed_details" cols="30" rows="4" placeholder="Share an article, photo video or idea..." onkeyup="extracturl();"></textarea>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function extracturl()
+	{
+		var val=document.getElementById("feed_details").value;
+		if(val!="" && val.indexOf("://")>-1)
+		{
+			$('#output').text('loading...');
+
+	        var form = $('#testdata')[0]; // You need to use standard javascript object here
+	        var formData = new FormData(form);
+	        $.ajax({
+	            type: 'POST',
+	            url: "fetch_url",
+	            data:  formData,
+	            processData: false,
+	            contentType: false,
+	            enctype: 'multipart/form-data',
+	            success: function (response){
+	            	$("#feed_details").val("");
+	            	$("#link_data").val(response);
+	            	document.getElementById("output").innerHTML=response;
+				}
+			});
+		}
+	}	
+</script>

@@ -1,0 +1,37 @@
+<!-- Model Popup for Add Organization -->
+<div id="addOrganization" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title ex_title text-center">Add Organization</h4>
+			</div>
+		    <div class="modal-body">
+				<form method="post" class="" id="form_addOrganization">
+					<div id="form-errors"></div>
+					<div class="form-group">
+						<label for="company_name">Organization Name:</label>
+						<input type="text" class="form-control" id="OrganizationCompanyName" name="company_name" placeholder="Organization Name" required="required">
+						<input type="hidden" class="form-control" id="OrganizationCompanyslug" name="slug" placeholder="Organization slug">
+					</div>
+
+					<div class="form-group">
+						<label for="address">Headquarters:</label>
+						<input type="text" class="form-control" id="autocomplete3" name="address" placeholder="Headquarters" required="required">
+						<input type="hidden" class="form-control" name="country" id="organization_country" value="" readonly="true">
+						<input type="hidden" class="form-control" name="state" id="organization_state" readonly="true" value="">
+						<input type="hidden" class="form-control" name="city" id="organization_city" readonly="true" value="">
+					</div>
+					<div class="form-group">
+						<label for="allow">&nbsp;</label>
+						<input type="checkbox" name="allow" id="allowenablebtn" value="1"> I verify that I am the offical representative of this Organization and I have the right to act on behalf of the Organization
+						</div>
+					</div>
+					<div class="form-group">
+						<center><input type="submit" class="btn btn-sm btn-primary" id="btnorgadd" name="btnadd" value="Register Organization" disabled="disabled"></center>
+					</div>
+				</form>
+		    </div>
+	    </div>
+    </div>
+</div>

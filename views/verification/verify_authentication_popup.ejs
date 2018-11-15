@@ -1,0 +1,285 @@
+<div id="myModal_authenticate" class="popup_container modal fade view-data-modal-lg p8_popup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" id="form_verify_request_authenticate">
+                <input type="hidden" name="login_user_id" id="login_user_id" value="<%=req.user.id%>">
+				<input type="hidden" name="rinkeby_ether_url" id="rinkeby_ether_url" value="<%=sails.config.ether_lieve_server%>">
+				
+                <div class="pop_up_main_block">
+                    <div class="section_title" id="myModalTitle">
+                        <h3>Document
+                            <span id="title_doc_id"></span><span id="title_type"></span><span id="title_doc_type"></span> <span id="requestor_name"></span>
+                            <button type="button" style="float:left;" class="close" data-dismiss="modal" aria-label="Close">
+                                <i style="color:white;" class="fa fa-close" aria-hidden="true"></i>
+                            </button>
+                        </h3>
+                    </div>
+                    <div id="myDataHTML"></div>
+                    <div class="slider_container owl-side-narrow">
+                        <table class="table table-striped table-bordered info_table_1" style="margin: 15px 10px 10px 10px !important;background:white;">
+                            <tbody>
+								<tr>
+									<td>Data</td>
+									<td><span style="text-transform:capitalize;" id="tab_type"></span></td>
+								</tr>
+                                <tr>
+                                    <td>Type</td>
+                                    <td><span id="doc_type_id"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Legal Name</td>
+                                    <td>
+                                        <span id="legal_name"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Legal Name</td>
+                                    <td><span id="first_name"></span> &nbsp;<span id="last_name"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="doc_name"></span> Number</td>
+                                    <td><span id="doc_num"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Gender</td>
+                                    <td><span id="gender"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Other Doc Info</td>
+                                    <td><span id="other_doc_info"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Issue Country</td>
+                                    <td>
+                                        <span id="issue_country"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Place of issue</td>
+                                    <td>
+                                        <span id="issue_place"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Issuance Date</td>
+                                    <td>
+                                        <span id="issue_date"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Expiration Date</td>
+                                    <td>
+                                        <span id="expiry_date"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Address</td>
+                                    <td>
+                                        <span style="text-transform:capitalize;" id="address_line_1"></span>
+                                        <span style="text-transform:capitalize;" id="address_line_2"></span>
+                                        <span id="zip"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>City</td>
+                                    <td>
+                                        <span id="city"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>State</td>
+                                    <td>
+                                        <span id="state"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Country</td>
+                                    <td>
+                                        <span id="country"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Birth Date</td>
+                                    <td>
+                                        <span id="dob"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Birth Place</td>
+                                    <td>
+                                        <span style="text-transform:capitalize;" id="birth_place"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>School/Institute Name</td>
+                                    <td>
+                                        <span id="edu_school"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Degree Name</td>
+                                    <td>
+                                        <span id="edu_degree"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Study Fields</td>
+                                    <td>
+                                        <span id="edu_study_field"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Grade</td>
+                                    <td>
+                                        <span id="edu_grade"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Year of Completion</td>
+                                    <td>
+                                        <span id="edu_from_year"></span> - <span id="edu_to_year"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Description</td>
+                                    <td><span id="edu_description"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Company Name</td>
+                                    <td><span id="company_name"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Position</td>
+                                    <td><span id="exp_title"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Location</td>
+                                    <td><span id="exp_location"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Description</td>
+                                    <td><span id="exp_description"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>From</td>
+                                    <td><span id="exp_from_month"></span> <span id="exp_from_year"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>To</td>
+                                    <td><span id="exp_to_month"></span> <span id="exp_to_year"></span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-check"></i></td>
+                                    <td colspan="2"><span id="exp_current_work"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Designation</td>
+                                    <td>
+                                        <span id="designation"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Company Name</td>
+                                    <td><span id="project_company"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Project Name</td>
+                                    <td><span id="project_title"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Project URL</td>
+                                    <td><span id="project_url"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Location</td>
+                                    <td><span id="project_location"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Description</td>
+                                    <td><span id="project_description"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>From</td>
+                                    <td><span id="project_from_year"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>To</td>
+                                    <td><span id="project_to_year"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-striped table-bordered info_table_2" style="margin: 15px 10px 10px 10px !important;background:white;">
+                            <tbody>
+                                <tr>
+                                    <td>Document URL</td>
+                                    <td>
+                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                        <a href="#" id="doc_url_link">
+                                            <span id="doc_url"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-striped table-bordered info_table_2" style="margin: 15px 10px 10px 10px !important;background:white;">
+                            <tbody>
+                                <tr>
+                                    <td>Comment</td>
+                                    <td>
+                                        <span id="comment"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p8_v_1000" >
+                        <div class="p8_v_1000_title">Verified By</div>
+                        <div id="verify_by_box"></div>
+                        <div class="p8_v_1000_li" id="current_verifier_block">
+                            <div class="p8_1001">
+                                <%
+                                    var profile_image = sails.config.appUrlwPort+'/themes/frontend/images/default-user.png';
+                                    
+                                    if(typeof userData!='undefined' && typeof userData.profile_image!='undefined'){
+                                        if(userData.profile_image!=''){
+                                            profile_image = sails.config.appUrlwPort+'/uploads/users/'+userData.profile_image;
+                                        }
+                                    }
+                                %>
+                                <img class="p8_1001_img" src="<%=profile_image%>" alt="<%= req.user.name %>" width="65" height="65">
+                                <div class="p8_1001_content">
+                                    <div class="p18_1001_user">
+                                        <a href="/profile">
+                                            <%= req.user.name %>
+                                        </a>
+                                    </div>
+                                    <div class="p18_1001_dated" id="todayDate"> </div>
+                                </div>
+                            </div>
+                            <div class="p8_1002 verify_request_form">
+                                <div class="p8_1002_description p8_1002_text_box">
+                                    <div class="p8_comment_content">
+                                        <div class="form-group">
+                                            <label class="label hidden" for="aa">Comment</label>
+                                            <textarea name="mycomments" id="mycomments" class="form-control verify_authenticate_comment" placeholder="Write Approval comments" rows="3"></textarea>
+                                            <input type="hidden" name="req_verify_id" id="req_verify_id">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary p8_button_1">
+                                                <i class="fa fa-check-circle" aria-hidden="true"></i> Confirm</button>
+                                            <button type="button" class="btn btn-primary p8_button_1" onclick="ignore_verify_request()">
+                                                <i class="fa fa-close" aria-hidden="true"></i> Ignore</button>
+                                                <button type="button" class="btn btn-primary p8_button_1 last" style="color:white;">   
+                                            <span id="more_info"><a href="/messages/" class="btn btn-primary" style="color:white;"><i class="fa fa-angle-double-right" aria-hidden="true"></i> More Info Required</a></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

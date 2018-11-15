@@ -1,0 +1,106 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+			<!-- Sidebar nav connections Starts -->
+            <% if(req.user.company_id){%>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+            <%- partial("../left-sidebar.ejs") %>
+            </div>
+            <% } else {%>
+			<%- partial('../includes/sidebar-nav-connections.ejs') %>
+            <% } %>
+			<!-- Sidebar nav connections Ends -->
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 no-padding connections">
+                <div class="p16_main1000 connections-list">
+                    <div class="p16_main1003">
+                        <div class="p16_section_title">Followers (<span class="peopleyouknow_count"><%=followers.length%></span>)</div>
+
+                        <ul class="p16_2000 a-center">
+                            <%
+                            if(followers.length > 0){
+                            _.each(followers,function(follower){
+                            
+                                var UserImage = '/themes/frontend/images/default-user.png';
+                                var displayname = '';
+                                var profile_slug = '/profile';
+                                var user_position = "";
+                                var user_company = "";
+                                var location = '';
+                                var message_url = '/messages/';
+                                
+                                if(follower.user_id){
+                                    displayname = follower.user_id.name;
+                                    if(follower.user_id.profile_image &&  follower.user_id.profile_image!=''){
+                                        UserImage = '/uploads/users/'+follower.user_id.profile_image;
+                                    }
+                                    if(follower.user_id.slug){
+                                        profile_slug = "/profile/"+follower.user_id.slug+"/wall";
+                                        var message_url = '/messages/'+follower.user_id.slug;
+                                    }
+                                    if(follower.user_id.location){
+                                        location = follower.user_id.location;
+                                    }
+
+                                    if(typeof follower.user_id.userexperiences[0]!="undefined") {
+                                        var experience = follower.user_id.userexperiences[0];
+                                        if(typeof experience["title"]!="undefined"){
+                                            user_position = experience["title"];
+                                        }
+                                        if( typeof experience["company_id"] != "undefined" && typeof experience["company_id"]["company_name"] != "undefined" ) {
+                                            if(experience["company_id"]["company_name"] != "") {
+                                                if(user_position != "") {
+                                                    user_company = experience["company_id"]["company_name"];
+                                                } else {
+                                                    user_company = experience["company_id"]["company_name"];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            %>
+                            <li class="p16_2000_li col-lg-4 col-md-4 col-sm-6 col-xs-12 first">
+                                <div class="p16_2001">
+                                    <a href="<%=profile_slug%>"><img src="<%=UserImage%>" width="90" height="90" alt="<%=follower.name%>"></a>
+                                    <div class="p16_2002">
+                                        <div class="p16_2003 name"><a href="<%=profile_slug%>" class="p16_2004"><%=displayname%></a></div>
+                                        <div class="p16_2005 designation">
+                                        <%=user_position%><br><%=user_company%>
+                                        </div>
+                                        <div class="p16_2007 location_city"><%=location%></div>
+                                    </div>
+                                    <div class="p16_2010">
+                                        <a href="<%=message_url%>" class="p16_2011 btn-primary btnfollow" value="">&nbsp;&nbsp;Message&nbsp;&nbsp;</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <% }) } else { %>
+                            <li class="col-lg-4 col-md-4 col-sm-6 col-xs-12">No data found</li>
+                            <% } %>
+                        </ul>
+
+                        <% if(followers.length > 9) {%>
+                        <!-- <div class="a-center last p16_2030" id="get_more_invitation">
+                            <input type="hidden" name="invitation_page" class="invitation_page_no" value="1">
+                            <a href="javascript:void(0);" class="p16_1031 get_more_invitation">More</a>
+                        </div> -->
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/9MH75NNRfsw?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                    <br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/J7_eU3TXbLA?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <p>&nbsp;</p>
+                <div class="max_width1000">
+                    <div class="p5_rc1001">
+                        <div class="p5_rc1002">
+                            <img src="/themes/frontend/images/color-logo.svg">
+                            <p class="p5_rc1004">Enter referral code and earn LBD ($5) in reward.</p>
+                            <form action="/import-from-mail" method="post" class="ajax-call-form max_width525">
+                                <input type="text" name="referral" id="referral" class="form-control" value="<%=ref_code%>" title="" placeholder="Enter Referral Code" required="required">
+                                <button type="submit" class="btn btn-primary referral_submit">Submit</button>
+                                <a class="p5_rc1005 skip_now" href="/import-from-mail">Skip for now &nbsp;&nbsp;<i class="fa fa-angle-double-right"></i></a>
+								<input type="hidden" name="from_data" value="newuser">
+                            </form>
+                        </div>
+                        <!-- <div class="p5_rc1003">
+                            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec id elit non mi porta gravida at eget metus. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Integer posuere erat a ante venenatis.</p>
+                            <p class="clear no-margin">&nbsp;</p>
+                            <p>Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas faucibus mollis interdum.</p>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include ../connection/referral-script.ejs %>

@@ -1,0 +1,187 @@
+<div class="mt_header_container">
+
+	<% if((req.user.is_verify_phone!=1 && req.user.is_verify_email!=1) || (req.path == "/wallet" && req.user.is_verify_phone!=1)) { %>
+		<!-- Top Header Warning Starts -->
+		<%- partial("../includes/top-header-warning.ejs") %>
+		<!-- Top Header Warning Ends -->
+	<% } %>
+	
+	<div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padd-xs margin-xs-0">
+                <a class="logo pull-left" href="/"><img src="/themes/frontend/images/white-logo.svg" class="logo-img" alt="Lynked" width="33" height="33" /></a>
+                <div class="mt_form_search">
+                    <form action="/search/" method="get" id="searchForm">
+                        <input type="text" name="keyword" id="formSearch" class="form-control" title="" required="required" placeholder="Search" value="<%= (typeof req.param('keyword') !='undefined' && req.param('keyword')!='' ? req.param('keyword') : '')%>">
+                        <button type="submit" ><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </form>
+                </div>
+                <div class="header_right_block">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle hidden-lg hidden-md hidden-sm" data-toggle="dropdown"><i class="fa fa-bars" aria-hidden="true"></i></button>
+                        <div class="dropdown-menu">
+                            <div class="mt_header_right">
+                                <div class="header_user_block">
+                                    <a class="mt_user_block" href="/profile">
+                                    <%
+                                        var userProfileImage='/themes/frontend/images/default-user.png';
+
+                                        if(typeof currentUser!='undefined'){
+                                            if(typeof currentUser[0]!='undefined' && typeof currentUser[0]['profile_image']!='undefined' && currentUser[0]['profile_image']!=''){
+                                                userProfileImage = '/uploads/users/'+currentUser[0]['profile_image'];
+                                            }
+                                            else{
+                                                userProfileImage='/themes/frontend/images/default-user.png';
+                                            }
+                                        }else{
+                                            if(typeof userData!='undefined' && typeof userData.profile_image!='undefined' &&  userData.profile_image!=''){
+                                                userProfileImage = '/uploads/users/'+userData.profile_image;
+                                            }
+                                        }
+
+                                        var display_user_name ='';
+                                        if(typeof currentUser!='undefined' && typeof currentUser[0]!='undefined' && typeof currentUser[0]['company_id']!='undefined' && typeof currentUser[0]['company_id']['company_name']!='undefined'){
+                                                display_user_name = currentUser[0]['company_id']['company_name']
+                                        } else {
+                                            if(typeof req.user!='undefined' && typeof req.user.company_id!='undefined'){
+                                                if(typeof userData!='undefined' && typeof userData.name!='undefined' &&  userData.name!=''){
+                                                    display_user_name=userData.name;
+                                                }
+                                            }else{
+                                                display_user_name=req.user.name;
+                                            }
+                                        }
+                                        %>
+                                        <img src="<%=userProfileImage%>" alt="<%=display_user_name%>" width="30" height="30" class="mt_user_img" />
+                                        <span class="mt_user_name">
+                                            <%=display_user_name%>
+                                        </span>
+                                    </a>
+									<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+										<span class="mt_user_profile hidden-xs">
+											<i class="fa fa-bars" aria-hidden="true"></i>
+										</span>
+									</a>
+									<div class="prelative">
+										<ul class="dropdown-menu cnotification">
+											<!--<i class="fa fa-caret-up" aria-hidden="true"></i>-->
+											<li>
+                                                <a href="/profile/edit">
+                                                    <span class="dropdownmenufull">  
+                                                        <strong>Account Settings</strong> 
+                                                    </span>    
+                                                </a>
+                                            </li>
+                                            <% if(typeof userData!='undefined' && typeof userData.parentUsers!='undefined' && userData.parentUsers.length > 0){%>
+                                            <li class="switch_user">
+                                                <a href="javascript:;" data-target="#sub-org" data-toggle="collapse">
+                                                    <span class="dropdownmenufull">  
+                                                        <strong>Switch Profile</strong> 
+                                                    </span>    
+                                                </a>
+                                                <ul class="collapsed" id="sub-org">
+                                                    <% 
+                                                    if(typeof req.user.company_id!='undefined' && req.user.company_id!='' && userData.mainUser){
+
+                                                        var mainUserImage='/themes/frontend/images/default-user.png';
+                                                        if(userData.mainUser.profile_image){
+                                                            mainUserImage = "/uploads/users/"+userData.mainUser.profile_image;
+                                                        }
+                                                    %> 
+                                                    <li class="swipeuser" data-loginid="<%=userData.mainUser.loginid%>" data-password="<%=userData.mainUser.password%>" data-company_id="<%=userData.mainUser.id%>"><a href="javascript:;"><span class="dropdownmenufull"><img src="<%=mainUserImage%>" alt="<%=display_user_name%>" width="23" height="23" class="img-circle mt_user_img">&nbsp;&nbsp;<strong><%=userData.mainUser.name%></strong></span></a></li>
+                                                    <% } %>
+
+                                                    <% 
+                                                    _.each(userData.parentUsers,function(userOrganization){
+                                                        if(userOrganization.company_id.id!=req.user.company_id){
+                                                        var OrgnaizedImage='/themes/frontend/images/default-user.png';
+                                                        if(userOrganization.profile_image){
+                                                            OrgnaizedImage = "/uploads/users/"+userOrganization.profile_image;
+                                                        }
+                                                    %>
+                                                    <li class="swipeuser" data-loginid="<%=userOrganization.loginid%>" data-password="<%=userOrganization.password%>" data-company_id="<%=userOrganization.id%>"><a href="javascript:;"><span class="dropdownmenufull"><img src="<%=OrgnaizedImage%>" alt="<%=display_user_name%>" width="23" height="23" class="img-circle mt_user_img">&nbsp;&nbsp;<strong><%=userOrganization.company_id.company_name%></strong></span></a></li>
+                                                    <% } }) %>
+                                                </ul>
+                                            </li>
+                                            <% } if(typeof req.user.company_id == 'undefined' || req.user.company_id==''){%> 
+                                            <li class="addOrganization">
+												<a href="javascript:;">
+													<span class="dropdownmenufull">  
+														<strong>Add Organization</strong> 
+													</span>    
+												</a>
+											</li>
+                                            <li class="linkOrganization">
+                                                <a href="javascript:;">
+                                                    <span class="dropdownmenufull">
+                                                        <strong>Link Organization</strong>
+                                                    </span>    
+                                                </a>
+                                            </li>
+                                            <% } %>
+											<li>
+												<a href="/help">
+													<span class="dropdownmenufull">  
+														<strong>Help</strong> 
+													</span>    
+												</a>
+											</li>  
+											<li>
+												<a href="/logout">
+													<span class="dropdownmenufull">  
+														<strong>Log Out</strong> 
+													</span>    
+												</a>
+											</li>  
+										</ul>
+									</div>
+                                </div>
+                                <a class="mt_info" href="/faq"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                            </div>
+                            <div class="header_mid">
+                                <ul>
+                                    <li class="mt_h_home">
+                                        <a href="/"><span><i class="fa fa-home" aria-hidden="true"></i></span><span class="hidden-sm htext">Home</span></a>
+                                    </li>
+                                    <li class="mt_h_refer">
+                                        <a href="/refer-a-friend"><span><i class="fa fa-refer" aria-hidden="true"></i></span><span class="hidden-sm htext">Refer A Friend</span></a>
+                                    </li>
+                                    <li class="mt_h_network">
+										<a href="/connections"><span><i class="fa fa-users" aria-hidden="true"></i></span><span class="hidden-sm htext">My Network</span></a>
+									</li>
+                                    <li class="mt_h_wallet">
+										<a href="/wallet"><span><i class="fa fa-wallet" aria-hidden="true"></i></span><span class="hidden-sm htext">My Rewards</span></a>
+									</li>
+                                    <li class="mt_h_job">
+										<a href="/jobs"><span><i class="fa fa-briefcase" aria-hidden="true"></i></span><span class="hidden-sm htext">Job</span></a>
+									</li>
+                                    <li class="mt_h_messages">
+                                        <a href="/messages"><!--<span class="mt_notification">1</span>--><span><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="hidden-sm htext">Messages</span></a>
+                                    </li>
+                                    <li class="mt_h_noti">
+										<a href="/notifications" id="notificationCount"><span><i class="fa fa-bell" aria-hidden="true"></i></span><span class="hidden-sm htext">Notifications</span></a>
+									</li>
+                                    <li class="hidden-sm mobileonly">
+                                        <a href="/profile/edit"><span><i class="fa fa-pencil" aria-hidden="true"></i></span><span class="hidden-sm htext">Setting</span></a>
+                                    </li>
+                                    <li class="hidden-sm mobileonly">
+                                        <a href="/profile/privacy"><span><i class="fa fa-expeditedssl" aria-hidden="true"></i></span><span class="hidden-sm htext">Privacy Setting</span></a>
+                                    </li>
+                                    <li class="hidden-sm mobileonly">
+                                        <a href="/logout"><span><i class="fa fa-power-off" aria-hidden="true"></i></span><span class="hidden-sm htext">Logout</span></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" defer="">
+    $(document).ready(function(){
+        $(".main-container").css({"padding-top":$('.mt_header_container').height() + 20});
+    });
+ </script>

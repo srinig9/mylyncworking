@@ -1,0 +1,120 @@
+<div class="main-container">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                    <div class="p7_main_container">
+                        <div class="p7_301">
+                            <div class="p7_section_title"><h3>Verification History</h3></div>
+                            <div class="p7_content">
+                                <form action="" method="POST" id="getDataTables">
+                                    <input type="hidden" name="page_no" class="form-control" value="1">
+    
+                                    <div id="data_table_wrapper" class="data_table_wrapper data_table">
+                                    
+                                        <div class="row pad_20_10">
+                                            <div class="col-sm-6 col-xs-6">
+                                                <div class="p15_3010">
+                                                    <label for="">Show </label>
+                                                    <select id="" name="limit" class="form-control main-limit">
+                                                        <option value="10">10</option>
+                                                        <option value="20">20</option>
+                                                        <option value="30">30</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xs-6">
+                                                <div class="p15_3011">
+                                                    <input type="text" name="search" class="form-control" id="searchTxt" placeholder="Type here..." /><label class="p8_label1" for="">Search </label>
+                                                    <!-- <button type="button" class="search_button"><i class="fa fa-search" aria-hidden="true"></i></button> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row minus-10-margin-xs">
+                                            <div class="col-sm-12">
+                                                <div class="table-responsive">
+                                                    <table id="upload_history" class="table table-striped dataTable" cellspacing="0" width="100%">
+                                                        <thead><tr role="row">
+                                                            <th data-defaultsort="desc">Created Date</th>
+                                                            <th>Data</th>
+                                                            <th>Type</th>
+                                                            <th>Last Verified</th>
+                                                            <th>Verified By</th>
+                                                            <th>Details</th>
+                                                        </tr></thead>
+                                                        <tbody>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row pad_20_10">
+                                            <div class="col-sm-5 col-xs-12"><div class="showing_number"></div></div>
+                                            <div class="col-sm-7 col-xs-12">
+                                                <div class="paging_simple_numbers">
+                                                    <ul class="pagination">
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>	
+                <!-- Sidebar nav verification Starts -->
+                <%- partial('../includes/sidebar-nav-verification.ejs') %>
+                <!-- Sidebar nav verification Ends -->			
+            </div>
+        </div>
+    </div>
+<!-- Select verifier user Modal pop up -->
+<%- include send-authenticate-popup.ejs %>
+
+<!-- Select verifier user Modal pop up -->
+<%- include verify_authentication_popup.ejs %>
+
+<script type="text/javascript" src="/themes/frontend/js/ajax_functions.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/send-request-authenticate.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/verify_authentication_popup.js"></script>
+<script>
+    $(document).ready(function(){
+        getVerifyHistoryData();
+
+        $('#upload_history th').each(function(col) {
+            $(this).hover(
+                function() { $(this).addClass('focus'); },
+                function() { $(this).removeClass('focus'); }
+            );
+            $(this).click(function() {
+                if ($(this).is('.asc')) {
+                    $(this).removeClass('asc');
+                    $(this).addClass('desc selected');
+                    sortOrder = -1;
+                }
+                else {
+                    $(this).addClass('asc selected');
+                    $(this).removeClass('desc');
+                    sortOrder = 1;
+                }
+                $(this).siblings().removeClass('asc selected');
+                $(this).siblings().removeClass('desc selected');
+                var arrData = $('#upload_history').find('tbody >tr:has(td)').get();
+                arrData.sort(function(a, b) {
+                var val1 = $(a).children('td').eq(col).text().toUpperCase();
+                var val2 = $(b).children('td').eq(col).text().toUpperCase();
+                if($.isNumeric(val1) && $.isNumeric(val2))
+                    return sortOrder == 1 ? val1-val2 : val2-val1;
+                else
+                    return (val1 < val2) ? -sortOrder : (val1 > val2) ? sortOrder : 0;
+                });
+                $.each(arrData, function(index, row) {
+                    $('tbody').append(row);
+                });
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript" src="/themes/frontend/js/verification-history.js"></script>
+

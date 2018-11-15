@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .pdf-logo img {
+                width: 100px;
+                height: auto;
+                margin: 0 auto;
+                display: block;
+            }
+            .blueTable {
+                width: 100%;
+                border:1px solid #000;
+                border-collapse: collapse;
+                margin-top: 5px;
+            }
+
+            table, tr, td, th, tbody, thead, tfoot {
+                page-break-inside: avoid !important;
+            }
+
+            .blueTable thead {
+                background-color: #025ba2;
+                text-align: left;
+            }
+            .blueTable thead.sub {
+                background-color: transparent;
+            }
+             .blueTable thead.sub th {
+                color: black;
+                border: 1px solid #000;
+            }
+            .blueTable thead.sub2 {
+                background-color: #efefef;
+            }
+             .blueTable thead.sub2 th {
+                color: black;
+                border: 1px solid #000;
+            }
+            .blueTable thead  th {
+                padding:5px 10px;
+                color: white;
+                font-weight: bold;
+            }
+            td {
+                border:1px solid #000;
+                padding:5px 10px;
+                font-size: 12px;
+            }
+            th {
+                font-size: 12px;
+            }
+            td.last {
+                vertical-align: middle;
+                border:1px;
+            }
+            td.last img {
+                margin: 0 auto;
+                display: block;
+            }
+            .personal td, .identity td {
+                border:none;
+            }
+
+        </style>
+    </head>
+    <body class="pdf-formate">
+        
+        <p><a href="" class="pdf-logo"><img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-logo.png" ></a></p>
+
+        <% 
+        _.each(completeAuthorizes,function(complete){
+            if(complete.type=='identification'){
+                    var i_checked_email = "";
+                    var i_checked_phone = "";
+                    var legal_name = "";
+                    var _contact_email = "";
+                    var _contact_phone = "";
+
+                    if(typeof complete.contact_email=='undefined'){
+                        i_checked_email = '1';
+                    } else if(typeof complete.contact_email!='undefined' && complete.contact_email==1){
+                        i_checked_email = '1';
+                    }
+
+                    if(typeof complete.contact_phone=='undefined'){
+                        i_checked_phone = '1';
+                    } else if(typeof complete.contact_phone!='undefined' && complete.contact_phone==1){
+                        i_checked_phone = '1';
+                    }
+
+                    if(typeof complete.request_id.user_id.company_id!='undefined' && typeof complete.request_id.user_id.company_id.company_name!='undefined'){
+                        legal_name = complete.request_id.user_id.company_id.company_name
+                    } else {
+                        legal_name = complete.request_id.user_id.name
+                    }
+
+                    var is_email_verify = 0;
+                    var is_phone_verify = 0;
+                    if(complete.request_id.user_id.user_contact_verify.length > 0){ 
+                        var _contact = complete.request_id.user_id.user_contact_verify[0];
+                        if(typeof _contact.email!='undefined' && _contact.email!=''){
+                            if(i_checked_email!=''){
+                                is_email_verify = (_contact.is_email_verify) ? 1 : 0;
+                                _contact_email = _contact.email;
+                            }
+                        }
+        
+                        if(typeof _contact.phone!='undefined' && _contact.phone!=''){ 
+                            if(i_checked_phone!=''){
+                                is_phone_verify = (_contact.is_phone_verify) ? 1 : 0;
+                                _contact_phone = _contact.dial_code+' '+_contact.phone;
+                            } 
+                        }
+                    }
+        %>
+        <table class="blueTable personal" >
+            <thead>
+                <tr>
+                    <th colspan="5">Personal Information</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div>Name</div>
+                        <% if(_contact_email){%>
+                        <div>Email Address</div>
+                        <% } %>
+                    </td>
+                    <td>
+                        <div><%=legal_name%></div>
+                        <% if(_contact_email){%>
+                        <div><a href="javascript:;"><%=_contact_email%></a></div>
+                        <% } %>
+                    </td>
+                    <% if(_contact_phone){%>
+                    <td><div>Phone Number</div></td>
+                    <td><div><%=_contact_phone%></div></td>
+                    <% } else { %>
+                    <td colspan="2"></td>
+                    <% } %>
+                    
+                    <td class="last">
+                        <% if(is_phone_verify || is_email_verify){%>
+                        <div><img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png"></div>
+                        <% } %>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <% 
+        if(complete.request_id.user_id.UserVerifyData.length > 0) {
+            var i = 0;
+            _.each(complete.request_id.user_id.UserVerifyData, function(verifydata) {
+                if(verifydata.tab_type=='identity'){
+        %>
+        <table class="blueTable identity">
+            <%
+            var dataTypeID = "";
+            var dataTypeTitle = "";
+            var country_name = "";
+            var doc_num = "";
+            var legal_name = "";
+            var gender = "N/A";
+            var dateofbirth = "";
+            var issue_date = "";
+            var expiry_date = "";
+            var i_checked = "";
+
+            if(complete.identification!='1'){
+                identification_data = complete.action_data;
+                if(!Array.isArray(identification_data)) {
+                    identification_data = [identification_data];
+                }
+
+                i_checked = identification_data.filter(function (identi) { 
+                    return identi == verifydata.id;
+                });
+
+                if(i_checked==''){
+
+                    if(dataTypeID!=''){
+                        i_checked = identification_data.filter(function (identi) { 
+                            return identi == dataTypeID;
+                        });
+                    }else{
+                        i_checked = identification_data.filter(function (identi) { 
+                            return identi == "d_"+verifydata.id;
+                        });
+                    }
+                }
+            }
+            if(i_checked!=''){
+
+                if(verifydata.doc_type_id && verifydata.doc_type_id.id){
+                    dataTypeID = verifydata.doc_type_id.id;
+                }
+                if(verifydata.doc_type_id && verifydata.doc_type_id.title){
+                    dataTypeTitle = verifydata.doc_type_id.title;
+                }
+
+                if(typeof verifydata.dob != 'undefined' && verifydata.dob!=null){
+                    boldData = dataTypeTitle;
+                }else if(typeof verifydata.doc_type_id!='undefined' && verifydata.doc_type_id!=''){
+                    boldData = verifydata.legal_name;
+                    if(dataTypeTitle){
+                        boldData = dataTypeTitle;
+                    }
+                }else{
+                    boldData = verifydata.legal_name;
+                }
+
+
+                if(typeof verifydata.doc_country!='undefined' && typeof verifydata.doc_country.name!='undefined' && verifydata.doc_country.name!=''){
+                    country_name = verifydata.doc_country.name;
+                }
+                if(typeof verifydata.doc_num!='undefined' && verifydata.doc_num!=''){
+                    doc_num = verifydata.doc_num;
+                }
+                if(typeof verifydata.legal_name!='undefined' && verifydata.legal_name!=''){
+                    legal_name = verifydata.legal_name;
+                }
+
+                if(typeof verifydata.gender!='undefined'){
+                    if(verifydata.gender==1){
+                        gender = "Male";
+                    }else if(verifydata.gender==2){
+                        gender = "Female";
+                    }else if(verifydata.gender==3){
+                        gender = "Not Specified";
+                    }
+                }
+
+                if(typeof verifydata.dob != 'undefined' && verifydata.dob!=null && verifydata.dob!=''){
+                    dateofbirth = DateDifferentService.internationalDateFormat(verifydata.dob);
+                }
+
+                if(typeof verifydata.expiry_date != 'undefined' && verifydata.expiry_date!=null && verifydata.expiry_date!=''){
+                    expiry_date = DateDifferentService.internationalDateFormat(verifydata.expiry_date);
+                }
+
+                if(typeof verifydata.issue_date != 'undefined' && verifydata.issue_date!=null){
+                    issue_date = DateDifferentService.internationalDateFormat(verifydata.issue_date);
+                }
+
+                if(i==0) {%>
+                <thead>
+                    <tr>
+                        <th colspan="5">Identity</th>
+                    </tr>
+                </thead>
+                <% } %> 
+
+                <thead class="sub">
+                    <tr>
+                        <th colspan="5">
+                        	<% if(boldData!=''){%>
+                        	<%=boldData%>
+                        	<% } else {
+			                    if(typeof complete.request_id.user_id.company_id!='undefined' && typeof complete.request_id.user_id.company_id.company_name!='undefined'){
+	                        %>
+	                        		<%=complete.request_id.user_id.company_id.company_name%>
+			                <% } else { %>
+			                		<%=complete.request_id.user_id.name%>
+			                <% } %>
+                        	<% } %>
+                        		
+                    	</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(boldData=="Driving License" || boldData=="ID Card"){ %>
+                        <tr>
+                            <td style="width: 20% !important;">
+                                <div><b>Country</b></div>
+                                <div><b>Name</b></div>
+                                <div><b>Issuance Date</b></div>
+                                <div><b>Date of Birth</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div><%=(country_name)?country_name:"N/A"%></div>
+                                <div><%=legal_name%></div>
+                                <div><%=issue_date%></div>
+                                <div><%=(dateofbirth && dateofbirth!='Invalid date')?dateofbirth:"N/A"%></div>
+                            </td>
+
+                            <td style="width: 20% !important;">
+                                <div><b><%=(boldData=="Driving License") ? "License No" : "ID Card No"%></b></div>
+                                <div><b>Expiration Date</b></div>
+                                <div><b>Sex</b></div>
+                                <div><b>&nbsp;</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div><%=doc_num%></div>
+                                <div><%=expiry_date%></div>
+                                <div><%=gender%></div>
+                                <div>&nbsp;</div>
+                            </td>
+                            <td style="width: 10% !important;"><div>
+                            <% 
+                            if(verifydata.verify_request_id && verifydata.verify_request_id.length>0){
+                            if(verifydata.verify_request_id[0].txnno && verifydata.verify_request_id[0].txnno!=''){
+                            %>
+                            <img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png">
+                            <%
+                            } 
+                            }
+                            %>
+                            </div></td>
+                        </tr>
+                    <% } else if(boldData=="Passport"){%>
+                        <tr>
+                            <td style="width: 20% !important;">
+                                <div><b>Country</b></div>
+                                <div><b>First Name</b></div>
+                                <div><b>Issuing Country/Authority</b></div>
+                                <div><b>Issuance Date</b></div>
+                                <div><b>Date of Birth</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div><%=(country_name)?country_name:"N/A"%></div>
+                                <div><div><%=(verifydata.first_name)?verifydata.first_name:"N/A"%></div></div>
+                                <div><%=(verifydata.issue_country)?verifydata.issue_country:"N/A"%></div>
+                                <div><%=issue_date%></div>
+                                <div><%=(dateofbirth && dateofbirth!='Invalid date')?dateofbirth:"N/A"%></div>
+                            </td>
+
+                            <td style="width: 20% !important;">
+                                <div><b>Passport No</b></div>
+                                <div><b>Last Name</b></div>
+                                <div><b>Place of Issue</b></div>
+                                <div><b>Expiration Date</b></div>
+                                <div><b>Sex</b></div>
+                             </td>
+                             <td style="width: 25% !important;">
+                                <div><%=(doc_num)?doc_num:"N/A"%></div>
+                                <div><div><%=(verifydata.last_name)?verifydata.last_name:"N/A"%></div></div>
+                                <div><%=(verifydata.issue_place)?verifydata.issue_place:"N/A"%></div>
+                                <div><%=expiry_date%></div>
+                                <div><%=gender%></div>
+                             </td>
+
+                            <td style="width: 10% !important;"><div>
+                            <% 
+                            if(verifydata.verify_request_id && verifydata.verify_request_id.length>0){
+                            if(verifydata.verify_request_id[0].txnno && verifydata.verify_request_id[0].txnno!=''){
+                            %>
+                            <img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png">
+                            <%
+                            } 
+                            }
+                            %>
+                            </div></td>
+                        </tr>
+                    <% } else if(boldData=="Birth Certificate"){%>
+                        <tr>
+                            <td style="width: 20% !important;">
+                                <div><b>Country</b></div>
+                                <div><b>name</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div><%=(country_name)?country_name:"N/A"%></div>
+                                <div><%=legal_name%></div>
+                            </td>
+                            <td style="width: 20% !important;">
+                                <div><b>Date of Birth</b></div>
+                                <div><b>Place</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div><%=(dateofbirth && dateofbirth!='Invalid date')?dateofbirth:"N/A"%></div>
+                                <div><%=(verifydata.birth_place)?verifydata.birth_place:"N/A"%></div>
+                            </td>
+                            <td style="width: 10% !important;"><div>
+                            <% 
+                            if(verifydata.verify_request_id && verifydata.verify_request_id.length>0){
+                            if(verifydata.verify_request_id[0].txnno && verifydata.verify_request_id[0].txnno!=''){
+                            %>
+                            <img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png">
+                            <%
+                            } 
+                            }
+                            %>
+                            </div></td>
+                        </tr>
+                    <% } else if(boldData=="Aadhar Card"){ %>
+                        <tr>
+                            <td style="width: 20% !important;">
+                                <div><b>Country</b></div>
+                                <div><b>Name</b></div>
+                                <div><b>Date of Birth</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div><%=(country_name)?country_name:"N/A"%></div>
+                                <div><%=legal_name%></div>
+                                <div><%=(dateofbirth && dateofbirth!='Invalid date')?dateofbirth:"N/A"%></div>
+                            </td>
+                            <td style="width: 20% !important;">
+                                <div><b>Adhar No</b></div>
+                                <div><b>Sex</b></div>
+                                <div><b>&nbsp;</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div><%=(doc_num)?doc_num:"N/A"%></div>
+                                <div><%=gender%></div>
+                                <div>&nbsp;</div>
+                            </td>
+                            <td style="width: 10% !important;">
+                                <div>
+                                    <% if(verifydata.verify_request_id && verifydata.verify_request_id.length>0){
+                                        if(verifydata.verify_request_id[0].txnno && verifydata.verify_request_id[0].txnno!=''){
+                                    %>
+                                    <img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png">
+                                    <% } } %>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } else{%>
+                        <tr>
+                            <td style="width: 20% !important;">
+                                <div><b>Country</b></div>
+                                <div><b>Name</b></div>
+                                <div><b>Address Line 1</b></div>
+                                <div><b>Address Line 2</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div><%=(verifydata.country)?verifydata.country:"N/A"%></div>
+                                <div><%=legal_name%></div>
+                                <div><%=(verifydata.address_line_1)?verifydata.address_line_1:"N/A"%></div>
+                                <div><%=(verifydata.address_line_2)?verifydata.address_line_2:"N/A"%></div>
+                            </td>
+                            <td style="width: 20% !important;">
+                                <div><b>State</b></div>
+                                <div><b>City</b></div>
+                                <div><b>Zipcode</b></div>
+                                <div><b>&nbsp;</b></div>
+                            </td>
+                            <td style="width: 25% !important;">
+                                <div>
+                                    <div><%=(verifydata.state)?verifydata.state:"N/A"%></div>
+                                    <div><%=(verifydata.city)?verifydata.city:"N/A"%></div>
+                                    <div><%=(verifydata.zip)?verifydata.zip:"N/A"%></div>
+                                    <div>&nbsp;</div>
+                                </div>
+                            </td>
+                            <td style="width: 10% !important;">
+                                <div>
+                                    <% if(verifydata.verify_request_id && verifydata.verify_request_id.length>0){
+                                        if(verifydata.verify_request_id[0].txnno && verifydata.verify_request_id[0].txnno!=''){
+                                    %>
+                                    <img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png">
+                                    <% } } %>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }
+            i++; } %>
+            </tbody>
+        </table>
+
+        <% } }) } }
+        if(complete.type=='educational'){ 
+
+        if(complete.request_id.user_id.usereducations.length > 0){
+
+        	var count_edu = 0;
+
+            _.each(complete.request_id.user_id.usereducations, function(education){
+            var edu_checked = "";
+
+            var education_from_month = (education.from_month!=null) ? education.from_month : "";
+            var education_from_year = (education.from_year!=null) ? education.from_year : "";
+            var education_to_month = (education.to_month!=null) ? education.to_month : "";
+            var education_to_year = (education.to_year!=null) ? education.to_year : "";
+
+            if(complete.educational!=1){
+                educational_data = complete.action_data;
+                if(!Array.isArray(educational_data)){
+                    educational_data=[educational_data];
+                }
+                edu_checked = educational_data.filter(function (person) { 
+                    return person == education.id;
+                });
+            }
+            if(edu_checked.length!=0){
+
+
+        %>
+        <% if(count_edu==0){%>
+        <table class="blueTable education">
+            <thead>
+                <tr>
+                    <th colspan="6">Education</th>
+                </tr>
+            </thead>
+            <thead class="sub2">
+                <tr>
+                    <th style="width: 20% !important;">School/Institute Name</th>
+                    <th style="width: 20% !important;">Degree</th>
+                    <th style="width: 20% !important;">Degree Type</th>
+                    <th style="width: 10% !important;">Start Year</th>
+                    <th style="width: 10% !important;">Completion Year</th>
+                    <th style="width: 10% !important;">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+        	<% } %>
+                <tr>
+                    <td>
+                        <div><%=education.school%></div>
+                    </td>
+                    <td>
+                        <div><%=education.degree%></div>
+                    </td>
+                    <td>
+                        <div><%=education.study_field%></div>
+                    </td>
+                    <td>
+                        <div><%=education_from_month+' '+education_from_year%></div>
+                    </td>
+                    <td>
+                        <div><%=education_to_month+' '+education_to_year%></div>
+                    </td>
+                    <td><div>
+                        <%
+                        if(education.educationdocs && education.educationdocs.length>0){
+
+                        if(education.educationdocs[0].verify_request_id && education.educationdocs[0].verify_request_id.length>0){
+
+                        if(education.educationdocs[0].verify_request_id[0].txnno){
+                        %>
+                        <img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png">
+                        <%
+                        }
+                        } 
+                        }
+                        %>
+                    </div></td>
+                </tr>
+                <% count_edu++; } }) }else{%>
+                <tr>
+                    <td colspan="5"><div>No data found</div></td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <% } if(complete.type=='employment'){%>
+
+        <%
+        	var count_exp = 0;
+            _.each(complete.request_id.user_id.userexperiences, function(experience) {
+
+            var emp_checked = "";
+            employment_data = complete.action_data;
+            
+            if(!Array.isArray(employment_data)){
+                employment_data=[employment_data];
+            }
+
+            emp_checked = employment_data.filter(function (person1) { 
+                return person1 == experience.id;
+            });
+            if(emp_checked!='') {
+                var from_month_val='';
+                var to_month_val='';
+                if(typeof experience.from_month!='undefined' && experience.from_month!=''){
+                    from_month_val = moment(experience.from_month).format('MMM');
+                }
+                if(typeof experience.to_month!='undefined' && experience.to_month!=''){
+                    to_month_val = moment(experience.to_month).format('MMM');
+                }
+
+        %>
+        <% if(count_exp==0){%>
+        <table class="blueTable Experience">
+            <thead>
+                <tr>
+                    <th colspan="6">Experience</th>
+                </tr>
+            </thead>
+            <thead class="sub2">
+                <tr>
+                    <th style="width: 20% !important;">Company</th>
+                    <th style="width: 20% !important;">Title</th>
+                    <th style="width: 20% !important;">Location</th>
+                    <th style="width: 10% !important;">From Date</th>
+                    <th style="width: 10% !important;">To Date</th>
+                    <th style="width: 10% !important;">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+        	<% } %>
+                <tr>
+                    <td>
+                        <div>
+                            <% if(typeof experience.company_id!='undefined' && typeof experience.company_id.company_name!='undefined' && experience.company_id.company_name!=''){ %>
+                            <%=experience.company_id.company_name%>
+                            <% } %>
+                        </div>
+                    </td>
+                    <td>
+                        <div><%=experience.title%></div>
+                    </td>
+                    <td>
+                        <div><%=(experience.location)?experience.location:""%></div>
+                    </td>
+                    <td>
+                        <div><%=from_month_val+' '+experience.from_year%></div>
+                    </td>
+                    <td>
+                        <div><%=(experience.current_work != 1) ? to_month_val+' '+ experience.to_year : "Present" %></div>
+                    </td>
+                    <td><div>
+                        <%
+                        if(experience.experiencedocs && experience.experiencedocs.length>0){
+                        
+                        if(experience.experiencedocs[0].verify_request_id && experience.experiencedocs[0].verify_request_id.length>0){
+                    
+                        if(experience.experiencedocs[0].verify_request_id[0].txnno){
+                        %>
+                        <img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png">
+                        <%
+                        }
+                        } 
+                        }
+                        %>
+                    </div>
+                    </td>
+                </tr>
+                <% count_exp++; } })%>
+            </tbody>
+        </table>
+        <% } if(complete.type=='projects'){%>
+
+        <%
+        if(complete.request_id.user_id.userprojects.length > 0){
+        	var count_pro = 0;
+            _.each(complete.request_id.user_id.userprojects, function(project) {
+
+                var pro_checked = "";
+                project_data = complete.action_data;
+                if(!Array.isArray(project_data)){
+                    project_data=[project_data];
+                }
+                pro_checked = project_data.filter(function (person2) { 
+                    return person2 == project.id;
+                });
+                if(pro_checked!='') { 
+                    var from_month_val='';
+                    var to_month_val='';
+                    if(typeof project.from_month!='undefined' && project.from_month!=''){
+                        from_month_val = moment(project.from_month).format('MMM');
+                    }
+                    if(typeof project.to_month!='undefined' && project.to_month!=''){
+                        to_month_val = moment(project.to_month).format('MMM');
+                    }
+        %>
+        <% if(count_pro==0){%>
+        <table class="blueTable Projects">
+            <thead>
+                <tr>
+                    <th colspan="6">Projects</th>
+                </tr>
+            </thead>
+            <thead class="sub2">
+                <tr>
+                    <th style="width: 20% !important;">Project Name</th>
+                    <th style="width: 20% !important;">Company</th>
+                    <th style="width: 20% !important;">Location</th>
+                    <th style="width: 10% !important;">From Date</th>
+                    <th style="width: 10% !important;">To Date</th>
+                    <th style="width: 10% !important;">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+        	<% } %>
+                <tr>
+                    <td>
+                        <div><%=project.title%></div>
+                    </td>
+                    <td>
+                        <div>
+                            <% if(typeof project.company_id!='undefined' && typeof project.company_id.company_name!='undefined' && project.company_id.company_name!=''){ %>
+                            <%=project.company_id.company_name%>
+                            <% } %>
+                        </div>
+                    </td>
+                    <td>
+                        <div><%=(project.location) ? project.location : ""%></div>
+                    </td>
+                    <td>
+                        <div><%=from_month_val+' '+project.from_year%></div>
+                    </td>
+                    <td>
+                        <div><%=to_month_val+' '+project.to_year%></div>
+                    </td>
+                    <td><div>
+                        <%
+                        if(project.projectdocs && project.projectdocs.length>0){
+                        
+                        if(project.projectdocs[0].verify_request_id && project.projectdocs[0].verify_request_id.length>0){
+                    
+                        if(project.projectdocs[0].verify_request_id[0].txnno){
+                        %>
+                        <img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/pdf-verified.png">
+                        <%
+                        }
+                        } 
+                        }
+                        %>
+                    </div></td>
+                </tr>
+                <% } count_pro++; }) } %>
+            </tbody>
+        </table>
+        <% } }) %>
+    </body>
+</html>

@@ -1,0 +1,374 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                <div class="p8_main_container">
+                    <div class="success-notification">
+                        <span class="p8_110"> You have got<span class="red count totalRecords"><%= (typeof userData.VerifyRequestReceiver!='undefined') ? userData.VerifyRequestReceiver.length : 0 %></span>request to verify</span>
+                    </div>
+                    <div class="p7_301">
+                        <div class="p7_section_title"><h3>Pending Authentication</h3></div>
+                        <div class="p7_content">
+                            <form action="" method="POST" id="getDataTables">
+                                <div id="data_table_wrapper" class="data_table_wrapper data_table">
+                                    <input type="hidden" name="page_no" class="form-control" value="1">
+                                    <div class="row pad_20_10">
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="p15_3010">
+                                                <label for="">Show </label>
+                                                <select id="" name="limit" class="form-control main-limit">
+                                                    <option value="10">10</option>
+                                                    <option value="20">20</option>
+                                                    <option value="30">30</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="p15_3011">
+                                                <input type="text" name="search" class="form-control" id="searchTxt" placeholder="Type here..." /><label class="p8_label1" for="">Search </label>
+                                                <!-- <button type="button" class="search_button"><i class="fa fa-search" aria-hidden="true"></i></button> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row minus-10-margin-xs">
+                                        <div class="col-sm-12">
+                                            <div class="table-responsive">
+                                                <table id="upload_history" class="table table-striped dataTable" cellspacing="0" width="100%">
+                                                    <thead>
+                                                        <tr role="row">
+                                                            <th>From</th>
+                                                            <th>Date</th>
+                                                            <th>Data</th>
+                                                            <th>Type</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody> 
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row pad_20_10">
+                                        <div class="col-sm-5 col-xs-12"><div class="showing_number"></div></div>
+                                        <div class="col-sm-7 col-xs-12">
+                                            <div class="paging_simple_numbers">
+                                                <ul class="pagination">
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+					<br/>
+					<div class="p7_301">
+                        <div class="p7_section_title"><h3>Completed Authentication</h3></div>
+                        <div class="p7_content">
+                            <form action="" method="POST" id="getDataTables2">
+                                <div id="data_table_wrapper" class="data_table_wrapper data_table">
+                                    <input type="hidden" name="page_no" class="form-control" value="1">
+                                    <div class="row pad_20_10">
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="p15_3010">
+                                                <label for="">Show </label>
+                                                <select id="" name="limit" class="form-control main-limit">
+                                                    <option value="10">10</option>
+                                                    <option value="20">20</option>
+                                                    <option value="30">30</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="p15_3011">
+                                                <input type="text" name="search" class="form-control" id="searchTxt2" placeholder="Type here..." /><label class="p8_label1" for="">Search </label>
+                                                <!-- <button type="button" class="search_button"><i class="fa fa-search" aria-hidden="true"></i></button> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row minus-10-margin-xs">
+                                        <div class="col-sm-12">
+                                            <div class="table-responsive">
+                                                <table id="upload_history2" class="table table-striped dataTable" cellspacing="0" width="100%">
+                                                    <thead>
+                                                        <tr role="row">
+                                                            <th>From</th>
+                                                            <th>Date</th>
+                                                            <th>Data</th>
+                                                            <th>Type</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody> 
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row pad_20_10">
+                                        <div class="col-sm-5 col-xs-12"><div class="showing_number"></div></div>
+                                        <div class="col-sm-7 col-xs-12">
+                                            <div class="paging_simple_numbers">
+                                                <ul class="pagination">
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+					
+                </div>
+            </div>
+			<!-- Sidebar nav verification Starts -->
+			<%- partial('../includes/sidebar-nav-verification.ejs') %>
+			<!-- Sidebar nav verification Ends -->
+        </div>
+    </div>
+</div>
+<%- include verify_authentication_popup.ejs %>
+
+<script type="text/javascript" src="/themes/frontend/js/verify_authentication_popup.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+		$('.view-data-modal-lg').on('hidden.bs.modal', function () {
+			$( "#verify_by_box" ).html( '' );
+		});
+		
+        getDataTables();
+        getDataTables2();
+    });
+
+    $(document).on("click",".paginate_button",function(){
+        var page_no = $(this).data("page_no");
+        $("input[name='page_no']").val(page_no);
+        getDataTables();
+        getDataTables2();
+    })
+
+    $(document).on("change",".main-limit",function(){
+        getDataTables();
+        getDataTables2();
+    });
+
+    $(document).on("keyup","#searchTxt",function(){
+        var searchTerm = $(this).val().toLowerCase();
+        $('#upload_history tbody tr').each(function(){
+            var lineStr = $(this).text().toLowerCase();
+            if(lineStr.indexOf(searchTerm) === -1){
+                $(this).hide();
+            }else{
+                $(this).show();
+            }
+        });
+    });
+	
+    $(document).on("keyup","#searchTxt2",function(){
+        var searchTerm = $(this).val().toLowerCase();
+        $('#upload_history2 tbody tr').each(function(){
+            var lineStr = $(this).text().toLowerCase();
+            if(lineStr.indexOf(searchTerm) === -1){
+                $(this).hide();
+            }else{
+                $(this).show();
+            }
+        });
+    });
+	
+	//getDataTables2
+    
+	function getDataTables(){
+       var form_id='';
+       var ajax_url='';
+       var table_id='';
+       table_id= '#upload_history';
+       form_id='#getDataTables';
+       ajax_url="/authenticate/getList";
+
+       ajax_data_table(form_id,ajax_url,table_id);
+    }
+
+    function getDataTables2(){
+       var form_id='';
+       var ajax_url='';
+       var table_id='';
+        
+       table_id= '#upload_history2';
+       form_id='#getDataTables2';
+       ajax_url="/authenticate/getcomplatedList";
+
+       ajax_data_table(form_id,ajax_url,table_id);
+    }
+    
+    function ignore_verify_request(){
+        var txt;
+        var req_verify_id= $('#req_verify_id').val();
+        $.confirm({content:"Are you sure you want to Ignore this verification?",
+            header: "Ignore",
+            confirm:function () {
+                if(req_verify_id==''){
+                    $.bootstrapGrowl(results.msg, {type: 'danger', delay: 1000});  
+                    return false;
+                }
+                var ajax_url='/authenticate/ignore-verify-request/'+req_verify_id;
+                $.ajax({
+                    url: ajax_url,
+                    method: 'GET',
+                    success: function(results)
+                    {
+                        if(results.status=='OK'){
+                            $.bootstrapGrowl(results.msg, {type: 'success', delay: 1000});
+                            setTimeout(function() { location.reload(); }, 1000);
+                        }
+                        else{
+                            $.bootstrapGrowl(results.msg, {type: 'danger', delay: 1000});
+                        }
+                    }
+                });
+            },
+            cancel:function () {
+                $('#myModal_authenticate').modal('hide');
+            }
+        });
+
+
+
+        // var txt;
+        // var r = confirm("Are you sure you want to Ignore this verification?");
+        // if (r == true) {
+        //   var req_verify_id= $('#req_verify_id').val();
+        //   if(req_verify_id==''){
+        //     $.bootstrapGrowl(results.msg, {type: 'danger', delay: 1000});  
+        //     return false;
+        //   }
+        //     var ajax_url='/authenticate/ignore-verify-request/'+req_verify_id;
+        //     $.ajax({
+        //         url: ajax_url,
+        //         method: 'GET',
+        //         success: function(results)
+        //         {
+        //             if(results.status=='OK'){
+        //                 $.bootstrapGrowl(results.msg, {type: 'success', delay: 1000});
+        //                 setTimeout(function() { location.reload(); }, 1000);
+        //             }
+        //             else{
+        //                 $.bootstrapGrowl(results.msg, {type: 'danger', delay: 1000});
+        //             }
+        //         }
+        //     });
+        // } else {
+        //     $('#myModal_authenticate').modal('hide');
+        // }
+    }
+
+    function ajax_data_table(form_id,ajax_url,table_id){
+		var form = $(form_id)[0]; // You need to use standard javascript object here
+        var formData = new FormData(form);
+        $.ajax({
+            type: "POST",
+            url: ajax_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if(result.status=="OK"){
+                    //$(".totalRecords").text(result.totalRecords);
+                    // Displaying numbers record
+                    $(form_id + " .showing_number").text("Showing "+result.startPoint+" to "+result.endPoint+" of "+result.totalRecords+" entries");
+                    // Pagination
+                    var paginate = "";
+                    if(result.numberofpages > 0){
+                        paginate += '<li class="paginate_button previous disabled" id="example_previous"><a href="#" aria-controls="example" data-dt-idx="0" tabindex="0"><i class="fa fa-angle-left" aria-hidden="true"></i></a></li>';
+                        for (i = 1; i <= result.numberofpages; i++) {
+                            var activeClass = "";
+                            if(i==result.currentPage){
+                                activeClass = "active";
+                            }
+                            paginate += '<li class="paginate_button '+activeClass+'" data-page_no="'+i+'"><a href="javascript:;" aria-controls="example" tabindex="0">'+i+'</a></li>';
+                        }
+                        paginate += '<li class="paginate_button next" id="example_next"><a href="#" aria-controls="example" data-dt-idx="4" tabindex="0"><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>';
+                    }
+                    $(form_id + " .pagination").html(paginate);
+
+                    // Display Data
+                    var html = "";
+                    if(result.data!='' && result.data.length>0){ 
+                        $.each(result.data, function( index, data ) {
+                            //console.log("Anil -->> " + JSON.stringify(data.verify_id.id));
+                            var from_name=''; 
+                            var dataDoc='';
+                            var data_type='';
+                            var attachment = 'Details'
+
+                            if(typeof data.owner_id!='undefined' && typeof data.owner_id.name!='undefined') {
+                                from_name = data.owner_id.name;
+                            }
+                            if(data.to_verify_data==1 && data.to_verify_doc==1){
+                                dataDoc='Doc & Data';
+
+                                if(typeof data.verify_id!='undefined' && typeof data.verify_id.doc_url!='undefined' && data.verify_id.doc_url!=''){
+                                    attachment = '<i class="fa fa-paperclip" aria-hidden="true"></i>&nbsp;&nbsp;Details';
+                                }
+
+                            }else if(data.to_verify_data==0 && data.to_verify_doc==1){
+                                dataDoc='Doc';
+                                if(typeof data.verify_id!='undefined' && typeof data.verify_id.doc_url!='undefined' && data.verify_id.doc_url!=''){
+                                    attachment = '<i class="fa fa-paperclip" aria-hidden="true"></i>&nbsp;&nbsp;Details';
+                                }
+                            }
+                            else if(data.to_verify_data==1 && data.to_verify_doc==0){
+                                dataDoc='Data';
+                            }
+                            var tab_type = '';
+                            if(typeof data.verify_id!='undefined' && typeof data.verify_id.tab_type != "undefined" && data.verify_id.tab_type != "") {
+                                tab_type = data.verify_id.tab_type;
+                                tab_type = tab_type.charAt(0).toUpperCase() + tab_type.slice(1);
+                            }
+
+                            if(typeof data.verify_id!='undefined' && typeof data.verify_id.doc_type_id!='undefined'){
+                                if(typeof data.verify_id.doc_type_id.title!='undefined'){
+                                    data_type = data.verify_id.doc_type_id.title;
+                                }
+                            }
+                            var formatedDate = moment(data.createdAt).format('DD-MMM-YYYY');
+                            var verify_doc_id='';
+                            if(typeof data.verify_id!='undefined' && typeof data.verify_id.doc_id!='undefined' && data.verify_id.doc_id!=''){
+                                verify_doc_id = data.verify_id.doc_id;
+                            }
+
+                            var verify_data_id = '';
+                            if(typeof data.verify_id!='undefined' && data.verify_id.id!='undefined'){
+                                verify_data_id = data.verify_id.id;
+                            }
+							
+							var C_className = (index%2==1) ? "even" : "odd";
+
+                            html +='<tr class="'+C_className+'"><td>'+from_name+'</td><td>'+formatedDate+'</td><td>'+tab_type+" ("+dataDoc+")"+'</td><td>'+data_type+'</td><td><a href="javascript:;" class="showMyModal" data-id="'+verify_data_id+'">'+attachment+'</a></td></tr>';
+                        });
+                    }else{
+                        html +='<tr><td colspan="6">No record found</td></tr>';
+                    }
+                    $(form_id + " " + table_id+" tbody").html(html);
+                }
+            }
+        });
+    }
+
+    $(document).on("click",".showMyModal",function(){
+        var id = $(this).data("id");
+        showMyModal(id);
+    });
+
+	$('form#form_verify_request_authenticate').submit(function (event) {
+		var ajax_url  = '/verify-request-blockchain';
+		var source_id = '#myModal_authenticate';
+		var form_id  = '#form_verify_request_authenticate';
+		
+		submitVerify(ajax_url,source_id,form_id);
+		event.preventDefault();
+	});
+</script>

@@ -1,0 +1,23 @@
+<a href="<%=website%>" target="_blank">
+	<div class="row">
+		<div class="col-md-12">
+			<% 
+			var title = website;
+			var image = "/themes/frontend/images/image_not_found.jpeg";
+			
+			if(data.title){
+				title = data.title;
+			}else if(data.keywords){
+				title = data.keywords;
+			}
+			%>
+			<p><b><%=title%></b></p>
+			<div class="col-md-3">
+				<img src="<%=image%>" class="img-responsive">
+			</div>
+			<div class="col-md-9">
+				<p><%=(data.description) ? data.description : ""%></p>
+			</div>
+		</div>
+	</div>
+</a>

@@ -1,0 +1,436 @@
+<style>
+    .message-box{
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+    }
+    .p26_content{
+        height: 500px;
+    }
+    .message_container{
+        position: absolute;
+        bottom: 230px;
+        width: 100%;
+        max-height: 250px;
+        overflow: scroll;
+    }
+    .p26_content#typing {
+        position: absolute;
+        bottom: 200px;
+    }
+</style>
+<div class="main-container message-page">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p26_sidebar first">
+                    <div class="section_title"><h3><i class="fa fa-edit" aria-hidden="true"></i> Message <a href="javascript:;" class="addnewmessage pull-right"><i class="fa fa-plus"></i> Add New</a></h3>
+                        </div>
+
+                    <div class="p26_sidebar_content">
+                        <% 
+                            var i = 1;
+                            var user_found = false;
+                            _.each(messages,function(conversion) {
+
+                                var profile_image = '/themes/frontend/images/default-user.png';
+                                var username = "";
+                                var activClass = '';
+                                if(conversion.user_id.id == req.user.id){
+                                    if(typeof conversion.to_user_id.profile_image != 'undefined' &&  conversion.to_user_id.profile_image!=''){
+                                        profile_image = '/uploads/users/'+conversion.to_user_id.profile_image;
+                                    }
+                                    username = conversion.to_user_id.name;
+                                    if(to_user_id == conversion.user_id.id || to_user_id == conversion.to_user_id.id){
+                                        activClass = 'active';
+                                        user_found = true;
+                                    }
+                                } else {
+                                    if(typeof conversion.to_user_id.profile_image != 'undefined' && conversion.user_id.profile_image &&  conversion.user_id.profile_image!=''){
+                                        profile_image = '/uploads/users/'+conversion.user_id.profile_image;
+                                    }
+                                    username = conversion.user_id.name;
+                                    if(to_user_id == conversion.user_id.id || to_user_id == conversion.to_user_id.id){
+                                        activClass = 'active';
+                                        user_found = true;
+                                    }
+                                }
+                                
+                                if(i==1 && to_user_id == ''){
+                                    activClass = "active";
+                                }
+                        %>
+                        <div class="p26_side_li getconversion <%=activClass%>" data-id="<%=conversion.id%>">
+                            <a class="p26_110" href="javascript:;">
+                                <img src="<%=profile_image%>" alt="<%=username%>" height="30" width="30" />
+                            </a>
+                            <div class="p26_111">
+                                <a class="p26_112" href="javascript:;"></a><%=username%></a>
+                                <div class="p26_113"><%= (conversion.conversions.length > 0) ? conversion.conversions[0].message : '' %></div>
+                                <div class="p26_114"><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="p26_115"><%= (conversion.conversions.length > 0) ? DateDifferentService.time_ago(conversion.conversions[0].createdAt) : '' %></span></div>
+                            </div>
+                        </div>
+                        <% 
+                            i++;
+                        }) %>
+                        <div class="p26_side_li last">
+                            <div class="a-center last" id="get_more_sent_invitation"><a href="javascript:;" class="p26_1031 lord-more-canavrsation">Lord more canavrsation</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 no-padding chatbox">
+                <div class="p26_main">
+                    
+                    <%
+                        var hideClass = "";
+                        var hideContent = "hide";
+                        if(messages.length > 0){
+                            hideClass = "hide";
+                            hideContent = "";
+                        }
+                    %>
+                    <div class="message-content"></div>
+                    <div class="newmessage <%=hideClass%>">
+                        <div class="section_title p26_title">
+                            <div class="p51_feed_post_user_block dropdown_selection">
+                                <div class="dropdown p51_feed_post_more_info">
+                                    <button class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                                    <ul class="dropdown-menu p51_feed_fpa">
+                                        <li><button class="p51_feed_fpa1" type="button">It's spam</button></li>
+                                        <li><button class="p51_feed_fpa2" type="button">Annoying</button></li>
+                                        <li><button class="p51_feed_fpa3" type="button">Hide now</button></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <h3>Add New Message</h3>
+                        </div>
+                        <div class="p26_content">
+
+                            <div class="p26_m1000_li">
+                                <div class="p6_comment_content">
+                                    <form method="POST" action="\messages_send" class="new-user-message">
+                                        <div class="form-group">
+                                            <label class="label hidden" for="">To :</label>                                            
+                                            <input type="text" id="user_search" name="autocomplete" placeholder="Select user" class="form-control user_drp" />
+                                            <input type="hidden" id="to_user_id" name="to_user_id" placeholder="Select user" class="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="label hidden" for="">Type Message here</label>
+                                            <textarea name="message" id="textMessage" class="form-control" placeholder="Type a message..." rows="5" required="required"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="submit" value="Send Message" class="btn btn-primary send-message" />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <!-- <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a> -->
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/9MH75NNRfsw?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                    <br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/JxoVkItOSW4?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+<style>
+    .slag_user.header_user_block {
+        border : none !important;
+    }
+    .slag_user.header_user_block .mt_user_name{
+        color: #008fc2 !important;
+    }
+</style>
+<% if(user_found == false && to_user_id != '') {  %>
+<script type="text/javascript">
+    $ (function(){
+        $(".message-content").addClass("hide");
+        $(".newmessage").removeClass("hide");
+        $(".user_drp").hide();
+        user_html = '<div class="slag_user header_user_block">'+
+                        '<img class="mt_user_img" alt="<%- user.name %>" width="30" height="30" src="<%- ((user.profile_image != undefined && user.profile_image != "") ? "/uploads/users/"+user.profile_image : "/themes/frontend/images/default-user.png") %>">'+
+                        '<span class="mt_user_name"><%- user.name %></span>'+
+                    '</div>';
+                    $("#to_user_id").val("<%- to_user_id %>");            
+                    //'<input type="hidden" name="to_user_id" id="title" placeholder="Title" class="form-control slag_user" value="<%- to_user_id %>" title="">';
+        $(".user_drp").after(user_html);
+    });
+</script>
+<% } %>
+<script type="text/javascript">
+    var csocket = io('<%=sails.config.appUrl+":"+sails.config.portSoketIo%>');
+    
+    var socket_id = '';
+    var to_socket_id = '';
+    var to_user_id = '';
+    csocket.on('connect', function () {
+        socket_id = csocket.id;
+        //$(".active").
+        var message_id = $(".active").data('id');
+        getconversion(message_id);
+    }); 
+    $ (function(){
+        
+        var message_id = $(".active").data('id');
+
+        //receiving typing message.
+        csocket.on('typing',function(msg){
+            var setTime;
+            //clearing previous setTimeout function.
+            clearTimeout(setTime);
+            //showing typing message.
+            if(msg.user_id == $("[name='to_user_id']").val()){
+                $('#typing').text(msg.message);
+            }
+            //showing typing message only for few seconds.\
+            setTime = setTimeout(function(){
+                $('#typing').text(" ");
+            },3500);
+        }); //end of typing event.
+        //sending message.
+        $(document).on("submit", ".sendMessage", function (e) {
+            e.preventDefault();
+            var sendMessage = {
+                                "message":$(".sendMessage").find("[name='message']").val(),
+                                "message_id":$(".sendMessage").find("[name='message_id']").val(),
+                                "user_id":$(".sendMessage").find("[name='user_id']").val(),
+                                "to_user_id":$(".sendMessage").find("[name='to_user_id']").val()
+                            };
+        form_obj = $(this);
+            $.ajax({
+                type: "POST",
+                url: "/user_is_block",
+                data :{user_id:$(".sendMessage").find("[name='user_id']").val(),to_user_id:$(".sendMessage").find("[name='to_user_id']").val()},
+                success: function (data) {
+                    if(data.status == "OK") {
+                        csocket.emit("send_message_by_mobile",sendMessage);
+                         
+                        var parents     = $(form_obj).parents('.message-content');
+                        parents.find('textarea[name="message"]').val("");
+                        parents.find('textarea[name="message"]').focus();
+                    } else {
+                        alert(data.msg);
+                    }
+                }
+            });
+            return false;
+        }); 
+        $(document).on("submit", ".new-user-message", function (e) {
+            if($(".new-user-message").find('[name="to_user_id"]').length == 2){
+                $(".new-user-message").find('[name="to_user_id"]').eq(0).remove();
+            }
+            e.preventDefault();
+            sendMessage_serialize = $(".new-user-message").serialize();            
+            $.ajax({
+                type: "POST",
+                url: "/messages_send",
+                data :sendMessage_serialize,
+                success: function (data) {
+                    if(data.status == 'OK'){
+                       window.location.reload();
+                    }
+                }
+            });
+            
+            
+        }); 
+        //end of sending message.
+
+
+        //receiving messages.
+        csocket.on('chat-msg',function(message) {
+            //styling of chat message.
+            id      = $(message).attr("data-id");
+            user_id = $(message).attr("user_id");
+            if(user_id == $("[name='to_user_id']").val()){
+                $.ajax({
+                    url: "/read_message",
+                    type: "POST",
+                    data : {'chat_id':id},
+                    success: function(){ }
+                });
+                
+                $(".message-content .p26_content").find('#typing').before(message);
+                //$(".message_container").scrollTop(($(".p26_m1000_li.chat_id").eq(0).outerHeight() * $(".p26_m1000_li.chat_id").length));
+                       
+                $('#typing').text(" ");
+            }
+        }); //end of receiving messages.
+        //receiving messages.
+        csocket.on('my_message_receive',function(chat) {
+            //styling of chat message.
+            var html = '';
+                html += '<div data-id="'+chat.id+'" user_id="'+chat.user_id.id+'" class="p26_m1000_li myself">'
+                    html += '<div class="p26_m1002">';
+                            html += '<div class="p26_m1005">'+
+                                        '<i class="fa fa-clock-o" aria-hidden="true"></i>'+
+                                        '<span class="p26_m1006"title="'+moment(chat.createdAt).format('Do MMM, YYYY')+'">'+moment(chat.createdAt).format('H:mm') +'</span>'+
+                                '</div>';
+                        html += '<div class="p26_m1003">'+chat.message+'</div>';														
+                    html += '</div>';
+                html += '</div>';
+                $(".message-content .p26_content").find('.message_container').append(html);
+                $(".message_container").scrollTop(($(".p26_m1000_li.chat_id").eq(0).outerHeight() * $(".p26_m1000_li.chat_id").length));
+                       
+        }); //end of receiving messages.
+        
+        $( "#user_search" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax( {
+                url: "/message_user",
+                //dataType: "jsonp",
+                data: {
+                    user_name: request.term
+                },
+                success: function( data ) {
+                    response( data );
+                }
+                } );
+            },
+            minLength: 2,
+            select: function( event, ui ) {
+                console.log(ui);
+                $('#to_user_id').val(ui.item.data);
+                $("#textMessage").focus();
+            }
+        } );
+        //
+        message_page_no = 2;
+        $(".lord-more-canavrsation").click(function(){
+            $.ajax({
+                type: "POST",
+                data :{page_no:message_page_no},
+                success: function (data) {
+                    console.log(data);
+                    var new_data = '';
+                    $.each(data,function(i,conversion){
+                        var profile_image = '/themes/frontend/images/default-user.png';
+                        var username = "";
+                        if(conversion.user_id.id == "<% req.user.id %>"){
+                            if(typeof conversion.to_user_id.profile_image != 'undefined' &&  conversion.to_user_id.profile_image!=''){
+                                profile_image = '/uploads/users/'+conversion.to_user_id.profile_image;
+                            }
+                            username = conversion.to_user_id.name;
+                            
+                        } else {
+                            if(typeof conversion.to_user_id.profile_image != 'undefined' && conversion.user_id.profile_image &&  conversion.user_id.profile_image!=''){
+                                profile_image = '/uploads/users/'+conversion.user_id.profile_image;
+                            }
+                            username = conversion.user_id.name;
+                            
+                        }
+
+                        new_data += '<div class="p26_side_li getconversion" data-id="'+conversion.id+'">'+
+                            '<a class="p26_110" href="javascript:;">'+
+                                '<img src="'+profile_image+'" alt="'+username+'" height="30" width="30" />'+
+                            '</a>'+
+                            '<div class="p26_111">'+
+                                '<a class="p26_112" href="javascript:;"></a>'+username+'</a>'+
+                                '<div class="p26_113">'+((conversion.conversions.length > 0) ? conversion.conversions[0].message : "") +'</div>'+
+                                '<div class="p26_114"><i class="fa fa-clock-o" aria-hidden="true"></i> <span class="p26_115">'+((conversion.conversions.length > 0) ? conversion.conversions[0].time : "") +'</span></div>'+
+                            '</div>'+
+                        '</div>';
+                    });
+                    $(".p26_sidebar.first .p26_side_li.last").before(new_data);
+                    message_page_no++;
+                }
+            });
+        });
+    });
+    $("#user_search").focus(function(){
+        this.setSelectionRange(0, this.value.length);
+    });
+    var chat_page_no = 1;
+    var responce_flace = false;
+    function getconversion(message_id){
+        $.ajax({
+            type: "POST",
+            url: "/getconversion",
+            data : {'message_id':message_id,'socket_id':socket_id,page_no:chat_page_no},
+            success: function (data) {
+                responce_flace=true;
+                if(chat_page_no == 1) {
+                    $(".message-content").html(data.view);
+                    //to_socket_id = data.socket_id;
+                    to_user_id = data.to_user_id;
+                    if($(".p26_m1000_li.chat_id").length > 0){
+                        setTimeout(function(){ 
+                            console.log($(".message_container").outerHeight());
+                            $(".message_container").scrollTop(($(".p26_m1000_li.chat_id").eq(0).outerHeight() * $(".p26_m1000_li.chat_id").length));
+                        },
+                        500);
+                    }
+
+                    if(data.chat_count!=0){
+                        $(".mt_h_messages").append('<span class="mt_notification">'+data.chat_count+'</span>');
+                    }
+
+                    //$(".message_container").mCustomScrollbar();
+                    $('textarea[name="message"]').keyup(function(){
+                        var parents = $(this).parents('.message-content');
+                        var toUser = parents.find('.section_title').data('user_id');
+                        if($('textarea[name="message"]').val()){
+                            csocket.emit('typing',{from:'<%=req.user.id%>',toUser:toUser,'to_socket_id':to_socket_id});
+                        }
+                    }); //end of keyup handler.
+                    
+                    $(".message_container").scroll(function() {
+                        if($(".message_container").scrollTop()<=30){
+                            if(responce_flace==true){
+                                responce_flace = false;
+                                getconversion(message_id);
+                            }
+                        }
+                    });
+                } else {
+                    $(".message-content .p26_m1000_li.chat_id").eq(0).before( $(data.view).find(".message_container").html());
+                }
+                chat_page_no ++;
+            }
+        });
+    }
+   
+    $(document).on("click",".addnewmessage",function(e){
+        $(".message-content").addClass("hide");
+        if($(".newmessage .slag_user").length > 0){
+            $(".newmessage [name='autocomplete']").removeAttr("style");
+            $(".newmessage .slag_user").remove();
+        }
+        $("#to_user_id").val('');
+        $(".newmessage").removeClass("hide");
+    });
+    
+    $(document).on("click",".getconversion",function(e){
+        var parents = $(this).parents(".p26_sidebar_content");
+        parents.find(".getconversion").removeClass("active");
+        $(this).addClass("active");
+        var message_id = $(this).data('id');
+        chat_page_no = 1;
+        getconversion(message_id);
+    });
+    $(".send-message").click(function(e){
+        if($('#to_user_id').val() == '') {
+            $.bootstrapGrowl('Please select user first', {type: 'danger', delay: 1000});
+            e.preventDefault();
+        }
+    });
+    
+</script>

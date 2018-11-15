@@ -1,0 +1,124 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar nav groups Starts -->
+            <%- partial('../includes/sidebar-nav-groups.ejs') %>
+            <!-- Sidebar nav groups Ends -->
+            
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padding">
+                <div class="p_31_mc">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            <div class="section_title"><h3>Local</h3></div>
+                            <ul class="p31_1010">
+                                <% if(localgroups.length > 0) { %>
+                                <% _.each(localgroups, function (localgroup) { %>
+                                <li class="first" data-id="<%=localgroup.id%>">
+                                    <div class="p31_1011">
+                                        <% 
+                                            if(localgroup.group_icon == '') { 
+                                                var  localgroup_group_icon = "/themes/frontend/images/p32_placeholder.jpg";
+                                            } else { 
+                                                var  localgroup_group_icon = "/uploads/groups/"+localgroup.group_icon;
+                                            }
+                                        %>
+                                        <a href="/group/<%=localgroup.slug%>"><img src="<%=localgroup_group_icon%>" width="65" height="65" alt="<%=localgroup.group_name%>" /> </a>
+                                        <div class="p31_1012">
+                                            <div class="p31_1013"><a href="/group/<%=localgroup.slug%>" class="p31_1014"><%=localgroup.group_name%></a></div>
+                                            <div class="p31_1015"><%=localgroup.groupusers.length%> Members</div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary p31_message btnjoinGroup"><i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp; Join</button>
+                                    </div>
+                                </li>
+                                <% }) %>
+                                <% } else { %>
+                                <li class="first" data-id="">
+                                    <div class="p31_1011">
+                                        <p>No data found</p>
+                                    </div>
+                                </li>
+                                <% } %>
+                            </ul>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                            <div class="section_title"><h3>Connections</h3></div>
+                            <ul class="p31_1010">
+                                <% if(connectiongroups.length > 0) { %>
+                                <% _.each(connectiongroups, function (connectiongroup) { %>
+
+                                <li class="first" data-id="<%=connectiongroup.id%>">
+                                    <div class="p31_1011">
+                                            <% 
+                                                if(connectiongroup.group_icon == '') { 
+                                                    var  connectiongroup_group_icon = "/themes/frontend/images/p32_placeholder.jpg";
+                                                } else { 
+                                                    var  connectiongroup_group_icon = "/uploads/groups/"+connectiongroup.group_icon;
+                                                }
+                                            %>
+
+                                        <a href="/group/<%=connectiongroup.slug%>"><img src="<%=connectiongroup_group_icon%>" width="65" height="65" alt="<%=connectiongroup.group_name%>" /> </a>
+                                        <div class="p31_1012">
+                                            <div class="p31_1013"><a href="/group/<%=connectiongroup.slug%>" class="p31_1014"><%=connectiongroup.group_name%></a></div>
+                                            <div class="p31_10443">3 Connections  <span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span> <%=connectiongroup.groupusers.length%> Members</div>
+                                            <div class="p31_1016">
+                                                <a href="">
+                                                    <img src="https://placehold.it/65x65/71CFEB/025ba2" width="25" height="25" alt="user name" class="p31_1016_li" />
+                                                </a>
+                                                <a href="">
+                                                    <img src="https://placehold.it/65x65/71CFEB/025ba2" width="25" height="25" alt="user name" class="p31_1016_li" />
+                                                </a> 
+                                                <a href="">
+                                                    <img src="https://placehold.it/65x65/71CFEB/025ba2" width="25" height="25" alt="user name" class="p31_1016_li" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary p31_message btnjoinGroup"><i class="fa fa-sign-in" aria-hidden="true"></i> Join</button>
+                                    </div>
+                                </li>
+                                <% }) %>
+                                <% } else { %>
+                                <li class="first" data-id="">
+                                    <div class="p31_1011">
+                                        <p>No data found</p>
+                                    </div>
+                                </li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).on("click",".btnjoinGroup",function(){
+        var parents = $(this).parents('li');
+        var group_id = parents.data("id");
+        $.confirm({content:"Are you sure to join group?",
+            header: "Delete",
+            confirm:function () {
+                $.ajax({
+                    url: '/joingroup/'+group_id,
+                    method: 'GET',
+                    success: function(results)
+                    {
+                        if(results.status=="OK")
+                        {
+                            parents.remove();
+                        }
+                        else
+                        {
+                            $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                        }
+                    }
+                });
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+</script>

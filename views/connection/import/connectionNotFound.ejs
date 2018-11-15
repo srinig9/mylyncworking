@@ -1,0 +1,80 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="max_width1000">
+                    <h1 class="p18_101">You can earn 40 Lynks immediately just by sending invitations</h1>
+                    <p class="p18_102">And you will earn additional 40 Lynks once the will joined Lynked.</p>
+                    <form action="/sendinvitation" method="post">
+                        <div class="p18">
+                            <div class="p18_1001">
+                                <div class="p18_1002">
+                                    <label class="input_check_label" for="selectAllConnection">
+                                        <input class="input_check" type="checkbox" value="" checked="checked" name="selectAllConnection" id="selectAllConnection" />
+                                        Deselect all <span class="deselectCount">(0)</span>
+                                    </label>
+                                </div>
+                                <div class="p18_1003">
+                                    <a href="/thank-you">
+                                    	<button type="button" class="btn btn-primary btn-primary-sw">Skip</button>
+                                    </a>&nbsp;&nbsp;&nbsp;
+                                    <button type="submit" class="btn btn-primary btn-primary-sw">Invite Now <span class="inviteCount">(<%=contacts.length%>)</span></button>
+                                </div>
+                            </div>
+                            <ul class="p18_1010">
+                                <% _.each(contacts,function(contact,key){ %>
+                                <li>
+                                    <input type="checkbox" class="input_check checkbox" value="<%=contact.email%>" checked="checked" name="connection[<%=key%>][email]" />
+                                    <input type="hidden" class="" value="<%=contact.name%>" name="connection[<%=key%>][name]" />
+                                    <div class="p18_1011">
+                                        <img src="https://placehold.it/65x65/71CFEB/025ba2" width="65" height="65" alt="Michele Show">
+                                        <div class="p18_1012">
+                                            <div class="p18_1016"><%=contact.name%></div>
+                                            <div class="p18_1017"><a href="mailto:<%=contact.email%>"><%=contact.email%></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	var unchecked = ($('.checkbox').length - $('.checkbox:checked').length);
+	$(".deselectCount").html("("+unchecked+")");
+	$(".inviteCount").html("("+$('.checkbox:checked').length+")");
+});
+
+//select all checkboxes
+$("#selectAllConnection").change(function(){  //"select all" change
+    $(".checkbox").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+
+	var unchecked = ($('.checkbox').length - $('.checkbox:checked').length);
+	$(".deselectCount").html("("+unchecked+")");
+	$(".inviteCount").html("("+$('.checkbox:checked').length+")");
+});
+
+//".checkbox" change
+$('.checkbox').change(function(){
+	
+	var unchecked = ($('.checkbox').length - $('.checkbox:checked').length);
+	$(".deselectCount").html("("+unchecked+")");
+	$(".inviteCount").html("("+$('.checkbox:checked').length+")");
+    //uncheck "select all", if one of the listed checkbox item is unchecked
+    if(false == $(this).prop("checked")){ //if this item is unchecked
+        $("#selectAllConnection").prop('checked', false); //change "select all" checked status to false
+    }
+    //check "select all" if all checkbox items are checked
+    if ($('.checkbox:checked').length == $('.checkbox').length ){
+        $("#selectAllConnection").prop('checked', true);
+    }
+}); 
+
+</script>

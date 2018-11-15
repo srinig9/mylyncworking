@@ -1,0 +1,678 @@
+<% 
+
+    var sengment = req.url;
+    var checkurl = sengment.split("/");
+    var get_method = checkurl[1];
+
+
+    var user_id = (req.user != undefined && req.user.id != undefined) ?  req.user.id : 0;
+
+    //profile image
+    var profile_image = '/themes/frontend/images/default-user.png';
+    var cover_image = '/themes/frontend/images/company-profile.jpg';
+
+    if(company.companydata[0].profile_image &&  company.companydata[0].profile_image!=''){
+        profile_image = '/uploads/users/'+company.companydata[0].profile_image;
+    }
+    if(company.companydata[0].cover_image &&  company.companydata[0].cover_image!=''){
+        cover_image = '/uploads/users/'+company.companydata[0].cover_image;
+    }
+
+    var slugUrl ="/profile";
+    if(typeof company!="undefined" && typeof company.slug!="undefined" && typeof company.slug!=""){
+        slugUrl = "/company/"+company.slug+"/wall";
+    }
+
+    var companySlug = "";
+    if(typeof company!="undefined" && typeof company.slug!="undefined" && typeof company.slug!=""){
+        companySlug = company.slug;
+    }
+%>
+
+<link type="text/css" href="/themes/frontend/css/lib.css" rel="stylesheet">
+<div class="main-container p11_main_container">
+    <div class="p11_company_profile">
+        <div id="p11_user_id" class="p11_bg">
+            <% if(req.url == '/profile') { %>
+            <div class="p11_bg_container">
+                <img alt="Background Image" src="<%=cover_image%>" style="left:0;top:-119.93142857142857px;width:100%;" id="CoverImage">
+                
+                <label data-toggle="modal" data-target="#profileCoverModalPopovers" class="change-cover"><i class="fa fa-camera" aria-hidden="true"></i></label>
+            </div>
+            <% } else {%>
+            <div class="p11_bg_container">
+                <img alt="Background Image" src="<%=cover_image%>" style="left:0;top:-119.93142857142857px;width:100%;" id="CoverImage">
+            </div>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-right company-profile">
+                <div class="p11_container p11_profile sepb20">
+                    <% if(req.url == '/profile') { %>
+                    <div id="company-profile" class="p9_1002" style="background-image:url('<%=profile_image%>')">
+                        
+                        <label data-toggle="modal" data-target="#profilePicModalPopovers" class="p9_1003"><i class="fa fa-camera" aria-hidden="true"></i></label>
+                    </div>
+                    <% } else { %>
+                    <div id="company-profile" class="p9_1002" style="background-image:url('<%=profile_image%>')">
+                    </div>
+                    <% } %>
+                    <div class="p11_1005">
+                        <div class="p11_1005_r3">
+                            <div class="p11_1010"><a href="<%=slugUrl%>"><%= (typeof company.company_name !='undefined') ? company.company_name : "" %></a></div>
+                            <div class="p11_1011"><%= (typeof company.companydata[0].headline !='undefined') ? company.companydata[0].headline : "" %></div>
+                            <% if(typeof company.companydata[0].address !='undefined' && company.companydata[0].address !='') { %>
+                            <div class="p11_1012"><i class="fa fa-map-marker blue" aria-hidden="true"></i>
+                            <%=company.companydata[0].address%></div>
+                            <% } %>
+                            <div class="p11_1013">
+                                <a href="/connections/list/<%=companySlug%>">
+                                    <i class="fa fa-users blue" aria-hidden="true"></i> 
+                                    <% 
+                                    var follower_count =0;
+                                    if(typeof company!='undefined' && company.followers!='undefined'){
+                                        follower_count = company.followers.length;
+                                    }
+                                    %>
+                                    <%=follower_count%> Followers
+                                </a>
+                            </div>
+                        </div>
+                        <div class="p11_1005_r4">
+                            <% if(req.url == '/profile') { %>
+                            <button type="button" class="btn btn-primary btn-primary-b30 btnEdit" value="">Edit</button>
+                            <% } else { 
+
+                                var follow = 0;
+                                if(typeof company!='undefined' && company.followers!='undefined' && company.followers.length>0){
+                                    _.each(company.followers,function(follower){
+                                        if(follower.user_id.id == user_id){
+                                            follow = follow+1;
+                                        }
+                                    })
+                                    follow = follow;
+                                }
+                            %>
+                            <% if(follow > 0) { %>
+                            <button type="submit" class="btn btn-primary btn-primary-b30 btnfollow" value="<%=company.id%>">UnFollow</button>
+                            <% } else { %>
+                            <button type="submit" class="btn btn-primary btn-primary-b30 btnfollow" value="<%=company.id%>">Follow</button>
+                            <% } } %>
+                        </div>
+                    </div>
+                </div>
+                <% 
+                    if((typeof company.about_me !='undefined' && company.about_me !='') || (typeof company.companydata[0].address !='undefined' && company.companydata[0].address !='') || (typeof company.year_founded !='undefined' && company.year_founded !='') || (typeof company.company_size !='undefined' && company.company_size !='') || (typeof company.specialties !='undefined' && company.specialties !='') || (typeof company.website !='undefined' && company.website !='') || (typeof company.companydata[0].email && company.companydata[0].email !='') || (typeof company.skype !='undefined' && company.skype !='')) {
+                %>
+                <div class="p11_1103">
+                    <div class="section_title"><h3>About Us</h3></div>
+                    <div class="p11_content">
+                        <div class="">
+                            <%- (typeof company.about_me !='undefined') ? company.about_me : "" %>
+                        </div>
+                        <div class="clear">&nbsp;</div>
+                        <div class="p11_content_34">
+                            <strong>Headquarters</strong>
+                            <ul class="blue_dots">
+                                <% if(typeof company.companydata[0].address !='undefined' && company.companydata[0].address !='') { %>
+                                <li><%=company.companydata[0].address%></li>
+                                <% } %>
+                            </ul>
+                        </div>
+                        <div class="clear">&nbsp;</div>
+                        <div class="p11_content_34">
+                            <strong>Year Founded</strong>
+                            <ul class="blue_dots">
+                                <% if(typeof company.year_founded !='undefined' && company.year_founded !='') { %>
+                                <li><%=company.year_founded%></li>
+                                <% } %>
+                            </ul>
+                        </div>
+                        <div class="clear">&nbsp;</div>
+                        <div class="p11_content_34">
+                            <strong>Company Size</strong>
+                            <ul class="blue_dots">
+                                <% if(typeof company.company_size !='undefined' && company.company_size !='') { %>
+                                <li><%=company.company_size%></li>
+                                <% } %>
+                            </ul>
+                        </div>
+                        <div class="clear">&nbsp;</div>
+                        <div class="p11_content_34">
+                            <strong>Specialties</strong>
+                            <p><%- (typeof company.specialties !='undefined') ? company.specialties : "" %></p>
+                        </div>
+                        <div class="clear">&nbsp;</div>
+                        <div class="p11_content_34">
+                            <strong>Know more about us</strong>
+                            <div>
+                                <%	
+                                if(typeof company.website!='undefined'){
+                                    var company_website_ht = company.website;
+                                    var company_url=company_website_ht.split(",");
+                                    var counter=0;
+                                    for(var i = 0; i < company_url.length; i++){
+                                        var web_url='';
+                                        counter=counter+1;
+                                        var my_length = company_url.length;
+                                        web_url = company_url[i];
+                                        web_url = web_url.trim();
+                                        if(web_url!=''){
+                                            if(!/^(f|ht)tps?:\/\//i.test(web_url)) { company_website_ht = "http://" + web_url; } %>
+                                            <a href="<%- (typeof company_website_ht !="undefined") ? company_website_ht : "javascript:;" %>" target="_blank">
+                                                <%= (typeof company.website !="undefined") ? web_url : "" %>
+                                            </a>
+                                            <% if(counter!=my_length){ %>,<% } %>
+                                        <% } 
+                                    } 
+                                }%>
+							</div>
+                            <div>
+								<a href="<%= (typeof company.companydata[0].email !="undefined") ? "mailto:"+company.companydata[0].email : "javascript:;" %>">
+									<%= (typeof company.companydata[0].email !="undefined") ? company.companydata[0].email : "" %>
+								</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+                <div class="p11_1103">
+                    <div class="section_title"><h3>Meet the team
+                        <% if(typeof is_login!='undefined' && is_login==1 && typeof action_flag!='undefined') {
+                            if(action_flag==1){
+                            %>
+                                <button type="button" class="btn btn-primary btn-primary-sw meet_team_popup pull-right" style="margin-right:50px;">Add</button>
+                            <% } 
+                        }%>
+                    </h3>
+                    </div>
+                    <% 
+                    if(typeof my_team!='undefined' && my_team.length>0) { 
+                    %>
+                    <div class="p11_content a-center">
+                        <div class="slider_container owl-top-narrow p16_main1003">
+                            <ul id="slider_11" class="owl-carousel owl-theme">
+                            	<% 
+                                 _.each(my_team,function(_followers){
+                                        follow_user_id = _followers.user_id.id;
+
+                                        var message     = 0;
+                                        var recReq      = 0;
+                                        var sentReq     = 0;
+                                        var unfollow    = 0;
+                                        var headline    = '';
+                                        var address     = '';
+                                        var company     = '';
+                                        var userInfo    = '';
+                                        var exp         = '';
+                                        var slug        = '/profile';
+                                        var follower_image = '/themes/frontend/images/default-user.png';
+                                        var team_id     = '';
+
+                                        if(typeof _followers!='undefined' && typeof _followers.id!='undefined'){
+                                            team_id     = _followers.id;
+                                        }
+
+                                        if(typeof _followers.user_id!='undefined'){
+                                            userInfo= _followers.user_id;
+                                            if(typeof userInfo.headline!='undefined' && userInfo.headline!=''){
+                                                headline = userInfo.headline;
+                                            }
+                                            if(typeof userInfo.address!='undefined' && userInfo.address!=''){
+                                                address = userInfo.address;
+                                            }
+
+                                            if(typeof userInfo.userexperiences!='undefined' && userInfo.userexperiences.length>0){
+                                                exp = userInfo.userexperiences[0];
+
+                                                if(typeof exp.title!='undefined' && exp.title!=''){
+                                                    headline = exp.title;
+                                                }
+
+                                                if(typeof exp.company_id!='undefined' && exp.company_id.company_name!='undefined'){
+                                                    company = exp.company_id.company_name;
+                                                }
+                                            }
+
+                                            
+                                            if(typeof userInfo.profile_image!='undefined' &&  userInfo.profile_image!=''){
+                                                follower_image = '/uploads/users/'+userInfo.profile_image;
+                                            }
+                                            if(typeof userInfo.slug!='undefined' &&  userInfo.slug!=''){
+                                                slug = '/profile/'+userInfo.slug;
+                                            }
+                                        }
+
+                                        if(typeof connections!='undefined'){
+                                            _.each(connections, function (connection) {
+                                                if(follow_user_id == user_id){
+                                                    unfollow = unfollow+1;
+                                                }else{
+                                                    if((connection.user_id == user_id && connection.to_user_id == follow_user_id) || (connection.to_user_id == user_id && connection.user_id == follow_user_id)){
+                                                        if(connection.status==1){
+                                                            message = message+1;
+                                                        }else if(connection.status==0 && connection.to_user_id==user_id){
+                                                            recReq = recReq+1;
+                                                        }else if(connection.status==0 && connection.user_id==user_id){
+                                                            sentReq = sentReq+1;
+                                                        }
+                                                    }
+                                                }
+                                            })
+                                        }
+
+                                    message = message;
+                                    recReq = recReq;
+                                    sentReq = sentReq;
+                                    unfollow = unfollow;
+                                %>
+                                <li class="p16_2000_li item">
+                                    <div class="p16_2001">
+                                        <a href="<%=slug%>"><img src="<%=follower_image%>" width="90" height="90" alt="<%=_followers.user_id.name%>"></a>
+                                        <div class="p16_2002">
+                                            <div class="p16_2003 name"><a href="<%=slug%>" class="p16_2004"><%=_followers.user_id.name%></a></div>
+                                            <div class="p16_2005 designation"><%=headline%></div>
+                                            <div class="p16_2006 company"><%=company%></div>
+                                            <div class="p16_2007 location_city"><%=address%></div>
+                                        </div>
+                                        <% if(typeof is_login!='undefined' && is_login==1 && typeof action_flag!='undefined') {
+                                            if(action_flag==1){
+                                            %>
+                                        <div class="p16_2010" style="display:none;">
+                                            <button type="button" title="Edit Detail" onclick="edit_team_member('<%=team_id%>')" class="btn btn-primary btn-primary-b30">
+                                                <span class="glyphicon glyphicon-edit"></span>
+                                            </button>
+                                            <button type="button" title="Remove Member" data-id="<%=team_id%>" class="btn btn-primary btn-primary-b30 btnRemoveMember">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                            </button>
+                                        </div>
+                                        <% } 
+                                    }%>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                    <% } else { %>
+                    <div class="p11_content a-center">
+                        <p>No member found</p>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 sept20">
+                <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                  <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/MR5k1jCN1BE?rel=0" height="300" allowfullscreen ></iframe>
+                </div><br>
+
+                <div class="people_viewed first">
+                    <div class="section_title"><h3>People also viewed</h3></div>
+                    <div class="people_viewed_content">
+                        <%
+                        if(typeof morecompanies!='undefined' && morecompanies.length>0){
+                        _.each(morecompanies,function(morecompany){
+                        %>
+                        <div class="people_viewed_li first">
+
+                            <% if(typeof morecompany.companydata != 'undefined' && morecompany.companydata.length > 0 && typeof morecompany.companydata[0].profile_image != 'undefined' && morecompany.companydata[0].profile_image != '' ) { %>
+                                <a href="<%=(typeof morecompany.slug !='undefined') ? '/company/'+morecompany.slug+'/wall' : 'javascript:;' %>">
+                                    <img src="<%- sails.config.appUrlwPort + sails.config.profile_image_url + morecompany.companydata[0].profile_image %>" alt="<%=morecompany.company_name%>" /> </a>
+                            <% } else { %>
+                            <a class="p6_sc_1002 project_img" href="<%=(typeof morecompany.slug !='undefined') ? '/company/'+morecompany.slug+'/wall' : 'javascript:;' %>">
+                                 <span class="first-letter" width="45">
+                                    <%=morecompany.company_name.charAt(0).toUpperCase()%>
+                                </span>
+                            </a>
+                            <% } %>
+                            <div class="people_viewed_li2">
+                                <div class="p11_1010">
+                                    <a href="<%=(typeof morecompany.slug !='undefined') ? '/company/'+morecompany.slug+'/wall' : 'javascript:;' %>"><%=morecompany.company_name%></a>
+                                </div>
+                                
+                                <% if(typeof morecompany.companydata[0]!="undefined" && typeof morecompany.companydata[0].address != "undefined" && morecompany.companydata[0].address != "") { %>
+									<div class="p11_1012"><i class="fa fa-map-marker blue" aria-hidden="true"></i> <%=morecompany.companydata[0].address%></div>
+                                <% } 
+								if(typeof morecompany.companydata[0]!="undefined" && typeof morecompany.companydata[0].createdAt != "undefined" && morecompany.companydata[0].createdAt != "") { %>
+									<div class="p11_1013"><i class="fa fa-clock-o blue" aria-hidden="true"></i> <%=DateDifferentService.time_ago_full(morecompany.companydata[0].createdAt)%></div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <% }) 
+                        }
+                        else{
+                        %>
+                            No Record found.
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% if(typeof is_login!='undefined' && is_login==1) { %>
+<%- include meet_team_popup.ejs %>
+<%- include popups/edit_profile_image.ejs %>
+<%- include popups/edit_profile_cover_image.ejs %>
+
+<% } %>
+<style type="text/css">
+#displaysearchUsers
+{
+    display:none;
+    margin-right:30px;
+    border-left:solid 1px #dedede;
+    border-right:solid 1px #dedede;
+    border-bottom:solid 1px #dedede;
+    overflow:hidden;
+    position: absolute;
+    background: #fff;
+    z-index: 1;
+    width: 100%;
+    max-width: 95%;
+    border-radius: 4px;
+}
+.display_box
+{
+    padding:4px; 
+    border-top:solid 1px #dedede; 
+    font-size:12px;
+    overflow: hidden;
+}
+#displaysearchUsers .display_box img {
+    width: 25px;
+    height: 25px;
+    float: left;
+    margin-right: 6px;
+    border-radius: 25px;
+}
+#displaysearchUsers .display_box .address {
+    font-size:9px; 
+    color:#999999;
+    display: block;
+}
+
+.display_box:hover
+{
+    background:#3b5998;
+    color:#FFFFFF;
+}
+#shade
+{
+    background-color:#00CCFF;
+}
+</style>
+<script type="text/javascript">
+    jQuery(function($){
+        $("#searchUserbox").Watermark("Search");
+    });
+
+     $(document).on("click",".display_box",function(){
+        var user_id = $(this).data("id");
+        var user_name = $(this).data("name");
+        $("#displaysearchUsers").hide();
+        $("#searchUserbox").val(user_name);
+        $("#search_user_id").val(user_id);
+    });
+
+      $(document).ready(function(){
+        $("#searchUserbox").keyup(function(){
+            var searchbox = $(this).val();
+            var dataString = 'searchword='+ searchbox;
+            if(searchbox=='')
+            {
+                $("#displaysearchUsers").html("").show();
+            }
+            else
+            {
+
+                $.ajax({
+                    type: "POST",
+                    url: "/profile/searchUsers",
+                    data: dataString,
+                    cache: false,
+                    success: function(results)
+                    {
+                        $("#displaysearchUsers").html(results.data).show();
+                    }
+                });
+            }return false;
+        });
+    });
+
+    $(document).on("click",".btnEdit",function(){
+        window.location.href = '/profile/edit';
+    });
+
+     $(".meet_team_popup").click(function(){
+        $('#form_team_member')[0].reset();
+        $('#form_team_member #team_id').val('');
+        $('.team_member_title').html('Add Team Member');
+        $('.team_select2').val(null).trigger('change');
+        $("#allow_verify,allow_job_post").prop('checked', false);
+        $('.team_select2').attr("disabled", false);
+
+        $('#meet_team_member').modal('show');
+    });
+
+    $('.team_select2').select2({
+        minimumInputLength: 2,
+        dropdownParent: $("#meet_team_member"),
+        //allowClear: true,
+    });
+
+
+     $('form#form_team_member').submit(function (event) {
+        var ajax_url    = '/company-team-member';
+        var source_id   = '#meet_team_member';
+        var form_id     = '#form_team_member';
+        var main_id     = $('#form_team_member #team_id').val();
+
+        if(main_id!=''){
+            ajax_url    = "/update-team-member";
+        }
+        
+        StoreModalData(ajax_url,source_id,form_id);
+        event.preventDefault();
+    });
+
+    function edit_team_member(id){
+
+        var ajax_url='/get-team-member-data/'+id;
+        var target_id='form#form_team_member';
+        $('#meet_team_member').modal('show');
+        $('.team_member_title').html('Edit Team Member');
+
+        $('.team_select2').attr("disabled", true);
+
+        //$('#edit_education').modal('show');
+        //$('.edu_title').html('Edit Education');
+
+
+        fill_Team_Member(ajax_url,target_id);
+    }
+
+    function fill_Team_Member(ajax_url,target_id){
+        $.getJSON(ajax_url,function (json) {
+            $.each(json, function (key, value) {
+                $(target_id+" select[name=" + key + "]").val(value);
+                $(target_id+' input[name="' + key + '"]').val(value);
+                $(target_id+' textarea[name="' + key + '"]').val(value);
+
+                if(key=="allow_job_post"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+                if(key=="allow_verify"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+                if(key=="super_user"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+                if(key=="user_admin"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+                if(key=="download"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+            });
+        });
+    }
+
+
+    $(document).on("click",".btnRemoveMember",function(){
+        var self_this = $(this);
+        var team_id = $(this).data('id');
+
+        $.confirm({content:"Are sure you want to remove?",
+            header: "Delete",
+            confirm:function () {
+                if(team_id==''){
+                    $.bootstrapGrowl('ID is require', {type: 'danger', delay: 1000});
+                    return false
+                }
+                $.ajax({
+                    url: '/remove-team-member/'+team_id,
+                    method: 'GET',
+                    success: function(results)
+                    {
+                        if(results.status=='OK'){
+                            $.bootstrapGrowl(results.msg, {type: 'success', delay: 1000});
+                           setTimeout(function() { location.reload(); }, 1500);
+                        }else{
+                            $.bootstrapGrowl(results.msg, {type: 'danger', delay: 1000});
+                        }
+                    },
+                    error: function (err) {
+                      $.bootstrapGrowl('Internal server error', {type: 'danger', delay: 1000});
+                    }
+                });
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+
+
+    $(document).on("click",".actionbtnfollow",function(){
+        var self_this = $(this);
+        var company_id = $(this).val();
+        $.ajax({
+            url: '/followCompany/'+company_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    location.reload();
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+
+    $(document).on("click",".btnfollow",function(){
+        var self_this = $(this);
+        var company_id = $(this).val();
+
+        $.ajax({
+            url: '/followCompany/'+company_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    location.reload();
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    function ajaxChangeProfileCoverImage(form_id,action_url){
+        var form = $('#'+form_id)[0]; // You need to use standard javascript object here
+        var formData = new FormData(form);
+        $.ajax({
+            type: 'POST',
+            url: action_url,
+            data:  formData,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            success: function (response)
+            {
+                if(response.status=='OK')
+                {
+                    $.bootstrapGrowl(response.msg, {type: 'success', delay: 2000});
+                    setTimeout(function() { location.reload(); }, 2000);
+                } else
+                {
+                    $.bootstrapGrowl(response.msg, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    }
+
+
+
+function StoreModalData(ajax_url,source_id,form_id){
+    var form = $(form_id)[0]; // You need to use standard javascript object here
+    var formData = new FormData(form);
+        $.ajax({
+            type: "POST",
+            url: ajax_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: 'multipart/form-data',
+            success: function (result) {
+                if(result.status=='OK'){
+                    $(source_id).modal('hide');
+                    $.bootstrapGrowl(result.msg, {type: 'success', delay: 1000});
+                    setTimeout(function() { location.reload(); }, 1200);
+                }else{
+                    if(typeof result.statusDescription!='undefined'){
+                        $.bootstrapGrowl(result.statusDescription.summary, {type: 'danger', delay: 1000});
+                    }else{
+                        if(typeof result.msg!='undefined'){
+                            $.bootstrapGrowl(result.msg, {type: 'danger', delay: 1000});
+                        }
+                    }
+                }
+            },
+            error: function (err) {
+             console.log(err);
+            }
+        });
+    }
+</script>

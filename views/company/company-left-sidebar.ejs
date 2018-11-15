@@ -1,0 +1,27 @@
+<%
+    var is_super_admin = "";
+    var login_company = (req.user.company_id)?req.user.company_id:0;
+    if(req.user.parent_id==userData.mainUser.id){
+        is_super_admin = userData.mainUser.id;
+    } else if(userData && userData.is_superadmin && userData.is_superadmin.length>0){
+        _.each(userData.is_superadmin,function(superadmin){
+            console.log(superadmin.company_id);
+            if(superadmin.super_user && superadmin.company_id && superadmin.company_id.id==login_company){
+                is_super_admin = userData.mainUser.id;
+            }
+        })
+    }
+%>
+<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+    <div class="p9_left_sidebar">
+        <ul class="p9_ls_1001">
+            <li class="first <%=(activepage=='edit')?'active':''%>"><a href="/profile/edit">Basic</a><span class="open"></span></li>
+            <!-- <li><a href="">Privacy</a></li>
+            <li><a href="">Security</a></li> -->
+            <li class="<%=(activepage=='administration')?'active':''%>"><a href="/profile/administration">User Administration</a></li>
+            <% if(is_super_admin){%>
+            <li class="last <%=(activepage=='closeAccount')?'active':''%>"><a href="/close-account">Closing Your Account</a></li>
+            <% } %>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+<%
+
+    if(typeof Jobs!='undefind' && Jobs.legth > 0){
+        _.each(Jobs, function (Job) {
+
+        var company_name='';
+        var job_title   = '';
+
+        if(typeof Job!='undefined' && typeof Job.feed_id!='undefined' && typeof Job.feed_id.title!='undefined'){
+            job_title = Job.feed_id.title
+        }
+        if(typeof Job!='undefined' && typeof Job.company_id!='undefined' && typeof Job.company_id.company_name!='undefined'){
+            if(Job.company_id.company_name!=''){
+                company_name = Job.company_id.company_name;
+            }
+        }
+%>
+<div class="list_connection">
+    <div class="feed_list poll_list p51_feed post" data-id="<%=Job.id%>">
+        <div class="p51_feed_post">
+            <div class="p51_feed_post_user_block dropdown_selection job-list">
+                <div class="p12_f30">
+                    <a class="p12_f301" href="">
+                        <img class="p12_f302" src="/themes/frontend/images/A.jpg" alt="<%=company_name%>" width="65" height="65">
+                    </a>
+                    <div class="p12_f303">
+                        <div class="p12_f304"><a href='<%- sails.config.appUrlwPort+"/jobs/"+Job.feed_id.slug %>' title="<%=job_title%>"><%=job_title%></a></div>
+                        <% if(typeof Job.company_id != 'undefined') {%>
+                        <div class="p12_f305"><%=company_name%></div>
+                        <div class="p12_f306"><i class="fa fa-map-marker" aria-hidden="true"></i> Location</div>
+                        <% } %>
+                        <div class="fmc5003"><%=DateDifferentService.time_ago(Job.createdAt)%> &nbsp; <i class="fa fa-globe" aria-hidden="true"></i></div>
+                    </div>
+                    <button type="button" class="p12_easy_apply btn btn-danger btnDelete">Remove Apply</button>
+                </div>
+                <br/>
+            </div>
+        </div>
+    </div>
+</div>
+<% }) }else{ %> 
+<div class="list_connection">
+    <div class="feed_list poll_list p51_feed post">
+        <div class="p51_feed_post">
+            <div class="p51_feed_post_user_block dropdown_selection job-list">
+                <div class="p12_f30">
+                     <div class="p12_f304">
+                        <p>No Record Found</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<script type="text/javascript">
+    $(document).on("click",".btnDelete",function(){
+        var parents = $(this).parents(".list_connection");
+        var apply_id = parents.find(".feed_list").data('id');
+        $.confirm({content:"Are you sure to delete?",
+            header: "Delete",
+            confirm:function () {
+                var url = "/deleteAppliedJob/"+apply_id;
+                window.location.href = url;
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+</script>

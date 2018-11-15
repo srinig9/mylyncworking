@@ -1,0 +1,634 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                <div class="p7_301 sepb20">
+                    <div class="p7_section_title">
+                        <h3>
+                            Blockchain Verification - Hash Maching
+                        </h3>
+                    </div>
+                    <div class="p7_content">
+                        <div class="p9_container p9_main_form p9_compare_form">
+                            <form id="compate_blockchain_hash" method="post">
+                                <h3 style="margin-left:  60px;font-size:  18px;">
+                                    <% 
+                                    var requestor_name  = '';
+                                    var document_type   = '';
+                                    var tab_name        = '';
+                                    var tab_val         = '';
+                                    var document_no     = 'Document ';
+                                    var document_title  = 'Document ';
+                                    var document_name   = '';
+                                    var data_hash       = '';
+                                    var address_flag    = '';
+                                    var identity_flag   = '';
+                                    var dob_flag        = '';
+
+                                    if(typeof verifyData!='undefined' && typeof verifyData.owner_id!='undefined' && typeof verifyData.owner_id.name!='undefined'){
+                                        requestor_name = ' - '+verifyData.owner_id.name;
+                                    }
+
+                                    if(typeof verifyData!='undefined' && typeof verifyData.hash!='undefined' && verifyData.hash!=''){
+                                        data_hash = verifyData.hash;
+                                    }
+
+                                    if(typeof verifyData!='undefined' && typeof verifyData.verify_id!='undefined'){
+
+                                        if(typeof verifyData.verify_id.identity_flag!='undefined' && verifyData.verify_id.identity_flag==1){
+                                            identity_flag=1;
+                                        }
+                                        if(typeof verifyData.verify_id.dob_flag!='undefined' && verifyData.verify_id.dob_flag==1){
+                                            dob_flag=1;
+                                        }
+                                        if(typeof verifyData.verify_id.address_flag!='undefined' && verifyData.verify_id.address_flag==1){
+                                            address_flag=1;
+                                        }
+                                        
+                                        if(typeof verifyData.verify_id.doc_type_id!='undefined' && typeof verifyData.verify_id.doc_type_id.title!='undefined'){
+                                            document_type = ' - '+verifyData.verify_id.doc_type_id.title;
+                                            document_name = verifyData.verify_id.doc_type_id.title;
+
+                                            if(verifyData.verify_id.doc_type_id.title!='Others'){
+                                                document_title = verifyData.verify_id.doc_type_id.title;
+                                            }
+                                        }
+                                        
+                                        if(typeof verifyData.verify_id.tab_type!='undefined'){
+                                            tab_name = ' - '+verifyData.verify_id.tab_type;
+                                            tab_val = verifyData.verify_id.tab_type;
+                                        }
+
+                                        if(typeof verifyData.verify_id.doc_id!='undefined'){
+                                            document_no += '#'+verifyData.verify_id.doc_id;
+                                        }
+                                    }
+                                %>
+                                    <%=document_no%>
+                                    <span style="text-transform:capitalize;">
+                                        <%=tab_name%>
+                                    </span>
+                                    <%=document_type%><%=requestor_name%>
+                                </h3>
+                                <input name="old_hash" type="hidden" value="<%=data_hash%>">
+                                    <input name="document_title" type="hidden" value="<%=document_name%>">
+                                        <input name="tab_type" type="hidden" value="<%=tab_val%>">
+                                            <input name="address_flag" type="hidden" value="<%=address_flag%>">
+                                                <input name="identity_flag" type="hidden" value="<%=identity_flag%>">
+                                                    <input name="dob_flag" type="hidden" value="<%=dob_flag%>">
+                                                        <table class="table table-striped table-bordered info_table_1" style="width: 90%; margin: 0px 0px 0px 60px;">
+                                                            <tbody>
+                                                                <% if(typeof verifyData!='undefined'){ %>
+                                                                    <%  if(typeof verifyData.verify_id!='undefined'){ 
+                                                                            if(typeof verifyData.verify_id.tab_type!='undefined'){
+                                                                    %>
+                                                                <tr>
+                                                                    <td>
+                                                                        Data
+                                                                    </td>
+                                                                    <td style="text-transform:capitalize;">
+                                                                        <%=verifyData.verify_id.tab_type%>
+                                                                    </td>
+                                                                </tr>
+                                                                <% 
+                                                                    } 
+                                                                %>
+                                                                <% if(typeof verifyData.verify_id.edu_id!='undefined'){
+                                                                    var edu_data='';
+                                                                        edu_data = verifyData.verify_id.edu_id;
+                                                                %>
+                                                                <tr>
+                                                                    <td>
+                                                                        School Name
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="edu_school" name="school" type="text" value="<%=(typeof edu_data.school!='undefined')?edu_data.school:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Degree Name
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="edu_degree" name="degree" type="text" value="<%=(typeof edu_data.degree!='undefined')?edu_data.degree:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Field of Study
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="edu_study_field" name="study_field" type="text" value="<%=(typeof edu_data.study_field!='undefined')?edu_data.study_field:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Degree Type
+                                                                    </td>
+                                                                    <% 
+                                                                        var degreeType='';
+                                                                        if(typeof edu_data.degree_type!='undefined' && typeof edu_data.degree_type.title!='undefined'){
+                                                                            degreeType = edu_data.degree_type.title;
+                                                                        }
+                                                                    %>
+                                                                    <td>
+                                                                        <input class="col-xs-6" id="edu_degree_type" name="degree_type" type="text" value="<%=degreeType%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Start Year
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="from_year" name="from_year" type="text" value="<%=(typeof edu_data.from_year!='undefined')?edu_data.from_year:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Complete Year
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="to_year" name="to_year" type="text" value="<%=(typeof edu_data.to_year!='undefined')?edu_data.to_year:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }else if(typeof verifyData.verify_id.exp_id!='undefined'){ 
+                                                                    var exp_data='';
+                                                                    var exp_company = '';
+                                                                    exp_data = verifyData.verify_id.exp_id;
+
+                                                                    if(typeof exp_data.company_id!='undefined' && typeof exp_data.company_id.company_name!='undefined'){
+                                                                        exp_company = exp_data.company_id.company_name;
+                                                                    }
+                                                                %>
+                                                                <tr>
+                                                                    <td>
+                                                                        Company
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="exp_company" name="company" type="text" value="<%=exp_company%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Position
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="title" name="position" type="text" value="<%=(typeof exp_data.title!='undefined')?exp_data.title:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Location
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="exp_location" name="location" type="text" value="<%=(typeof exp_data.location!='undefined')?exp_data.location:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        From Month
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-3" id="from_month" name="from_month" type="text" value="<%=(typeof exp_data.from_month!='undefined')?exp_data.from_month:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        From Year
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-3" id="from_year" name="from_year" type="text" value="<%=(typeof exp_data.from_year!='undefined')?exp_data.from_year:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        To Month
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-3" id="to_month" name="to_month" type="text" value="<%=(typeof exp_data.to_month!='undefined')?exp_data.to_month:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        To Year
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-3" id="to_year" name="to_year" type="text" value="<%=(typeof exp_data.to_year!='undefined')?exp_data.to_year:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }else if(typeof verifyData.verify_id.project_id!='undefined'){
+                                                                     var project_data = '';
+                                                                     project_data = verifyData.verify_id.project_id;
+                                                                 
+                                                                     var project_company = '';
+                                                                     if(typeof project_data.company_id!='undefined' && typeof project_data.company_id.company_name!='undefined'){
+                                                                        project_company = project_data.company_id.company_name;
+                                                                    }
+                                                                 %>
+                                                                <tr>
+                                                                    <td>
+                                                                        Project Name
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="project_name" name="title" type="text" value="<%=(typeof project_data.title!='undefined')?project_data.title:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Project Url
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="project_url" name="project_url" type="text" value="<%=(typeof project_data.project_url!='undefined')?project_data.project_url:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Company
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="project_company" name="company" type="text" value="<%=project_company%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        Location
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="location" name="location" type="text" value="<%=(typeof project_data.location!='undefined')?project_data.location:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        From Month
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-3" id="from_month" name="from_month" type="text" value="<%=(typeof project_data.from_month!='undefined')?project_data.from_month:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        From Year
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-3" id="from_year" name="from_year" type="text" value="<%=(typeof project_data.from_year!='undefined')?project_data.from_year:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        To Month
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-3" id="to_month" name="to_month" type="text" value="<%=(typeof project_data.to_month!='undefined')?project_data.to_month:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        To Year
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-3" id="to_year" name="to_year" type="text" value="<%=(typeof project_data.to_year!='undefined')?project_data.to_year:''%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }else{ 
+                                                                var verifydata = '';
+                                                                var name_flag=0;
+                                                                verifydata = verifyData.verify_id;
+                                                                 %>
+                                                                <%
+                                                                    if(typeof document_name!='' && document_name=='Passport'){%>
+
+                                                                    <%  if(typeof verifydata.first_name!='undefined' && verifydata.first_name!=''){
+                                                                        name_flag=1;
+                                                                    %>
+                                                                <tr>
+                                                                    <td>
+                                                                        First Name
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-6" id="exp_to_year" name="first_name" type="text" value="<%=verifydata.first_name%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                    <%  if(typeof verifydata.last_name!='undefined' && verifydata.last_name!=''){
+                                                                        name_flag=1;
+                                                                    %>
+                                                                    <tr>
+                                                                    <td>
+                                                                        Last Name
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-6" id="exp_to_year" name="last_name" type="text" value="<%=verifydata.last_name%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                    <% }else{%>
+                                                                <% if(typeof verifydata.legal_name!='undefined' && verifydata.legal_name!='' && name_flag==0){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Legal Name
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="exp_to_year" name="legal_name" type="text" value="<%=verifydata.legal_name%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                    <% } %>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.issue_country!='undefined' && verifydata.issue_country!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Issue Country
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="exp_to_year" name="issue_country" type="text" value="<%=verifydata.issue_country%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.issue_place!='undefined' && verifydata.issue_place!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Issue Place
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-6" id="exp_to_year" name="issue_place" type="text" value="<%=verifydata.issue_place%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.doc_num!='undefined' && verifydata.doc_num!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        <%=document_title%> No
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-5" id="exp_to_year" name="doc_num" type="text" value="<%=verifydata.doc_num%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.issue_date!='undefined' && verifydata.issue_date!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Issue Date
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="exp_to_year" name="issue_date" type="text" value="<%=verifydata.issue_date%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.expiry_date!='undefined' && verifydata.expiry_date!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Expiry Date
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="exp_to_year" name="expiry_date" type="text" value="<%=verifydata.expiry_date%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.dob!='undefined' && verifydata.dob!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Birth Date
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="exp_to_year" name="dob" type="text" value="<%=verifydata.dob%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.birth_place!='undefined' && verifydata.birth_place!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Birth Place
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-6" id="exp_to_year" name="birth_place" type="text" value="<%=verifydata.birth_place%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.gender!='undefined' && verifydata.gender!=0){
+                                                                    var gender='';
+                                                                    if(verifydata.gender==1){
+                                                                        gender='Male';
+                                                                    }else if(verifydata.gender==2){
+                                                                        gender='Female';
+                                                                    }
+                                                                    else if(verifydata.gender==3){
+                                                                        gender='Not Specified';
+                                                                    }
+                                                                %>
+                                                                <tr>
+                                                                    <td>
+                                                                        Gender
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-6" id="exp_to_year" name="gender" type="text" value="<%=gender%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.address_line_1!='undefined' && verifydata.address_line_1!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Address line 1
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="exp_to_year" name="address_line_1" type="text" value="<%=verifydata.address_line_1%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.address_line_2!='undefined' && verifydata.address_line_2!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Address line 2
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-8" id="exp_to_year" name="address_line_2" type="text" value="<%=verifydata.address_line_2%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.city!='undefined' && verifydata.city!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        City
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="exp_to_year" name="city" type="text" value="<%=verifydata.city%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.state!='undefined' && verifydata.state!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        State
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="exp_to_year" name="state" type="text" value="<%=verifydata.state%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.country!='undefined' && verifydata.country!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Country
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="exp_to_year" name="country" type="text" value="<%=verifydata.country%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.zip!='undefined' && verifydata.zip!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Zipcode
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-4" id="exp_to_year" name="zip" type="text" value="<%=verifydata.zip%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                <% if(typeof verifydata.other_doc_info!='undefined' && verifydata.other_doc_info!=''){%>
+                                                                <tr>
+                                                                    <td>
+                                                                        Other Doc Info
+                                                                    </td>
+                                                                    <td>
+                                                                        <input class="col-xs-5" id="exp_to_year" name="other_doc_info" type="text" value="<%=verifydata.other_doc_info%>"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                            <% } %>
+                                                        <% }} %>
+                                                            </tbody>
+                                                        </table>
+                                                        <div class="form-group a-center">
+                                                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                                <br/>
+                                                                <!-- <button type="button" class="btn btn-primary">Verify value in Blockchain</button> -->
+                                                                <input class="btn btn-primary" onclick="CompareBlocakchainData();" type="button" value="Verify Value in Blockchain">
+                                                                </input>
+                                                            </div>
+                                                        </div>
+                                                    </input>
+                                                </input>
+                                            </input>
+                                        </input>
+                                    </input>
+                                </input>
+                            </form>
+                            <hr>
+                                <div class="form-group">
+                                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                        <label class="label" for="">
+                                            Data hash of entered value
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                        <!-- <span class="compared-value"></span> -->
+                                        <input id="new_hash" maxlen="70" name="result0" size="70" type="text" value="">
+                                        </input>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                        <label class="label" for="">
+                                            Data hash from Blockchain
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                        <!-- <span class="compared-value">ncnvs786snnvjhgvjdsci</span> -->
+                                        <input id="old_hash" maxlen="70" name="result1" size="70" type="text" value="<%=data_hash%>">
+                                        </input>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                        <label class="label" for="">
+                                            Status
+                                        </label>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                        <!-- <span class="compared-status">
+                                        <div class="alert alert-success" id="result2"> -->
+                                        <!-- <strong>Success!</strong> Data value hashes Match... -->
+                                        <input id="hash_result_matched" maxlen="70" name="res3" size="70" type="text" value="">
+                                            <!-- </div>
+                                    </span> -->
+                                        </input>
+                                    </div>
+                                </div>
+                            </hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sidebar nav verification Starts -->
+            <%- partial('../includes/sidebar-nav-verification.ejs') %>
+            <!-- Sidebar nav verification Ends -->
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /*function verify() {
+        return false;
+         var user =  document.getElementById("user").value;            
+         var datatype = document.getElementById("datatype").value;          
+         var data = document.getElementById("data").value;
+     
+        //  alert(name);
+        //  alert(datatype);
+       // alert(data);
+
+        $.get('/verifydata/'+user+'/'+datatype+'/'+data, function (data) {
+               // alert(data);
+               // $("#result").html(data);
+                document.getElementById("result0").value = data[0];
+                 document.getElementById("result1").value = data[1];
+                  document.getElementById("result2").value = data[2];
+         });
+
+    }*/
+
+    function CompareBlocakchainData(){
+        var ajax_url    = '/compare-bockchain-hash';
+        var form_id     = '#compate_blockchain_hash';
+        
+        ajaxindicatorstart('LOADING');
+        $('#hash_result_matched').removeAttr('style');
+
+        var form = $(form_id)[0]; // You need to use standard javascript object here
+        var formData = new FormData(form);
+        $.ajax({
+            type: "POST",
+            url: ajax_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: 'multipart/form-data',
+            success: function (result) {
+                $('#new_hash').val('');
+                $('#hash_result_matched').val('');
+
+                if(typeof result.hash!='undefined'){
+                    $('#new_hash').val(result.hash);
+                }
+                $('#hash_result_matched').removeAttr('style');
+                if(result.status=='OK'){
+                    ajaxindicatorstop();
+                    $("#hash_result_matched").css({"font-weight":"bold", "color":"green"});
+                    $('#hash_result_matched').val('Matched');
+                    $.bootstrapGrowl(result.msg, {type: 'success', delay:1500,align:'center',width:350});
+                }else{
+                    ajaxindicatorstop();
+                    $("#hash_result_matched").css({"font-weight":"bold", "color":"red"});
+                    $('#hash_result_matched').val('Not Matched');
+                    if(typeof result.msg!='undefined'){
+                        $.bootstrapGrowl(result.msg, {type: 'danger', delay: 1500,width:350,align:'center'});
+                    }
+                }
+            },
+            error: function (err) {
+             console.log(err);
+             ajaxindicatorstop();
+            }
+        });
+    }
+</script>

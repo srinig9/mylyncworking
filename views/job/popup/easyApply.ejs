@@ -1,0 +1,90 @@
+<%
+    var profile_image = '/themes/frontend/images/default-user.png';
+    if(typeof userData != 'undefined' &&  typeof userData.profile_image != 'undefined' &&  userData.profile_image!=''){
+        profile_image = '/uploads/users/'+userData.profile_image;
+    }
+%>
+<div class="popup_container modal fade bd-example-modal-lg p13_popup" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="pop_up_main_block p13_popup_4000">
+                <form method="POST" id="applyingForm" enctype="multipart/form-data" action="/applyjob">
+                    <div class="section_title"><h3 class="applytocomp"></h3></div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-close" aria-hidden="true"></i></button>
+                    <div class="p13_popup_4001">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding">
+                            <div class="p9_container p9_profile">
+                                <div class="p9_1001 col-lg-6 col-md-6 col-sm-6 col-xs-4 no-padding">
+                                    <a href="" class="p9_1002"><img src="<%=profile_image%>" alt="name" height="100" width="100"></a>
+                                </div>
+                                <div class="p9_1005 col-lg-6 col-md-6 col-sm-6 col-xs-8 no-padding">
+                                     <span class="p13_popup_4013"><%= (typeof userData.name!='undefined' && typeof userData.name!='') ? userData.name : req.user.name %></span>
+                                     <br>
+                                    <% 
+                                    var experience_title='';
+                                    if(typeof userData.userexperiences!='undefined' && typeof userData.userexperiences[0]!='undefined' && typeof userData.userexperiences[0]['title']!='undefined'){
+                                        if(userData.userexperiences[0]['title']!=''){
+                                            experience_title = userData.userexperiences[0]['title'];
+                                        }
+                                    }
+                                    %>
+                                    <%=experience_title%>
+                                    <br>
+                                    <%=typeof req.user.location == 'undefined' ? '' : req.user.location%>
+                                </div>
+                                <button type="submit" class="btn btn-primary p12_easy_apply" data-toggle="modal">Instant Apply</button>
+                            </div>
+                            <div class="p13_popup_4010 p13_popup_4020">Upload resume is optional. We include your profile with your application.</div>
+                        </div>
+
+                        <div class="p13_popup_4010 p13_popup_applying_form">
+                            <div class="row no-margin">
+                                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3"></div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 p13_popup_terms">
+                                    <label class="label" for="isFollowed">
+                                        <input type="checkbox" class="input_check" value="1" name="isFollowed" id="isFollowed" checked="checked"> <span class="followtocomp"></span>
+                                    </label>
+                                </div>
+                                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                                    <label class="label" for="uploadFile">&nbsp;</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <div class="relative">
+                                        <input type="hidden" name="job_id" placeholder="Job ID" class="p7_input form-control" value="">
+                                        <input type="hidden" name="company_id" placeholder="Company ID" class="p7_input form-control" value="">
+
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="form-group input-upload resume_general_block_upload">
+                                            <input type="file" name="filename" id="uploadFile" class="input-upload-button resume_upload_input">
+                                            <div class="upload-file-text">
+                                                <i class="fa fa-cloud-upload" aria-hidden="true"></i> Drag and Drop Your Resume Here..<br>or<br><span>Browse files</span>
+                                            </div>
+                                            <span class="resume_file_name"></span>
+                                        </div>
+                                    </div><br/>
+                                    <span class="uploadFile_info" style="margin-left:20px;">Notes : &nbsp;Word or PDF only (Max, 5MB)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div><!-- End Easy Apply Popup -->
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        /* Selected file name display */
+        $(".resume_file_name").html('');
+
+        $(".resume_upload_input").on("change", function() {
+            var upload_html='';
+
+            upload_html="<b>Selected File:</b> <span class='upload_file_name'>" + this.files[0].name+" </span>";
+
+            $(this).parent().find(".resume_file_name").html(upload_html);
+        });
+    });
+</script>

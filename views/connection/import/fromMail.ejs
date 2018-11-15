@@ -1,0 +1,73 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <p>&nbsp;</p>
+                <div class="max_width1000">
+                    <div class="p5_rc1001">
+                        <div class="p5_rc1002">
+                            <img class="p5_rc1101" src="/themes/frontend/images/color-logo.svg">
+                            <p class="p5_rc1004">Best way to grow your connections is to invite your contacts</p>
+                            <p class="p5_rc1102">
+								<!-- You earn LBD ($5) for each invitation immediately.<br> -->
+								You will earn LBD ($5) once your contact joins Lynked.World
+							</p>
+                        </div>
+                        <div class="p5_rc1003 a-center">
+                            <ul class="p5_rc1100">
+                                <li class="gmail_icon"><a href="javascript:;" onclick="auth();"></a></li>
+                                <li class="aol_icon"><a href="javascript:;"></a></li>
+                                <li class="yahoo_icon"><a href="javascript:;"></a></li>
+                                <li class="window_icon"><a href="javascript:;"></a></li>
+                            </ul>
+							<a class="p5_rc1005 skip_now" href="/">Skip for now &nbsp;&nbsp;<i class="fa fa-angle-double-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="//apis.google.com/js/client.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    function auth() {
+        var config = {
+            'client_id': "<%=sails.config.google_client_id%>",
+            'scope': 'https://www.google.com/m8/feeds'
+        };
+        gapi.auth.authorize(config, function() {
+            fetch(gapi.auth.getToken());
+        });
+    }
+
+    function fetch(token) {
+        $.ajax({
+            url: "https://www.google.com/m8/feeds/contacts/default/full?access_token=" + token.access_token + "&alt=json",
+            dataType: "jsonp",
+            success:function(data) {
+
+                var a = data.feed.entry;
+                var array = [];
+                
+                var $form = $("<form />");
+                $form.attr("action","/import-connection-found");
+                $form.attr("method","POST");
+
+                a.forEach(function(entry,index) {
+                    if(entry.gd$email != undefined && entry.gd$email.length > 0){
+                        email = entry.gd$email[0].address;
+                        name = entry.title.$t;
+                        $form.append('<input type="hidden" name="data['+index+'][email]" value="'+email+'" />');
+                        $form.append('<input type="hidden" name="data['+index+'][name]" value="'+name+'" />');
+                    }
+                });
+
+                $("body").append($form);
+                $form.submit();
+            }
+        });
+    }
+</script>

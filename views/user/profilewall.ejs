@@ -1,0 +1,839 @@
+<%
+var profile_image = "/themes/frontend/images/default-user.png";
+
+if(typeof userInfo!="undefined" && typeof userInfo.profile_image!="undefined" &&  userInfo.profile_image!=""){
+    profile_image = "/uploads/users/"+userInfo.profile_image;
+}
+
+var slugUrl ="/profile";
+if(typeof userInfo!="undefined" && typeof userInfo.slug!="undefined" && typeof userInfo.slug!=""){
+        slugUrl = userInfo.slug;
+}
+
+var login_user_id = (typeof req.user != 'undefined' && req.user!='') ? req.user.id : 0;
+var profile_privacy = 0;
+
+if(login_user_id!=user.id){
+    if(typeof userrelation!='undefined' && userrelation.length==0){
+        if(user.userprivacysettings.length > 0){
+            _.each(user.userprivacysettings,function(privacy){
+                if(typeof privacy.privacy_option_id.privacy_id.type !='undefined' && privacy.privacy_option_id.privacy_id.type=='profile'){
+                    if(privacy.privacy_option_id.option_val=='Private'){
+                        profile_privacy = profile_privacy+1;
+                    }
+                }
+            })
+        }
+    }
+}
+%>
+
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p51_sidebar first">
+                    <div class="p51_title_container hidden"><span class="p51_title_icon"><i class="fa fa-check-circle" aria-hidden="true"></i></span> Verification <span class="open"></span></div>
+                    <div class="p51_content">
+                        <div class="p51_user_info">
+                            <div class="p51_user_img"><a href="<%=slugUrl%>"><img src="<%=profile_image%>" alt='<%=userInfo.name%>' width="95" height="95" /></a></div>
+                            <div class="p51_user_name">
+                                <a href="<%=slugUrl%>">
+                                    <% if(typeof userInfo!='undefined' && typeof userInfo.name!='undefined' && typeof userInfo.name!=''){
+                                    %>
+                                        <%=userInfo.name%>
+                                    <% } else { %>
+                                        <%=userInfo.name%>
+                                    <% } %>
+                                </a>
+                            </div>
+                            <% var user_position = "";
+                            var user_company = "";
+                            if(typeof userInfo!="undefined" && typeof userInfo.userexperiences!="undefined" && typeof userInfo.userexperiences.length > 0) {
+                                var experience = userInfo.userexperiences[0];
+                                if(typeof experience["title"]!="undefined"){
+                                    user_position = experience["title"];
+                                }
+                                if( typeof experience["company_id"] != "undefined" && typeof experience["company_id"]["company_name"] != "undefined" ) {
+                                    if(experience["company_id"]["company_name"] != "") {
+                                        if(user_position != "") {
+                                            //user_company = " <br/> "+experience["company_id"]["company_name"];
+                                            user_company = experience["company_id"]["company_name"];
+                                        } else {
+                                            user_company = experience["company_id"]["company_name"];
+                                        }
+                                    }
+                                }
+                            } 
+                            if(user_position != "") { %>
+                                <div class="p51_user_designation"><%=user_position%></div>
+                            <% } %>
+
+                            <% if(profile_privacy==0) {%>
+                                <% if(user_company != "") { %>
+                                    <div class="p51_user_company"><%=user_company%></div>
+                                <% } %>
+                                <div class="p51_user_location"><%=typeof userInfo.location == "undefined" ? "" : userInfo.location%></div>
+                                <% var my_income = 0;
+                                if(typeof userInfo != "undefined" && typeof userInfo.wallet != "undefined") {
+                                    my_income = userInfo.wallet;
+                                } %>
+                                <div class="p51_user_total_lynked"><a href="/blogs"><span class="lynked_bal">Blog (<% if(typeof userInfo!='undefined' && typeof userInfo.blogCount!='undefined'){ %><%=userInfo.blogCount %><% } %>)</span></a><span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span><a href="/wallet"><span class="lynked_bal"> LBD ($<%=my_income.toFixed(2)%>)</span></a> <a href="/rewards"><span class="p51_user_info_i"><i class="fa fa-info-circle" aria-hidden="true"></i></span></a></div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 feed_main_container no-padding">
+                <% if(profile_privacy==0) {%>
+
+                <% 
+                console.log(userInfo.company_id);
+                if(typeof userInfo.company_id=='undefined' || user.company_id=='') {%>
+
+                <div class="p51_feed">
+                    <div class="p51_feed_title">Create Post and earn rewards</div>
+                    <div class="p51_feed_post">
+                        <% if(login_user_id!=0){%>
+                        <form action="/createFeed" method="POST" id="createFeed">
+                            <div class="myfileuploads"></div>
+                            <textarea name="feed_details" id="feed_details" cols="30" rows="4" placeholder="Share an article, photo video or idea..."></textarea>
+                            <div id="displayImages"></div>
+                            <div class="p51_feed_post_action dropdown_selection">
+                                <a href="/blogs/create"><button type="button" class="p51_fw12 pull-left">Write blog</button></a>
+                                <div class="dropdown">
+                                    <button type="button" data-toggle="dropdown" class="dropdown-toggle p51_fw12">Share with &nbsp; <i class="fa fa-globe" aria-hidden="true"></i></button>
+                                    <ul class="dropdown-menu p51_feed_share_world">
+                                        <li><button class="p51_feed_share1" type="button"><i class="fa fa-globe" aria-hidden="true"></i> Public</button></li>
+                                        <li><button class="p51_feed_share2" type="button"><i class="fa fa-users" aria-hidden="true"></i> Friends</button></li>
+                                        <li><button class="p51_feed_share3" type="button"><i class="fa fa-lock" aria-hidden="true"></i> Only me</button></li>
+                                    </ul>
+                                </div>
+                                <% if(login_user_id!=userInfo.id){%>
+                                <input type="hidden" name="to_user_id" id="to_user_id" value="<%=userInfo.id%>">
+                                <% } %>
+                                <input type="hidden" name="redirect" id="redirect" value="<%=req.originalUrl%>">
+                                <input type="hidden" name="group_id" id="group_id" value="">
+                                <input type="hidden" name="privacy" id="privacy" value="1">
+                                <div class="image-upload">
+                                    <label for="file-input" class="p51_feed_video_share_button marlr8">
+                                        <i class="fa fa-camera" aria-hidden="true"></i>
+                                    </label>
+                                    <input name="avatar" id="file-input" type="file" multiple="multiple" />
+                                </div>
+                                <button type="submit" class="btn btn-primary p51_feed_post_share_button">Post</button>
+                            </div>
+                        </form>
+                        <% } %>
+                    </div>
+                </div>
+                <%
+                }
+                if(feeds.length > 0){
+                for(var _index=0; _index < feeds.length; _index++) {
+                    var _feed = feeds[_index];
+                %>
+                <div class="list_connection">
+                    <!-- Display Only blog data -->
+                    <div class="feed_list poll_list p51_feed post" dataAccessRequestList="<%=_feed.user_id.id%>" data-id="<%=_feed.id%>">
+                        <div class="p51_feed_post">
+                            <div class="p51_feed_post_user_block dropdown_selection <%- (_feed.type == 'J') ? 'job-list' : '' %>">
+                                <%
+                                    var userimage =  '/themes/frontend/images/default-user.png';
+                                    var slug_url  = '/profile';
+                                    var displayname='';
+                                    var my_position =  '';
+                                    var my_company = '';
+                                     var feedUser = '';
+                                    if(typeof _feed.user_id!='undefined'){
+
+                                        feedUser =_feed.user_id;
+                                        if(typeof feedUser.profile_image!='undefined' && feedUser.profile_image != ''){
+                                            userimage = '/uploads/users/'+feedUser.profile_image;
+                                        }
+
+                                        if(typeof feedUser.company_id!='undefined' && typeof feedUser.company_id.slug!='undefined' && feedUser.company_id.slug!=''){
+                                            slug_url = '/company/'+feedUser.company_id.slug;
+                                        }else{
+                                            if(typeof feedUser.slug!='undefined' && feedUser.slug!=''){
+                                                slug_url = '/profile/'+feedUser.slug;
+                                            }
+                                        }
+
+                                       if(typeof feedUser.company_id!='undefined' && typeof feedUser.company_id.company_name!='undefined' && feedUser.company_id.company_name!=''){
+                                            displayname = feedUser.company_id.company_name;
+                                        }else{
+                                             displayname = feedUser.name;
+                                        }
+                                    
+                                        if(typeof feedUser.userexperiences!='undefined' && feedUser.userexperiences.length>0){
+
+                                            if(typeof feedUser.userexperiences[0]['title']!='undefined' && feedUser.userexperiences[0]['title']!=''){
+                                                my_position = feedUser.userexperiences[0]['title'];
+                                            }
+
+                                            if(typeof feedUser.userexperiences[0]['company_id']!='undefined' && typeof feedUser.userexperiences[0]['company_id']['company_name']!='undefined'){
+                                                
+                                                if(feedUser.userexperiences[0]['company_id']['company_name']!=''){
+                                                    if(my_position!=''){
+                                                        my_company = ' at '+feedUser.userexperiences[0]['company_id']['company_name'];
+                                                    }else{
+                                                        my_company = feedUser.userexperiences[0]['company_id']['company_name'];
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                %>
+                                <% if(typeof _feed.title == 'undefined'){ %>
+                                <div class="p51_feed_post_user_info">
+                                    <% if(_feed.group_id != undefined) { %>
+                                        <a href="<%=slug_url%>">
+                                            <img class="p51_feed_post_user_img" src="<%=userimage%>" alt="<%=_feed.user_id.name%>">
+                                        </a>
+                                        <div class="p51_feed_post_user_feed_info">
+                                            <div class="fmc5002">
+                                                <a href="<%=slug_url%>"><%=displayname%></a>
+                                                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                                                <a href="/group/<%=_feed.group_id.slug%>"><%=_feed.group_id.group_name%></a>
+                                            </div>
+                                            <div class="fmc5003">
+                                                <%
+                                                if(my_company!='' || my_position!=''){%>
+                                                <span style="font-size:12px;"><%=my_position%> <%=my_company%></span>
+                                                <% } %>
+                                                &nbsp; &nbsp; <%=DateDifferentService.time_ago(_feed.createdAt)%> <i class="fa fa-globe" aria-hidden="true"></i></div>
+                                        </div>
+                                    <% } else if(_feed.to_user_id != undefined) { %>
+                                        <a href="<%=slug_url%>">
+                                            <img class="p51_feed_post_user_img" src="<%=userimage%>" alt="<%=_feed.user_id.name%>">
+                                        </a>
+                                        <div class="p51_feed_post_user_feed_info">
+                                            <div class="fmc5002">
+                                                <a href="<%=slug_url%>"><%=displayname%></a>
+                                                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                                                <a href="/profile/<%=_feed.to_user_id.slug%>"><%=_feed.to_user_id.name%></a>
+                                            </div>
+                                            <div class="fmc5003">
+                                                <%
+                                                if(my_company!='' || my_position!=''){%>
+                                                <span style="font-size:12px;"><%=my_position%> <%=my_company%></span>
+                                                <% } %>
+                                                &nbsp; &nbsp; <%=DateDifferentService.time_ago(_feed.createdAt)%> <i class="fa fa-globe" aria-hidden="true"></i></div>
+                                        </div>
+                                    <% } else { %>
+                                        <a href="<%=slug_url%>">
+                                            <img class="p51_feed_post_user_img" src="<%=userimage%>" alt="<%=_feed.user_id.name%>">
+                                        </a>
+                                        <div class="p51_feed_post_user_feed_info">
+                                            <div class="fmc5002"><a href="<%=slug_url%>"><%=displayname%></a>
+                                            </div>
+                                            <div class="fmc5003">
+                                            <%
+                                            if(my_company!='' || my_position!=''){%>
+                                            <span style="font-size:12px;"><%=my_position%> <%=my_company%></span>
+                                            <% } %>
+                                            &nbsp;&nbsp; <%=DateDifferentService.time_ago(_feed.createdAt)%> <i class="fa fa-globe" aria-hidden="true"></i></div>
+                                        </div>
+                                    <% } %>
+                                </div>
+
+                                <%  } else if(_feed.type != 'J'){ %>
+                                <div class="p51_feed_post_user_info">
+                                    <a href="<%=slug_url%>">
+                                        <img class="p51_feed_post_user_img" src='<%=userimage%>' alt='<%=_feed.user_id.name%>' width="65" height="65" />
+                                    </a>
+                                    <div class="p51_feed_post_user_feed_info">
+                                        <% if(_feed.type=='E'){ var module = "event"; }else { var module = "blogs"; } %>
+                                        <div class="fmc5001"><a href="/<%=module%>/<%=_feed.slug%>"><%=_feed.title%></a></div>
+                                        <div class="fmc5002">Posted by - <a href="<%=slug_url%>"><%=displayname%></a></div>
+                                        <div class="fmc5003">
+                                        <%
+                                            if(my_company!='' || my_position!=''){%>
+                                            <span style="font-size:12px;"><%=my_position%> <%=my_company%></span>
+                                        <% } %>
+                                    &nbsp; &nbsp; <%=DateDifferentService.time_ago(_feed.createdAt)%> <i class="fa fa-globe" aria-hidden="true"></i></div>
+                                    </div>
+                                </div>
+
+                                <% } else if(_feed.type == 'J'){ var Job = _feed;
+
+                                     var job_slug='';
+                                     var slug_url='javascript:;';
+                                     if(typeof Job.slug!='undefined' && Job.slug!=''){
+                                         job_slug =sails.config.appUrlwPort+'/jobs/'+Job.slug;
+                                    }
+                                 %>
+                                    
+                                    <span class="bookmark">
+                                        <% if(Job.jobBookmarks != undefined && Job.jobBookmarks.length > 0) {  %>
+                                        <i job_id="<%- Job.id %>" class="fa fa-bookmark" aria-hidden="true"></i>
+                                        <% } else { %>
+                                        <i job_id="<%- Job.id %>" class="fa fa-bookmark-o" aria-hidden="true"></i>
+                                        <% } %>
+                                    </span>
+                                    <div class="p12_f30">
+                                        <% if(typeof Job.company_id != 'undefined') {
+                                            if(typeof Job.company_id.slug!='undefined' && Job.company_id.slug!=''){
+                                                slug_url=sails.config.appUrlwPort+'/company/'+Job.company_id.slug+'/wall';
+                                            }
+                                            if(typeof Job.company_id.companydata[0].profile_image != 'undefined'){ %>
+                                            <a class="p12_f301" href="<%- sails.config.appUrlwPort+"/jobs/"+Job.slug %>">
+                                                <img class="p12_f302" src="<%- sails.config.appUrlwPort+sails.config.profile_image_url+Job.company_id.companydata[0].profile_image %>" alt="<% if(typeof Job.company_id != 'undefined' && typeof Job.company_id.company_name != 'undefined') { %><%- Job.company_id.company_name %><% } %>" width="65" height="65">
+                                            </a>
+                                            <% } else { %>
+                                            <a class="p6_sc_1002 project_img" href="<%=job_slug%>" target="_blank">
+                                                <span class="first-letter">
+                                                    <%=Job.company_id.company_name[0].toUpperCase()%>
+                                                </span>
+                                            </a>
+                                            <% } 
+                                        } else { 
+                                         if(typeof Job.user_id!='undefined' && typeof Job.user_id.slug!='undefined' && Job.user_id.slug!=''){
+                                                slug_url=sails.config.appUrlwPort+'/profile/'+Job.user_id.slug+'/wall';
+                                            }
+                                            if(typeof Job.user_id.profile_image != 'undefined') { %>
+                                                <a class="p12_f301" href="<%- sails.config.appUrlwPort+"/jobs/"+Job.slug %>">
+                                                    <img class="p12_f302" src="<%- sails.config.appUrlwPort+sails.config.profile_image_url+Job.user_id.profile_image %>" width="65" height="65">
+                                                </a>
+                                            <% } else { %>
+                                                <a class="p12_f301 project_img" href="<%=job_slug%>" target="_blank">
+                                                    <span class="first-letter">
+                                                        <%=Job.user_id.name[0].toUpperCase()%>
+                                                    </span>
+                                                </a>
+                                            <% } 
+                                            } %>
+                                        <div class="p12_f303">
+                                            <div class="p12_f304"><a href='<%- sails.config.appUrlwPort+"/jobs/"+Job.slug %>'><%- Job.title %></a></div>
+                                           <% if(Job.company_id != undefined && Job.company_id.company_name != undefined) { %>
+                                                <div class="p12_f305"><a href="<%=slug_url%>" title="<%- Job.company_id.company_name %>"><%- Job.company_id.company_name %></a></div>
+                                            <% }else{
+                                                if(Job.user_id!='undefined' && Job.user_id.name!='undefined'){
+                                            %>
+                                            <div class="p12_f305"><a href="<%=slug_url%>" title="<%- Job.user_id.name %>"><%- Job.user_id.name %></a></div>
+                                            <% }
+                                            }
+                                            if(typeof Job.location != 'undefined' && Job.location != '') { %>
+                                            <div class="p12_f306"><i class="fa fa-map-marker" aria-hidden="true"></i> <%- Job.location %> </div>
+                                            <% } %>
+                                        </div>
+                                        <button type="button" class="btn btn-primary p12_easy_apply btnEasyApply" data-toggle="modal">Instant Apply</button>
+                                    </div>
+                                    
+                                <% } %>
+                            </div>
+                            <% if(_feed.type == 'J'){ %>
+                            <div class="p12_f31">
+                                    <% if(typeof Job.experience_id != 'undefined' && typeof Job.experience_id.title != 'undefined'){ %>
+                                    <div class="p12_f311"><i class="fa fa-briefcase" aria-hidden="true"></i> <%- Job.experience_id.title %></div>
+                                    <% } %>
+                                    
+                                    <% if(typeof Job.job_type_id != 'undefined' && typeof Job.job_type_id.title != 'undefined'){ %>
+                                    <div class="p12_f312"><i class="fa fa-file" aria-hidden="true"></i> <%- Job.job_type_id.title %></div>
+                                    <% } %>
+                                    <% if(typeof Job.salary != 'undefined'){ %>
+                                    <div class="p12_f313"><%- Job.salary %></div>
+                                    <% } %>
+                                </div>
+                            <% }
+                            if(_feed.type=='P') { %>
+                            <div class="p51_feed_post">
+                                <div class="p_29_mc">
+                                    <div class="p29_li pad20 pad_tb10">
+                                        <div class="p29_li_check">
+                                            <label class="input_check_label" for="selection1"><%-_feed.feed_details%></label>
+                                        </div>
+                                    </div>
+                                    <div class="p29_li_option row no-margin">
+                                        <%
+                                            var total_ans =  _feed.pollanswers.length;
+
+                                            _.each(_feed.polloptions, function (polloption) {
+                                                var total_option_ans = 0;
+                                                var avg = 0;
+                                                var checked = "";
+                                                if(polloption.pollanswers.length > 0){
+                                                    total_option_ans = polloption.pollanswers.length;
+                                                    avg = (total_option_ans * 100)/total_ans;
+                                                    checked = polloption.pollanswers.filter(function (person) { 
+                                                        return person.user_id == login_user_id;
+                                                    });
+                                                }
+                                        %>
+                                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <div class="form-group">
+                                                <input name="answer_<%=polloption.feed_id%>[]" id="option_<%=polloption.id%>" class="input_radio form-inline answer_poll" value="<%=polloption.id%>" type="radio" <% if(checked!='') { %> checked="checked" <% } %> >
+                                                <label class="label" for="option_<%=polloption.id%>"><%=polloption.poll_option%></label>
+                                                <div class="p29_02112017">
+                                                    <div class="meter">
+                                                        <span class="poll_meter_<%=polloption.id%>" style="width: <%=avg%>%;"></span>
+                                                    </div>
+                                                    <div class="poll_count poll_count_<%=polloption.id%>">
+                                                        <%=avg.toFixed(2)%>% <span class="count">(<%=total_option_ans%>)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } else if(_feed.type=='E'){ %>
+
+                            <div class="p51_feed_post">
+                                <div class="p_29_mc">
+                                    <div class="p29_li pad20 pad_tb10">
+                                        <div class="p29_li_check">
+                                            <ul class="event-list">
+                                                <% 
+                                                if(_feed.feedmedias.length > 0) { 
+                                                    var event_image = "/uploads/feeds/"+_feed.feedmedias[0].image;
+                                                }else{
+                                                    var event_image = "/themes/frontend/images/image_not_found.jpeg"
+                                                }
+
+                                                %>                                                
+                                                <li>
+                                                    <img alt="" src="<%=event_image%>" />
+                                                    <div class="info">
+                                                        <h2 class="title"><%=_feed.title%></h2>
+                                                        <p class="desc">
+                                                            <span><i class="fa fa-map-marker" aria-hidden="true"></i>&nbsp; <%=_feed.location%></span><br>
+                                                            <span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp; 12 Dec, 2018</span><br>
+                                                            <span><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp; 9:00 AM - 12:00 PM</span>
+                                                        </p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <label class="input_check_label" for="selection1"><%-_feed.feed_details%></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <% } else { %>
+                            <div class="p51_feed_post_feeds">
+                                <%
+                                if(_feed.feedmedias.length > 0 ){
+                                    var feedmedias =  _feed.feedmedias;
+                                    for(var _mindex=0; _mindex < feedmedias.length; _mindex++) {
+                                        var _media = feedmedias[_mindex];
+
+                                %>
+                                <div class="feed-images">
+                                    <img src="<%=sails.config.appUrlwPort%>/uploads/feeds/<%=_media.image%>" class="img-responsive" width="150">
+                                </div>
+                                <% } } %>
+                                <div class="myspecialdiv">
+                                    <% var fd = _feed.feed_details; %>
+                                    <%-fd.replace(/<img[^>]*>/g,"").substring(0,375)%> 
+                                </div>
+                            </div>
+                            <% }
+
+                                var totalLikes = 0;
+                                var totaldislikes = 0;
+                                var isliked = 0;
+                                var isdisliked = 0;
+                                feedlikes = _feed.feedlikes;
+
+                                _.each(feedlikes, function (feedlike) {
+                                    temp2 = [];
+                                    temp2 = feedlike;
+                                    if(feedlike.status==1){
+                                        totalLikes = totalLikes+1;
+                                    }
+                                    if(feedlike.status==2){
+                                        totaldislikes = totaldislikes+1;
+                                    }
+                                    if(feedlike.status==2 && feedlike.user_id==login_user_id){
+                                        isdisliked = 1;
+                                    }
+                                    if(feedlike.status==1 && feedlike.user_id==login_user_id){
+                                        isliked = 1;
+                                    }
+                                })
+                                totalLikes = totalLikes;
+                                totaldislikes = totaldislikes;
+                                isliked = isliked;
+                                isdisliked = isdisliked;
+                            %>
+                            <div class="p51_feed_post_feed_not">
+                                <div class="pull-left p51_feed_pfn1 p51_feed_pfn2"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="total_likes"> &nbsp; <%=totalLikes%> Likes</span></div>
+
+                                <!-- <div class="pull-left p51_feed_pfn1 p51_feed_pfn2"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="total_dislikes"> &nbsp; <%=totaldislikes%> Disikes</span></div> -->
+
+                                <div class="pull-right p51_feed_pfn2 total_comments"><%=_feed.feedcomments.length%> Comments</div>
+                                <div class="pull-right p51_feed_pfn3">0 Shares</div>
+                            </div>
+
+                            <div class="p51_feed_post_action bloglist">
+                                <button type="button" class="p51_feed_world_share_lynked"><img src="/themes/frontend/images/color-logo.svg" class="" alt="share with lynked" width="25" height="25"><span class=""> &nbsp; LBD ($0)</span> &nbsp; <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+
+                                <button type="button" class="active-action p51_fw12 marlr8 btnlike <% if(isliked==1){ %> active <% } %>" title="Like"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Like</span></button>
+
+                                <!-- <button type="button" class="active-action p51_fw12 btndislike <% if(isdisliked==1){ %> active <% } %>" title="Dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Dislike</span></button> -->
+
+                                <button type="button" class="p51_fw12 marlr8 btncomment" title="Comment"><i class="fa fa-comment" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Comment</span></button>
+
+                                <button type="button" class="p51_fw12" title="Share"><i class="fa fa-share" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Share</span></button>
+
+                                <div class="row">
+                                    <div class="">
+                                        <div class="comment-form">
+                                        <div class="comments mycomments">
+                                        <% if(_feed.feedcomments.length > 3 ){ %>
+                                        <a href="javascript:;" class="see-more">
+                                            <i class="fa fa-repeat"></i> Load Previous Comments
+                                        </a>
+                                        <% } %>
+
+                                            <% 
+                                            if(_feed.feedcomments.length > 0 ){
+                                                var feedcomments =  _feed.feedcomments;
+                                                for(var _cindex=0; _cindex < feedcomments.length; _cindex++) {
+                                                    var _feedcomment = feedcomments[_cindex];
+
+                                                    var comment_userimage =  '/themes/frontend/images/default-user.png';
+                                                    var comment_user_slug  = '/profile';
+                                                    var displayname ='';
+
+                                                    if(typeof _feedcomment.user_id!='undefined' && typeof _feedcomment.user_id.profile_image!='undefined' && _feedcomment.user_id.profile_image!=''){
+                                                        comment_userimage = '/uploads/users/'+_feedcomment.user_id.profile_image;
+                                                    }
+
+                                                    if(typeof _feedcomment.user_id.company_id!='undefined' && typeof _feedcomment.user_id.company_id.slug!='undefined' && _feedcomment.user_id.company_id.slug!=''){
+                                                        comment_user_slug = '/company/'+_feedcomment.user_id.company_id.slug;
+                                                    }else{
+                                                        if(typeof _feedcomment.user_id!='undefined' && typeof _feedcomment.user_id.slug!='undefined' && _feedcomment.user_id.slug!=''){
+                                                        comment_user_slug ='/profile/'+_feedcomment.user_id.slug;
+                                                        }
+                                                    }
+
+                                                   if(typeof _feedcomment.user_id.company_id!='undefined' && typeof _feedcomment.user_id.company_id.company_name!='undefined' && _feedcomment.user_id.company_id.company_name!=''){
+                                                        displayname = _feedcomment.user_id.company_id.company_name;
+                                                    }else{
+                                                         displayname = _feedcomment.user_id.name;
+                                                    }
+                                                   
+                                            %>
+                                            <div class="comment-wrap main-comment" data-fid="<%=_feedcomment.feed_id%>">
+                                                <div class="photo">
+                                                    <div class="avatar" style="background-image: url('<%=comment_userimage%>')"></div>
+                                                </div>
+                                                <div class="comment-block">
+                                                    <p class="comment-user"><a href="<%=comment_user_slug%>"><%=displayname%></a></p>
+                                                    <p class="comment-text"><%=_feedcomment.comments%></p>
+                                                    <div class="p6_comment_count pull-left">
+                                                        <a href="javascript:;" class="btncommentlike" data-cid="<%=_feedcomment.id%>">Like</a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                        <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                        <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_feedcomment.commentlikes.length%></span></a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> <%=_feedcomment.commentreply.length%></a>
+                                                    </div>
+                                                    <% 
+                                                    if(_feedcomment.commentreply.length > 0 ){
+                                                        var commentreply =  _feedcomment.commentreply;
+                                                        for(var _crindex=0; _crindex < commentreply.length; _crindex++) {
+                                                            var _commentreply = commentreply[_crindex];
+
+                                                            var cr_userimage =  '/themes/frontend/images/default-user.png';
+                                                            var cr_user_slug  = '/profile';
+                                                            var display_name  = '';
+                                                            
+                                                            if(typeof _commentreply.user_id!='undefined' && typeof _commentreply.user_id.profile_image!='undefined' && _commentreply.user_id.profile_image!=''){
+                                                                cr_userimage = '/uploads/users/'+_commentreply.user_id.profile_image;
+                                                            }
+
+                                                            if(typeof _commentreply.user_id.company_id!='undefined' && typeof _commentreply.user_id.company_id.slug!='undefined' && _commentreply.user_id.company_id.slug!=''){
+                                                                comment_user_slug = '/company/'+_commentreply.user_id.company_id.slug;
+                                                            }else{
+                                                                 if(typeof _commentreply.user_id!='undefined' && typeof _commentreply.user_id.slug!='undefined' && _commentreply.user_id.slug!=''){
+                                                                    cr_user_slug = '/profile/'+_commentreply.user_id.slug;
+                                                                }
+                                                            }
+                                                            
+                                                            if(typeof _commentreply.user_id.company_id!='undefined' && typeof _commentreply.user_id.company_id.company_name!='undefined' && _commentreply.user_id.company_id.company_name!=''){
+                                                                display_name = _commentreply.user_id.company_id.company_name;
+                                                            }else{
+                                                                 display_name = _commentreply.user_id.name;
+                                                            }
+
+                                                    %>
+                                                    <div class="comment-wrap comment-reply ember-mode" style="display: block;">
+                                                        <div class="photo">
+                                                            <div class="avatar" style="background-image: url('<%=cr_userimage%>')">
+                                                            </div>
+                                                        </div>
+                                                        <div class="comment-block">
+                                                            <p class="comment-user"><a href="<%=cr_user_slug%>"><%=display_name%></a></p>
+                                                            <p class="comment-text"><%=_commentreply.comments%></p>
+                                                            <div class="p6_comment_count pull-left">
+                                                                <a href="javascript:;"  class="btncommentlike" data-cid="<%=_commentreply.id%>">Like</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_commentreply.commentlikes.length%></span></a>
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> 0</a>
+                                                            </div>
+                                                            <div class="bottom-comment">
+                                                                <div class="comment-date">
+                                                                    <%=DateDifferentService.time_ago(_commentreply.createdAt)%>
+                                                                    <% if(_commentreply.user_id.id == login_user_id) { %>
+                                                                    <div class="bottom-comment-action dropdown_selection">
+
+                                                                        <!-- <a href="javascript:;" class="btneditComment" data-comment_id="<%=_commentreply.id%>" data-text="reply"><i class="fa fa-pencil"></i></a>
+                                                                        <a href="javascript:;" class="deleteComment" data-comment_id="<%=_commentreply.id%>"  data-text="reply"><i class="fa fa-trash"></i></a> -->
+                                                                        <div class="dropdown p51_feed_post_more_info">
+                                                                            <button data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                                                                            <ul class="dropdown-menu p51_feed_share_world">
+                                                                                <li><a href="javascript:;" class="btneditComment" data-comment_id="<%=_commentreply.id%>" data-text="reply"><i class="fa fa-pencil"></i>&nbsp;Edit</a></li>
+                                                                                <li><a href="javascript:;" class="deleteComment" data-comment_id="<%=_commentreply.id%>"  data-text="reply"><i class="fa fa-trash"></i>&nbsp;Delete</a></li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                   
+                                                                    <% } %>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } } %>
+                                                    
+                                                    <form method="post" class="form-comment formReply commentForm" style="display: none;">
+                                                        <div class="form-group">
+                                                            <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                            <input name="parent_id" value="<%=_feedcomment.id%>" class="parent_id" type="hidden">
+                                                            <input name="feed_id" value="" type="hidden">
+                                                            <button type="submit" class="send-comment" value="replyform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </form>
+                                                    <div class="bottom-comment">
+                                                        <div class="comment-date">
+                                                            <%=DateDifferentService.time_ago(_feedcomment.createdAt)%>
+                                                            <% if(_feedcomment.user_id.id == login_user_id) { %>
+                                                            <div class="bottom-comment-action dropdown_selection">
+                                                                <!-- <a href="javascript:;" class="btneditComment" data-comment_id="<%=_feedcomment.id%>"><i class="fa fa-pencil"></i></a>
+                                                                <a href="javascript:;" class="deleteComment" data-comment_id="<%=_feedcomment.id%>" data-text="main"><i class="fa fa-trash"></i></a> -->
+                                                                <div class="dropdown p51_feed_post_more_info">
+                                                                    <button data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                                                                    <ul class="dropdown-menu p51_feed_share_world">
+                                                                        <li><a href="javascript:;" class="btneditComment" data-comment_id="<%=_feedcomment.id%>"><i class="fa fa-pencil"></i>&nbsp;Edit</a></li>
+                                                                        <li><a href="javascript:;" class="deleteComment" data-comment_id="<%=_feedcomment.id%>" data-text="main"><i class="fa fa-trash"></i>&nbsp;Delete</a></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } } %>
+                                        </div>
+                                            <form method="post" class="form-comment commentForm">
+                                                <div class="form-group">
+                                                    <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                    <input name="parent_id" class="parent_id" value="" type="hidden">
+                                                    <input name="feed_id" value="<%=_feed.id%>" type="hidden">
+                                                    <button type="submit" class="send-comment" value="mainform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } } else { %>
+                <div class="p51_feed post">
+                    <div class="p51_feed_post">
+                        <div class="p51_feed_post_user_block dropdown_selection">
+                            <p>No data found</p>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <% if(totalfeeds > 10){%>
+                <div class="p51_p61 a-center load-feed">
+                    <input type="hidden" name="event_page_no" value="1" class="feed_page_no">
+                    <a href="javascript:;" id="load_more_blog">Load More</a> 
+                    <span class="load_more refresh"></span> 
+                    <i class="fa fa-spin fa-refresh hide" aria-hidden="true"></i>
+                </div>
+                <% } %>
+                <% } else {%>
+                <div class="p51_feed post">
+                    <div class="p51_feed_post">
+                        <div class="p51_feed_post_user_block dropdown_selection">
+                            <p>You don't have access to view <a href="<%=slugUrl%>"><span style="color: #337ab7"><%=userInfo.name%></span></a>'s wall. To view wall add <a href="<%=slugUrl%>"><span style="color: #337ab7"><%=userInfo.name%></span></a> to your connection.</p>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/fRM-2dt-LIs?rel=0" height="300" allowfullscreen ></iframe>
+                    </div><br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/suvE6ZAPTDQ?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<% if(typeof req.user !='undefined' && req.user !='') {%>
+<%- partial('../job/popup/easyApply.ejs') %>
+<% } %>
+</div>
+<script src="/themes/frontend/js/like_comment.js"></script>
+<script src="/js/job.js"></script>
+<style type="text/css">
+    .comment-wrap { display: none; }
+</style>
+<script type="text/javascript">
+
+    $("#edit-file-input").on("change", function(e) {
+        var files = e.target.files,
+            filesLength = files.length;
+        for (var i = 0; i < filesLength; i++) {
+            var f = files[i]
+            var fileReader = new FileReader();
+            fileReader.onload = (function(e) {
+                var file = e.target;
+                
+                var html = '<span class="pip">';
+                html += '<div class="col-md-3"><img class="imageThumb img-responsive img-thumbnail" src="'+e.target.result+'" title="'+file.name+'">';
+                html += '<span class="remove p51_feed_video_share_button"><i class="fa fa-trash"></i></span></div></span>';
+                $("#EditdisplayImages").append(html);
+                $(document).on("click",".remove",function(e){
+                    $(this).parents(".pip").remove();
+                });
+            });
+            fileReader.readAsDataURL(f);
+        }
+        edituploadFiles();
+    });
+
+    function edituploadFiles(){
+        ajaxindicatorstart('LOADING');
+        var form = $("#EditFeedForm")[0]; // You need to use standard javascript object here
+        var formData = new FormData(form);
+        $.ajax({
+            type: 'POST',
+            url: "/uploadFiles",
+            data:  formData,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            success: function (response)
+            {
+                var Datahtml = "";
+                $.each(response, function( index, value ) {
+                    Datahtml += "<input type='hidden' name='files' value='"+value.image+"'>";
+                });
+                $("form#EditFeedForm").find(".EditmyuploadImg").append(Datahtml);
+                ajaxindicatorstop();
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        $( ".myspecialdiv ul li" ).css( "list-style-type", "initial" );
+        $( ".myspecialdiv ol li" ).css( "list-style-type", "number" );
+    });
+
+    $(document).on("click",".btnEditFeed",function(e){
+        var parents = $(this).parents('.feed_list');
+        var feed_id = parents.data('id');
+
+        $.ajax({
+            url: '/getFeedData/'+feed_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $("form#EditFeedForm").find("#feed_details").text(results.data.feed_details);
+                    $("form#EditFeedForm").find("#id").val(results.data.id);
+                    $("form#EditFeedForm").find("#group_id").val(results.data.group_id);
+
+                    $('#editFeed').modal({
+                        show:true,
+                        backdrop: 'static', 
+                        keyboard: false
+                    });
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    /* Poll Answer */
+    $(document).on("click",".answer_poll",function(e){
+        var poll_option_id = $(this).val();
+        var parents = $(this).parents('.feed_list');
+        var poll_id = parents.data('id');
+        $.ajax({
+            type: "GET",
+            url: "/pollanswer/"+poll_id+"/"+poll_option_id,
+            success: function (results) {
+                if(results.status=="OK"){
+                    jQuery.each(results.response, function(key, val) {
+                        $('.poll_meter_'+val.id).css("width",val.avg + "%");
+                        $('.poll_count_'+val.id).html(val.avg.toFixed(2) + " % "+ "<span class='count'>("+ val.total_option_ans +")</span>");
+                    });
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click","#load_more_blog",function(){
+        var pages = $('input[name="event_page_no"]').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('input[name="event_page_no"]').val(page_no);
+
+        $.ajax({
+            type: "GET",
+            url: "/load_more_feeds/"+page_no,
+            success: function (data) {
+                if(data.feeds!=undefined && data.feeds==false){
+                    $('.load-feed').hide();
+                }else{
+                    $(data).insertBefore('.load-feed');
+                }
+            }
+        });
+    });
+    
+     $(document).on("click",".btnfollow",function(){
+        var parents = $(this).parents('li');
+        var company_id = $(this).val();
+        $.ajax({
+            url: '/followCompany/'+company_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                    parents.remove();
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+</script>

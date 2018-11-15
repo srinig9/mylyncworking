@@ -1,0 +1,490 @@
+<%
+    var requestSearch = "";
+    if(typeof req.param("search")!="undefined"){
+        requestSearch = req.param("search");
+    }
+
+    var profile_image = "/themes/frontend/images/default-user.png";
+
+    if(typeof userInfo!="undefined" && typeof userInfo.profile_image!="undefined" &&  userInfo.profile_image!=""){
+        profile_image = "/uploads/users/"+userInfo.profile_image;
+    }
+
+    var slugUrl ="/profile";
+    if(typeof userInfo!="undefined" && typeof userInfo.slug!="undefined" && typeof userInfo.slug!=""){
+            slugUrl = userInfo.slug;
+    }
+
+    var login_user_id = (typeof req.user != 'undefined' && req.user!='') ? req.user.id : 0;
+    var profile_privacy = 0;
+
+    if(login_user_id!=user.id){
+        if(typeof userrelation!='undefined' && userrelation.length==0){
+            if(user.userprivacysettings.length > 0){
+                _.each(user.userprivacysettings,function(privacy){
+                    if(typeof privacy.privacy_option_id.privacy_id.type !='undefined' && privacy.privacy_option_id.privacy_id.type=='profile'){
+                        if(privacy.privacy_option_id.option_val=='Private'){
+                            profile_privacy = profile_privacy+1;
+                        }
+                    }
+                })
+            }
+        }
+    }
+%>
+
+<style type="text/css">
+.typeahead { 
+    border-radius: 4px;
+    padding: 8px 12px;
+    max-width: 255px;
+    min-width: 255px;
+    background: #fff;
+    color: #025ba2;
+    border: none;
+}
+.tt-menu { width:300px; }
+ul.typeahead{margin:0px;padding:0px;}
+ul.typeahead.dropdown-menu li a {padding: 10px !important;  border-bottom:#e3eeef 1px solid;color:#025ba2;}
+ul.typeahead.dropdown-menu li:last-child a { border-bottom:0px !important; }
+.bgcolor {max-width: 550px;min-width: 290px;max-height:340px;background:url("world-contries.jpg") no-repeat center center;padding: 100px 10px 130px;border-radius:4px;text-align:center;margin:10px;}
+.demo-label {font-size:1.5em;color: #686868;font-weight: 500;color:#FFF;}
+ul.typeahead.dropdown-menu>.active>a, ul.typeahead.dropdown-menu>.active>a:focus, ul.typeahead.dropdown-menu>.active>a:hover {
+text-decoration: none;
+background-color: #025ba2;
+outline: 0;
+color: white;
+}
+    
+</style>
+
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+			<!-- Sidebar nav connections Starts -->
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p51_sidebar first">
+                    <div class="p51_title_container hidden"><span class="p51_title_icon"><i class="fa fa-check-circle" aria-hidden="true"></i></span> Verification <span class="open"></span></div>
+                    <div class="p51_content">
+                        <div class="p51_user_info">
+                            <div class="p51_user_img"><a href="<%=slugUrl%>"><img src="<%=profile_image%>" alt='<%=userInfo.name%>' width="95" height="95" /></a></div>
+                            <div class="p51_user_name">
+                                <a href="<%=slugUrl%>">
+                                    <% if(typeof userInfo!='undefined' && typeof userInfo.name!='undefined' && typeof userInfo.name!=''){
+                                    %>
+                                        <%=userInfo.name%>
+                                    <% } else { %>
+                                        <%=userInfo.name%>
+                                    <% } %>
+                                </a>
+                            </div>
+                            <% var user_position = "";
+                            var user_company = "";
+                            if(typeof userInfo!="undefined" && typeof userInfo.userexperiences[0]!="undefined") {
+                                var experience = userInfo.userexperiences[0];
+                                if(typeof experience["title"]!="undefined"){
+                                    user_position = experience["title"];
+                                }
+                                if( typeof experience["company_id"] != "undefined" && typeof experience["company_id"]["company_name"] != "undefined" ) {
+                                    if(experience["company_id"]["company_name"] != "") {
+                                        if(user_position != "") {
+                                            //user_company = " <br/> "+experience["company_id"]["company_name"];
+                                            user_company = experience["company_id"]["company_name"];
+                                        } else {
+                                            user_company = experience["company_id"]["company_name"];
+                                        }
+                                    }
+                                }
+                            } 
+                            if(user_position != "") { %>
+                                <div class="p51_user_designation"><%=user_position%></div>
+                            <% } %>
+
+                            <% if(profile_privacy==0) {%>
+                                <% if(user_company != "") { %>
+                                    <div class="p51_user_company"><%=user_company%></div>
+                                <% } %>
+                                <div class="p51_user_location"><%=typeof userInfo.location == "undefined" ? "" : userInfo.location%></div>
+                                <% var my_income = 0;
+                                if(typeof userInfo != "undefined" && typeof userInfo.wallet != "undefined") {
+                                    my_income = userInfo.wallet;
+                                } %>
+                                <div class="p51_user_total_lynked"><a href="/blogs"><span class="lynked_bal">Blog (<% if(typeof userInfo!='undefined' && typeof userInfo.blogCount!='undefined'){ %><%=userInfo.blogCount %><% } %>)</span></a><span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span><a href="/wallet"><span class="lynked_bal"> LBD ($<%=my_income.toFixed(2)%>)</span></a> <a href="/rewards"><span class="p51_user_info_i"><i class="fa fa-info-circle" aria-hidden="true"></i></span></a></div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="p16_sidebar">
+                    <div class="p16_sidebar_1001"><% if(typeof total_connection != 'undefined'){ %><%=total_connection%><% } else { %>0<% } %></div>
+                    <div class="p16_sidebar_1002"><%=userInfo.name%> Connections</div>
+                    <!-- <div class="p16_sidebar_1003"><a href="/connections/list">View All</a></div> -->
+                    <div class="p16_sidebar_1004">
+                        <a href="/connections/list">
+                            <img src="/themes/frontend/images/request1.jpg" alt="" class="social-connections-profile-img img-circle">
+                            <img src="/themes/frontend/images/request2.jpg" alt="" class="social-connections-profile-img img-circle">
+                            <img src="/themes/frontend/images/user.jpg" alt="" class="social-connections-profile-img img-circle">
+                            <img src="/themes/frontend/images/user1.jpg" alt="" class="social-connections-profile-img img-circle">
+                            <img src="/themes/frontend/images/request4.jpg" alt="" class="social-connections-profile-img img-circle">
+                        </a>
+                    </div>
+                </div>
+                <% if(user.referral){ %>
+                    <div class="p16_sidebar last">
+                        Referral Code: <strong><a href="/referral/used" id="text_element"><%= RefferalCode.displayReferral({ code: user.referral }) %></a></strong>
+                        &nbsp;<a href="javascript:;" onclick="copyToClipboard('text_element')"><i class="fa fa-clone" aria-hidden="true"></i></a>
+                        <input type="hidden" id="referral_code" class="copyReferralCode" value="<%= user.referral %>" />
+                    </div>
+                    <script>
+                        function copyToClipboard(elementId) {
+                            // Create an auxiliary hidden input
+                            var aux = document.createElement("input");
+                            // Get the text from the element passed into the input
+                            var copy_url = '<%=sails.config.appUrlwPort%>/?ref=';
+                            copy_url = copy_url+document.getElementById(elementId).innerHTML;
+
+                            aux.setAttribute("value",copy_url);
+                            // Append the aux input to the body
+                            document.body.appendChild(aux);
+                            // Highlight the content
+                            aux.select();
+                            // Execute the copy command
+                            document.execCommand("copy");
+                            // Remove the input from the body
+                            document.body.removeChild(aux);
+                            $.bootstrapGrowl("Referral Code is copied", {type: 'success', delay: 1000});
+                        }
+                    </script>
+                <% } %>
+            </div>
+
+			<!-- Sidebar nav connections Ends -->
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 no-padding myconnection">
+                <div class="p16_main1000">
+                    <div class="p16_main1001">
+                        <div class="p16_section_title p15_section_title">
+                            <div class="p15_search-fun">
+                                <form class="form-horizontal" method="get">
+                                    <div class="col-sm-6 col-xs-6">
+                                        <div class="p15_3010">
+                                            <label for="">Sort by : </label>
+                                            <select id="" name="sort_by" class="form-control p15_select">
+                                                <option value="1">Recently Added</option>
+                                                <option value="2">2 weeks</option>
+                                                <option value="3">1 month</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6  col-xs-6">
+                                        <div class="p15_3011">
+                                        <label for=""><input type="search" name="search" class="form-control" value="<%=requestSearch%>" id="search_name" placeholder="Search from connections" autocomplete="off"></label>
+                                        <button type="submit" class="search_button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <ul class="p16_1010">
+                            <% if(connections.length > 0) { 
+                                for(var _index=0; _index < connections.length; _index++) {
+                                    var _connection = connections[_index];
+
+                                    var userimage = '/themes/frontend/images/default-user.png';
+                                    if(typeof _connection.profile_image!='undefined' && _connection.profile_image!=''){
+                                        userimage = '/uploads/users/'+_connection.profile_image;
+                                    }
+
+                                var position    = '';
+                                var location    = '';
+                                var userSlug    = '';
+                                var displayname ='';
+                                var message_slug='/messages/';
+
+                                if(typeof _connection.userexperiences[0]!='undefined' &&  typeof _connection.userexperiences[0]['title']!='undefined'){
+                                    position = _connection.userexperiences[0]['title']; 
+                                }
+
+                                if(typeof _connection.userexperiences[0]!='undefined' &&  typeof _connection.userexperiences[0]['location']!='undefined'){
+                                    location ='at '+_connection.userexperiences[0]['location'];
+                                }
+
+                                var user_position = "";
+                                var user_company = "";
+                                if(typeof _connection.userexperiences[0]!="undefined") {
+                                    var experience = _connection.userexperiences[0];
+                                    if(typeof experience["title"]!="undefined"){
+                                        user_position = experience["title"];
+                                    }
+                                    if( typeof experience["company_id"] != "undefined" && typeof experience["company_id"]["company_name"] != "undefined" ) {
+                                        if(experience["company_id"]["company_name"] != "") {
+                                            if(user_position != "") {
+                                                //user_company = " <br/> "+experience["company_id"]["company_name"];
+                                                user_company = experience["company_id"]["company_name"];
+                                            } else {
+                                                user_company = experience["company_id"]["company_name"];
+                                            }
+                                        }
+                                    }
+                                }
+
+                                 if(typeof _connection.company_id!='undefined' && typeof _connection.company_id.slug!='undefined' && _connection.company_id.slug!='')
+                                {
+                                     userSlug ='/company/'+_connection.company_id.slug;
+                                     message_slug+=_connection.company_id.slug;
+                                }
+                                else if(typeof _connection.slug!='undefined' &&  typeof _connection.slug!=''){
+                                    userSlug ='/profile/'+_connection.slug+"/wall";
+                                    message_slug+=_connection.slug;
+                                }
+
+                                if(typeof _connection.company_id!='undefined' && typeof _connection.company_id.company_name!='undefined' && _connection.company_id.company_name!='')
+                                {
+                                    displayname = _connection.company_id.company_name;
+                                }
+                                else if(typeof _connection.name!='undefined' && _connection.name!=''){
+                                    displayname=_connection.name;
+                                }
+
+
+                            %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <a href="<%=userSlug%>"><img src="<%=userimage%>" width="55" height="55" alt="<%=displayname%>"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=userSlug%>" class="p16_1014"><%=displayname%></a></div>
+                                        <div class="p16_1015">
+                                            <%=user_position%>
+                                            <% if(user_company!=''){ %>
+                                            at <%=user_company%>
+                                            <%}%>
+                                        </div>
+                                        <div class="p16_1016">
+                                        <%
+                                        var time_ago = '1 sec';
+                                        if(typeof _connection.receiverequest!='undefined' && _connection.receiverequest.length>0){
+                                            if(typeof _connection.receiverequest[0]['createdAt']!='undefined' && _connection.receiverequest[0]['createdAt']!=''){
+                                            %>
+                                            Invited <%=DateDifferentService.time_ago_full(_connection.receiverequest[0]['createdAt'])%> ago
+                                            <%
+                                            }
+                                        }else if(typeof _connection.sendrequest!='undefined' && _connection.sendrequest.length>0){
+                                            if(typeof _connection.sendrequest[0]['createdAt']!='undefined' && _connection.sendrequest[0]['createdAt']!=''){
+                                            %>
+                                            Invited <%=DateDifferentService.time_ago_full(_connection.sendrequest[0]['createdAt'])%> ago
+                                            <%
+                                            }
+                                        }
+                                        %>
+                                        </div>
+                                    </div>
+                                    <% 
+                                        if(_connection.id!=login_user_id){
+                                            if(_connection.receiverequest.length > 0 || _connection.sendrequest.length > 0){
+                                                if(_connection.receiverequest.length > 0){
+                                                    if(_connection.receiverequest[0].status=="1"){
+                                    %>
+                                    <a href="<%=message_slug%>" data-id="1" class="btn btn-primary p15_message">Message</a>
+                                    <% }else if(_connection.receiverequest[0].status=="0"){ %>
+                                    <div class="p16_1021">
+                                        <button type="button" class="p16_1022 btnaccept" value="<%=_connection.id%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                        <button type="button" class="p16_1023 btnreject" value="<%=_connection.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                    </div>                                    
+                                    <% } }else if(_connection.sendrequest.length > 0){
+                                        if(_connection.sendrequest[0].status=="1"){ %>
+                                    <a href="<%=message_slug%>" data-id="1" class="btn btn-primary p15_message">Message</a>
+                                    <% }else if(_connection.sendrequest[0].status=="0"){ %>
+                                    <div class="p16_1021">
+                                        <button type="button" class="p16_1023 cancelsent" value="<%=_connection.id%>" data-toggle="tooltip" title="" data-placement="left" data-original-title="Cancel Sent Request"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                    </div>
+                                    <% } } }else{ %>
+                                    <div class="p16_1021">
+                                        <form method="post" class="userknown">
+                                            <input name="to_user_id" value="<%=_connection.id%>" type="hidden">
+                                            <button type="submit" class="btn btn-primary p32_message">Connect</button>
+                                        </form>
+                                    </div>
+                                    <% } } %>
+                                </div>
+                            </li>
+                            <% } } else { %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% } %>
+                        </ul>
+                        <input type="hidden" class="page_no" value="1">
+                    </div>
+                </div>
+
+                <div class="p16_main1000">
+                    <div class="p16_main1001">
+                        <div class="p16_section_title">
+                            Your Follow list (<%=total_follow%>)
+                        </div>
+                        <ul class="p16_1010">
+                            <% if(follows.length > 0) {
+                                for(var _index=0; _index < follows.length; _index++) {
+                                    var _follow = follows[_index];
+
+                                    var userimage = '/themes/frontend/images/default-user.png';
+                                    var userSlug    = '/profile';
+                                    var displayname ='/';
+                                    var company_id ='';
+                                    
+                                    if(typeof _follow.company_id!='undefined'){
+                                        company_id = _follow.company_id.id;
+                                        
+                                        if(typeof _follow.company_id.slug!='undefined' &&  typeof _follow.company_id.slug!=''){
+                                            userSlug ='/company/'+_follow.company_id.slug;
+                                        }
+
+                                        if(typeof _follow.company_id.company_name!='undefined' && _follow.company_id.company_name!=''){
+                                            displayname=_follow.company_id.company_name;
+                                        }
+                                    }
+                            %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <a href="<%=userSlug%>"><img src="<%=userimage%>" width="55" height="55" alt="Michele Show"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=userSlug%>" class="p16_1014"><%=displayname%></a></div>
+                                        <div class="p16_1016">
+                                            Invited <%=DateDifferentService.time_ago_full(_follow.createdAt)%> ago
+                                        </div>
+                                    </div>
+                                    <!-- <button type="button" value="<%=company_id%>" class="btn btn-primary p15_message Unfollow_company">Unfollow</a> -->
+                                </div>
+                            </li>
+                            <% } %>
+
+                            <% if(total_follow > 3){%>
+                            <!-- <li class="a-center last" id="get_more_follows">
+                                <input type="hidden" name="request_page_no" class="request_page_no" value="1">
+                                <input type="hidden" name="request_search" class="request_search" value="<%=requestSearch%>">
+                                <a href="javascript:void(0);" class="p16_1031">More</a>
+                            </li> -->
+                            <%
+                            }
+                            } else { %>
+                            <li class="first list_connection">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% } %>
+                        </ul>
+                        <input type="hidden" class="page_no" value="1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/suvE6ZAPTDQ?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                    <br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/2sEj0_9jlIs?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+// Accept Request from other user
+$(document).on("click",".btnaccept",function(){
+    var parents = $(this).parents('li');
+    var user_id = $(this).val();
+    $.ajax({
+        url: '/acceptRequest/'+user_id,
+        method: 'GET',
+        success: function(results)
+        {
+            console.log(results);
+            if(results.status=='OK'){
+                user_id = results.user_id;
+                send_notification(user_id);
+                $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                location.reload();
+            }
+            else{
+                $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+            }
+        }
+    });
+});
+
+// Reject Request from other user
+$(document).on("click",".btnreject",function(){
+    var parents = $(this).parents('li');
+    var user_id = $(this).val();
+    $.ajax({
+        url: '/rejectRequest/'+user_id,
+        method: 'GET',
+        success: function(results)
+        {
+            if(results.status=='OK'){
+                $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                location.reload();
+            }
+            else{
+                $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+            }
+        }
+    });
+});
+
+$(document).on("click",".cancelsent",function(){
+    var parents = $(this).parents('li');
+    var to_user_id = $(this).val();
+    $.ajax({
+        url: '/cancelsentRequest/'+to_user_id,
+        method: 'GET',
+        success: function(results)
+        {
+            if(results.status=='OK'){
+                $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                location.reload();
+            }
+            else{
+                $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+            }
+        }
+    });
+});
+
+$(document).on("submit", ".userknown", function (event) {
+    event.preventDefault();
+    var formData = new FormData( this );
+    console.log(formData);
+    var parents = $(this).parents('li');
+    $.ajax({
+        url: '/sendRequest',
+        method: 'POST',
+        data:  formData,
+        mimeType:"multipart/form-data",
+        processData: false,
+        contentType: false,
+        success: function(results)
+        {
+            var json_obj = jQuery.parseJSON( results );
+            if(json_obj.status == 'OK'){
+                user_id = json_obj.user_id;
+                send_notification(user_id);
+                $.bootstrapGrowl(json_obj.message, {type: 'success', delay: 2000});
+                location.reload();
+            } else {
+                $.bootstrapGrowl(json_obj.message, {type: 'danger', delay: 2000});
+            }
+        }
+    });
+});
+
+
+</script>

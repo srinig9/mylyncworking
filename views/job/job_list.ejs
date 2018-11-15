@@ -1,0 +1,306 @@
+<%
+/**
+ * views/partials/navbar.ejs
+ *
+ * > Note: This EJS comment won't show up in the HTML served to the browser.
+ * > So you can be as verbose as you like.  Just be careful not to inadvertently
+ * > type a percent sign followed by a greater-than sign (it'll bust you out of
+ * > the EJS block).
+ *
+ */%>
+ <%
+    if(typeof Jobs!='undefined' && Jobs.length > 0) {
+        _.each(Jobs, function (Job) { 
+            
+                    var totalLikes      = 0;
+                    var totaldislikes   = 0;
+                    var isliked         = 0;
+                    var isdisliked      = 0;
+                    var feedlikes       = Job.feedlikes;
+                    if(typeof show_like_comment != 'undefined' && show_like_comment == true && typeof feedlikes.length != 'undefind' && feedlikes.length > 0){
+                        _.each(feedlikes,function(factor1){ 
+                            if(factor1.status==1){
+                                totalLikes = totalLikes+1;
+                            }
+                            if(factor1.status==2){
+                                totaldislikes = totaldislikes+1;
+                            }
+                            if(typeof user_id != '0' &&  factor1.status==2 && factor1.user_id==user_id){
+                                isdisliked = 1;
+                            }
+                            if(typeof user_id != '0' && factor1.status==1 && factor1.user_id==user_id){
+                                isliked = 1;
+                            }
+                        });
+                    }
+
+        var job_slug='';
+        var slug_url='javascript:;';
+        var share_url='';
+        if(typeof Job.slug!='undefined' && Job.slug!=''){
+             job_slug  = sails.config.appUrlwPort+'/jobs/'+Job.slug;
+             share_url = 'jobs/'+Job.slug;
+        }
+    %>
+            <div class="list_connection">
+            <!-- Display Only blog data -->
+                <div class="feed_list poll_list p51_feed post" data-id="<%- Job.id %>">
+                    <div class="p51_feed_post">
+                        <div class="p51_feed_post_user_block dropdown_selection job-list">
+                            <div class="dropdown p51_feed_post_more_info">
+                                <button class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                                <ul class="dropdown-menu p51_feed_fpa">
+                                    <% if(typeof page_type!='undefined' && page_type == 'my_jobs'){ %>
+                                        <li><button class="p51_feed_fpa1" type="button"><a title="Job Edit" href="/job/edit/<%=Job.id%>">Edit my job</a></button></li>
+                                        <li><button class="p51_feed_fpa2" onclick="job_delete('<%=Job.id%>')" type="button">Delete my job</button></li>
+                                    <% }else{
+                                        var owner_id='';
+                                        if(typeof Job.user_id!='undefined' && typeof Job.user_id.id!='undefined' && Job.user_id.id!=''){
+                                            owner_id = Job.user_id.id;
+                                        }
+
+                                        if(owner_id==req.user.id){
+                                     %>
+                                        <li><button class="p51_feed_fpa1" type="button"><a title="Job Edit" href="/job/edit/<%=Job.id%>">Edit my job</a></button></li>
+                                        <li><button class="p51_feed_fpa2" onclick="job_delete('<%=Job.id%>')" type="button">Delete my job</button></li>
+                                        
+                                     <% } else {%>
+                                        <li><button class="p51_feed_fpa1 btnSpam" type="button">Hide this job</button></li>
+                                        <li class="dropdown-submenu"><button class="p51_feed_fpa2" type="button">Report this post</button>
+                                            <ul class="dropdown-menu">
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's spam</button></li>
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's fake or scam</button></li>
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's abusive or harmful</button></li>
+                                            </ul>
+                                        </li>
+                                        <li><button class="p51_feed_fpa3 blockuser" data-user_id="<%=owner_id%>" type="button">Block this user</button></li>
+                                    <% }
+                                } %>
+                                </ul>
+                            </div>
+                            <span class="bookmark">
+                                <% if(Job.jobBookmarks.length > 0) {  %>
+                                    <i job_id="<%- Job.id %>" class="fa fa-bookmark" aria-hidden="true"></i>
+                                <% } else { %>
+                                    <i job_id="<%- Job.id %>" class="fa fa-bookmark-o" aria-hidden="true"></i>
+                                <% } %>
+                            </span>
+                            <div class="p12_f30">
+                                <% if(typeof Job.company_id != 'undefined') {
+                                        if(typeof Job.company_id.slug!='undefined' && Job.company_id.slug!=''){
+                                            slug_url=sails.config.appUrlwPort+'/company/'+Job.company_id.slug+'/wall';
+                                        }
+                                    if(typeof Job.company_id.companydata[0].profile_image != 'undefined'){ 
+                                    %>
+                                    <a class="p12_f301" href="<%=job_slug%>">
+                                        <img class="p12_f302" src="<%- sails.config.appUrlwPort+sails.config.profile_image_url+Job.company_id.companydata[0].profile_image %>" alt="<% if(typeof Job.company_id != 'undefined' && typeof Job.company_id.company_name != 'undefined') { %><%- Job.company_id.company_name %><% } %>" width="65" height="65">
+                                    </a>
+                                    <% } else { %>
+                                    <a class="p6_sc_1002 project_img" href="<%=job_slug%>" target="_blank">
+                                        <span class="first-letter">
+                                            <%=Job.company_id.company_name[0].toUpperCase()%>
+                                        </span>
+                                    </a>
+                                    <% } 
+                                } else { 
+                                    if(typeof Job.user_id!='undefined' && typeof Job.user_id.slug!='undefined' && Job.user_id.slug!=''){
+                                        slug_url=sails.config.appUrlwPort+'/profile/'+Job.user_id.slug+'/wall';
+                                    }
+                                    if(typeof Job.user_id.profile_image != 'undefined') { 
+                                        %>
+                                        <a class="p12_f301" href="<%=job_slug%>">
+                                            <img class="p12_f302" src="<%- sails.config.appUrlwPort+sails.config.profile_image_url+Job.user_id.profile_image %>" width="65" height="65">
+                                        </a>
+                                    <% } else { %>
+                                        <a class="p12_f301 project_img" href="<%=job_slug%>" target="_blank">
+                                            <span class="first-letter">
+                                                <%=Job.user_id.name[0].toUpperCase()%>
+                                            </span>
+                                        </a>
+                                    <% } 
+                                 } %>
+                                <div class="p12_f303">
+                                    <div class="p12_f304"><a href='<%- sails.config.appUrlwPort+"/jobs/"+Job.slug %>'><%- Job.title %></a></div>
+                                    <% if(Job.company_id != undefined && Job.company_id.company_name != undefined) { %>
+                                    <div class="p12_f305"><a href="<%=slug_url%>" title="<%- Job.company_id.company_name %>"><%- Job.company_id.company_name %></a></div>
+                                        <% }else{
+                                            if(Job.user_id!='undefined' && Job.user_id.name!='undefined'){
+                                        %>
+                                        <div class="p12_f305"><a href="<%=slug_url%>" title="<%- Job.user_id.name %>"><%- Job.user_id.name %></a></div>
+                                        <% }
+                                        }
+                                        if(typeof Job.location != 'undefined' && Job.location != '') { %>
+                                    <div class="p12_f306"><i class="fa fa-map-marker" aria-hidden="true"></i> <%- Job.location %> </div>
+                                    <% } %>
+                                </div>
+                                <button type="button" class="btn btn-primary p12_easy_apply btnEasyApply" data-toggle="modal">Instant Apply</button>
+                            </div>
+                        </div>
+                        <%
+                            var block_flag=0;
+                            var experience='';
+                            var job_type='';
+                            var salary = '';
+
+                            if(typeof Job.experience_id != 'undefined' && typeof Job.experience_id.title!= 'undefined' && Job.experience_id.title!=''){
+                                experience = Job.experience_id.title;
+                                block_flag=1;
+                            }
+                            if(typeof Job.job_type_id != 'undefined' && typeof Job.job_type_id.title != 'undefined' && Job.job_type_id.title!=''){
+                                job_type = Job.job_type_id.title;
+                                block_flag=1;
+                            }
+                            if(typeof Job.salary != 'undefined' && Job.salary!=''){
+                                salary=Job.salary;
+                                block_flag=1;
+                            }
+                        %>
+                        <% if(block_flag==1){%>
+                        <div class="p12_f31">
+                            <% if(experience!=''){ %>
+                            <div class="p12_f311"><i class="fa fa-briefcase" aria-hidden="true"></i> <%- experience %></div>
+                            <% } %>
+                            
+                            <% if(job_type!=''){ %>
+                            <div class="p12_f312"><i class="fa fa-file" aria-hidden="true"></i> <%- job_type %></div>
+                            <% } %>
+                            <% if(salary!=''){ %>
+                            <div class="p12_f313"><i class="fa fa-money" aria-hidden="true"></i> <%- salary %></div>
+                            <% } %>
+                        </div>
+                        <% } %>
+                        
+                        <div class="p51_feed_post_feeds">
+                            <div class="myspecialdiv">
+                                <%-Job.feed_details%>
+                            </div>
+                        </div>
+                        <% if(typeof show_like_comment != 'undefined' && show_like_comment == true){ %>
+                        <div class="p51_feed_post_feed_not">
+                            <div class="pull-left p51_feed_pfn1"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="total_likes"> &nbsp; <%=totalLikes%> Likes</span></div>
+
+                            <div class="pull-left p51_feed_pfn1 p51_feed_pfn2" style="display: none;"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="total_dislikes"> &nbsp; <%=totaldislikes%> Disikes</span></div>
+
+                            <div class="pull-right p51_feed_pfn2 total_comments"><%=Job.feedcomments.length%> Comments</div>
+                            <div class="pull-right p51_feed_pfn3">0 Shares</div>
+                        </div>
+                        <% if (user_id != 0) {  %>
+
+                        <div class="p51_feed_post_action bloglist">
+                            
+                            <button type="button" class="p51_feed_world_share_lynked"><img src="/themes/frontend/images/color-logo.svg" class="" alt="share with lynked" width="25" height="25"><span class=""> &nbsp; LBD ($0)</span> &nbsp; <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+
+                            <button type="button" class="active-action p51_fw12 marlr8 btnlike <% if(isliked==1){ %> active <% } %>" title="Like"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Like</span></button>
+
+                            <button style="display:none;" type="button" class="active-action p51_fw12 btndislike <% if(isdisliked==1){ %> active <% } %>" title="Dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg">Dislike</span></button>
+
+                            <button type="button" class="p51_fw12 marlr8 btncomment" title="Comment"><i class="fa fa-comment" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg">Comment</span></button>
+
+                            <button type="button" class="p51_fw12" onclick="copyShareURL('<%=share_url%>')"  title="Share"><i class="fa fa-share" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Share</span></button>
+
+                            <div class="row">
+                                <div class="">
+                                    <div class="comment-form">
+                                    <div class="comments mycomments">
+                                    <% if(Job.feedcomments.length > 3 ){ %>
+                                    <a href="javascript:;" class="see-more">
+                                        <i class="fa fa-repeat"></i> Load Previous Comments
+                                    </a>
+                                    <% } %>
+
+                                        <% 
+                                        if(Job.feedcomments.length > 0 ){
+                                            var feedcomments =  Job.feedcomments;
+                                            for(var _cindex=0; _cindex < feedcomments.length; _cindex++) {
+                                                var _feedcomment = feedcomments[_cindex];
+
+                                        %>
+                                        <div class="comment-wrap" data-fid="<%=_feedcomment.feed_id%>">
+                                            <div class="photo">
+                                                <div class="avatar" style="background-image: url('/themes/frontend/images/default-user.png')"></div>
+                                            </div>
+                                            <div class="comment-block">
+                                                <p class="comment-user"><a href="/"><%=_feedcomment.user_id.name%></a></p>
+                                                <p class="comment-text"><%=_feedcomment.comments%></p>
+                                                <div class="p6_comment_count pull-left">
+                                                    <a href="javascript:;" class="btncommentlike" data-cid="<%=_feedcomment.id%>">Like</a> 
+                                                    &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                    <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                    <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_feedcomment.commentlikes.length%></span></a> 
+                                                    &nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> <%=_feedcomment.commentreply.length%></a>
+                                                </div>
+                                                <% 
+                                                if(_feedcomment.commentreply.length > 0 ){
+                                                    var commentreply =  _feedcomment.commentreply;
+                                                    for(var _crindex=0; _crindex < commentreply.length; _crindex++) {
+                                                        var _commentreply = commentreply[_crindex];
+
+                                                %>
+                                                <div class="comment-wrap ember-mode" style="display: block;">
+                                                    <div class="photo">
+                                                        <div class="avatar" style="background-image: url('/themes/frontend/images/default-user.png')">
+                                                        </div>
+                                                    </div>
+                                                    <div class="comment-block">
+                                                        <p class="comment-user"><a href="http://local.lynked.world/profile/anil"><%=_commentreply.user_id.name%></a></p>
+                                                        <p class="comment-text"><%=_commentreply.comments%></p>
+                                                        <div class="p6_comment_count pull-left">
+                                                            <a href="javascript:;"  class="btncommentlike" data-cid="<%=_commentreply.id%>">Like</a> 
+                                                            &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                            <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                            <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_commentreply.commentlikes.length%></span></a>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                            <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> 0</a>
+                                                        </div>
+                                                        <div class="bottom-comment">
+                                                            <div class="comment-date">1 Week</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% } } %>                                                
+                                                <form method="post" class="form-comment formReply commentForm" style="display: none;">
+                                                    <div class="form-group">
+                                                        <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                        <input name="parent_id" value="<%=_feedcomment.id%>" class="parent_id" type="hidden">
+                                                        <input name="feed_id" value="" type="hidden">
+                                                        <button type="submit" class="send-comment" value="replyform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                    </div>
+                                                </form>
+                                                <div class="bottom-comment">
+                                                    <div class="comment-date">10 Mins </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } } %>
+                                    </div>
+                                        <form method="post" class="form-comment commentForm">
+                                            <div class="form-group">
+                                                <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                <input name="parent_id" class="parent_id" value="" type="hidden">
+                                                <input name="feed_id" value="<%=Job.id%>" type="hidden">
+                                                <button type="submit" class="send-comment" value="mainform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }
+                    } %>
+                    </div>
+                </div>
+            </div>
+    <% }); %>
+    <div class="job_load_more"></div>
+    <%
+    } else { %>
+    <div class="list_connection job_data_empty">
+        <div class="feed_list poll_list p51_feed post">
+            <div style="padding: 20px;" class="p51_feed_post">
+                No data found
+            </div>  
+        </div>
+    </div>
+<% } %>

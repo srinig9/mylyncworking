@@ -1,0 +1,1337 @@
+<%
+    var request_count = 0;
+    if(typeof requestInfo!='undefined'){
+        request_count = requestInfo.length;
+    }
+    var page_no = (typeof req.param("page_no")!="undefined" && req.param("page_no")!='') ? req.param("page_no") : 1;
+%>
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                <div class="p25_list_02 sepb20">
+                    <div class="success-notification"><span class="p8_110"> You have got<span class="red count totalRecords"><%=authorizes.totalRecords%></span>request to data access</span></div>
+                    <div class="section_title"><h3>Pending access document requests</h3></div>
+
+                    <div class="p7_content">
+                        <div id="data_table_wrapper" class="data_table_wrapper data_table">
+                            <div class="row pad_20_10">
+                                <div class="col-sm-6 col-xs-6">
+                                    <div class="p15_3010">
+                                        <label for="">Show </label><select id="" name="sort_by" class="form-control"><option value="10">10</option><option value="20">20</option><option value="30">30</option></select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-xs-6">
+                                    <div class="p15_3011">
+                                        <input type="search" class="form-control" id="searchTxt" placeholder="Type here..." /><label class="p8_label1" for="">Search </label><button type="button" class="search_button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row minus-10-margin-xs">
+                                <div class="col-sm-12">
+                                    <div class="table-responsive">
+                                        <table id="upload_history" class="table table-striped dataTable table-expandable" cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th>Request Date</th>
+                                                    <th>Name</th>
+                                                    <th>Status</th>
+                                                    <th width="20%">Expand / Collapse</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <% 
+                                            if(authorizes.data.length > 0){
+                                            var i = 1;
+                                            _.each(authorizes.data,function(authorize){
+                    
+                                                var formatedDate = DateDifferentService.internationalDateFormat(authorize.createdAt);
+
+                                                var owner_name = "";
+                                                var owner_slug = "/profile";
+
+
+                                                if(typeof authorize.owner_id.company_id!='undefined' && typeof authorize.owner_id.company_id.company_name!='undefined'){
+                                                    owner_name = authorize.owner_id.company_id.company_name;
+                                                    if(typeof authorize.owner_id.company_id.slug!='undefined'){
+                                                        owner_slug = "/company/"+authorize.owner_id.company_id.slug+"/wall";
+                                                    }
+                                                } else if(typeof authorize.owner_id!='undefined' && typeof authorize.owner_id.name!='undefined'){
+                                                    owner_name = authorize.owner_id.name;
+                                                    if(typeof authorize.owner_id.slug!='undefined'){
+                                                        owner_slug = "/profile/"+authorize.owner_id.slug+"/wall";
+                                                    }
+                                                }
+
+                                                var className = (i%2==0) ? "even" : "odd";
+
+                                            %>
+                                                <tr class="<%=className%>">
+                                                    <td><%=formatedDate%></td>
+                                                    <td><a href="<%=owner_slug%>"><%=owner_name%></a></td>
+                                                    <td>Pending</td>
+                                                    <td><div class="table-expandable-arrow"></div> Expand / Collapse </td>
+                                                </tr>
+                                                <tr class="authorize-access" style="display: none;">
+                                                    <td colspan="4">
+                                                        <div class="col-xs-3">
+                                                            <!-- required for floating -->
+                                                            <!-- Nav tabs -->
+                                                            <%
+                                                            var iden_active_panel = "";
+                                                            var educ_active_panel = "";
+                                                            var exp_active_panel = "";
+                                                            var proj_active_panel = "";
+
+                                                            if(authorize.identification && authorize.identification==1){
+                                                                var iden_active_panel = "active";
+                                                            }
+
+                                                            else if((!authorize.identification || authorize.identification!=1) && authorize.educational && authorize.educational==1){
+                                                                var educ_active_panel = "active";
+                                                            }
+
+                                                            else if((!authorize.identification || authorize.identification!=1) && (authorize.educational || authorize.educational!=1) && authorize.employment && authorize.employment==1){
+                                                                var exp_active_panel = "active";
+                                                            }
+
+                                                            else if((!authorize.identification || authorize.identification!=1) && (authorize.educational || authorize.educational!=1) && (authorize.employment || authorize.employment!=1) && authorize.projects && authorize.projects==1){
+                                                                var proj_active_panel = "active";
+                                                            }
+                                                            %>
+
+                                                            <ul class="nav nav-tabs tabs-left">
+                                                                <% if(authorize.identification && authorize.identification==1){%>
+                                                                <li class="<%=iden_active_panel%>"><a href="#Identification_<%=authorize.id%>" data-toggle="tab">Identification</a></li>
+                                                                <% } if(authorize.educational && authorize.educational==1){ %>
+                                                                <li class="<%=educ_active_panel%>"><a href="#Education_<%=authorize.id%>" data-toggle="tab">Education</a></li>
+                                                                <% } if(authorize.employment && authorize.employment==1){%>
+                                                                <li class="<%=exp_active_panel%>"><a href="#Experience_<%=authorize.id%>" data-toggle="tab">Experience</a></li>
+                                                                <% } if(authorize.projects && authorize.projects==1){%>
+                                                                <li class="<%=proj_active_panel%>"><a href="#Projects_<%=authorize.id%>" data-toggle="tab">Projects</a></li>
+                                                                <% } %>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="col-xs-9">
+                                                            <!-- Tab panes -->
+                                                            <div class="tab-content">
+
+                                                                <!-- Identification Listing -->
+                                                                <% if(authorize.identification && authorize.identification==1){ %>
+                                                                <div class="tab-pane <%=iden_active_panel%>" id="Identification_<%=authorize.id%>">
+                                                                    <div class="form-group">
+                                                                        <form action='/authorize/allowdeny' class='identificationForm' method='POST'>
+                                                                            <input type='hidden' name='to_user_id' value="<%=authorize.owner_id.id%>">
+                                                                            <input type='hidden' name='authorize_id' value="<%=authorize.id%>">
+                                                                            <input type='hidden' name='type' value='identification'>
+
+                                                                        <div class="label-block">
+                                                                            <input type="checkbox" class="form-inline" value="color Scan" checked="checked">
+                                                                            <label for="">
+                                                                                <%
+                                                                                if(typeof authorize.user_id.company_id!='undefined' && typeof authorize.user_id.company_id.company_name!='undefined'){
+                                                                                %>
+                                                                                <%=authorize.user_id.company_id.company_name%>
+                                                                                <% } else {%>
+                                                                                <%=authorize.user_id.name%>
+                                                                                <% } %>
+                                                                            </label>
+                                                                        </div>
+                                                                        <%
+                                                                        if(authorize.user_id.user_contact_verify.length > 0){ 
+                                                                            var _contact = authorize.user_id.user_contact_verify[0];
+                                                                            if(typeof _contact.email!='undefined' && _contact.email!=''){
+                                                                            is_email_verify = (_contact.is_email_verify) ? 1 : 0;
+                                                                        %>
+                                                                        <div class="label-block">
+                                                                            <input type="checkbox" class="form-inline" value="1" name="contact_email" checked="checked"><label for=""> <%=_contact.email%></label>
+                                                                            <% if(is_email_verify){ %>
+                                                                            <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                            <% } %>
+                                                                        </div>
+                                                                        <% } if(typeof _contact.phone!='undefined' && _contact.phone!=''){ 
+                                                                        var is_phone_verify = (_contact.is_phone_verify) ? 1 : 0;
+                                                                        %>
+                                                                        <div class="label-block">
+                                                                            <input type="checkbox" class="form-inline" value="1" name="contact_phone" checked="checked"> <label for=""> <%=_contact.dial_code+' '+_contact.phone%></label>
+                                                                            <% if(is_phone_verify){%>
+                                                                            <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                            <% } %>
+                                                                        </div>
+                                                                        <% } } 
+
+                                                                        if(authorize.user_id.UserVerifyData.length > 0) {
+                                                                            _.each(authorize.user_id.UserVerifyData, function(verifydata) {
+                                                                                
+                                                                            if(verifydata.tab_type=='identity'){
+
+                                                                            var boldData = "";
+                                                                            var span1 = "";
+                                                                            var span2 = "";
+                                                                            var span3 = "";
+                                                                            var span4 = "";
+                                                                            var span5 = "";
+
+                                                                            var dataTypeID = "";
+                                                                            var dataType = "";
+                                                                            var dataTypeTitle = "";
+                                                                            var country_name = "";
+                                                                            var doc_num = "";
+                                                                            var legal_name = "";
+                                                                            var gender = "";
+                                                                            var dateofbirth = "";
+                                                                            var issue_date = "";
+                                                                            var expiry_date = "";
+
+                                                                            if(verifydata.doc_type_id && verifydata.doc_type_id.id){
+                                                                                dataTypeID = verifydata.doc_type_id.id;
+                                                                            }
+                                                                            if(verifydata.doc_type_id && verifydata.doc_type_id.title){
+                                                                                dataTypeTitle = verifydata.doc_type_id.title;
+                                                                            }
+
+                                                                            if(typeof verifydata.dob != 'undefined' && verifydata.dob!=null){
+                                                                                boldData = dataTypeTitle;
+                                                                            }else if(typeof verifydata.doc_type_id!='undefined' && verifydata.doc_type_id!=''){
+                                                                                boldData = verifydata.legal_name;
+                                                                                if(dataTypeTitle){
+                                                                                    boldData = dataTypeTitle;
+                                                                                }
+                                                                            }else{
+                                                                                boldData = verifydata.legal_name;
+                                                                            }
+
+                                                                            if(typeof verifydata.doc_country!='undefined' && typeof verifydata.doc_country.name!='undefined' && verifydata.doc_country.name!=''){
+                                                                                country_name = verifydata.doc_country.name;
+                                                                            }
+                                                                            if(typeof verifydata.doc_num!='undefined' && verifydata.doc_num!=''){
+                                                                                doc_num = verifydata.doc_num;
+                                                                            }
+                                                                            if(typeof verifydata.legal_name!='undefined' && verifydata.legal_name!=''){
+                                                                                legal_name = verifydata.legal_name;
+                                                                            }
+
+                                                                            if(typeof verifydata.gender!='undefined'){
+                                                                                if(verifydata.gender==1){
+                                                                                    gender = "Male";
+                                                                                }else if(verifydata.gender==2){
+                                                                                    gender = "Female";
+                                                                                }else if(verifydata.gender==3){
+                                                                                    gender = "Not Specified";
+                                                                                }
+                                                                            }
+
+                                                                            if(typeof verifydata.dob != 'undefined' && verifydata.dob!=null && verifydata.dob!=''){
+                                                                                dateofbirth = DateDifferentService.internationalDateFormat(verifydata.dob);
+                                                                            }
+
+                                                                            if(typeof verifydata.expiry_date != 'undefined' && verifydata.expiry_date!=null && verifydata.expiry_date!=''){
+                                                                                expiry_date = DateDifferentService.internationalDateFormat(verifydata.expiry_date);
+                                                                            }
+
+                                                                            if(typeof verifydata.issue_date != 'undefined' && verifydata.issue_date!=null){
+                                                                                issue_date = DateDifferentService.internationalDateFormat(verifydata.issue_date);
+                                                                            }
+
+                                                                            if(doc_num){
+                                                                                if(boldData=="Driving License"){
+                                                                                    dataType = "License No";
+                                                                                }else if(boldData=="ID Card"){
+                                                                                    dataType = "ID Card";
+                                                                                }else if(boldData=="Birth Certificate"){
+                                                                                    dataType = "Certificate No";
+                                                                                }else if(boldData=="Aadhar Card"){
+                                                                                    dataType = "Aadhar Card No";
+                                                                                }else if(boldData=="Passport"){
+                                                                                    dataType = "Passport No";
+                                                                                }else{
+                                                                                    dataType = "Document No";
+                                                                                }
+                                                                            }
+
+
+                                                                            if(boldData==''){
+                                                                                var userName = "";
+                                                                                var userSlug = "";
+                                                                                if(typeof authorize.user_id.company_id!='undefined' && typeof authorize.user_id.company_id.company_name!='undefined'){
+                                                                                    userName = authorize.user_id.company_id.company_name;
+                                                                                    if(typeof authorize.user_id.company_id.slug!='undefined'){
+                                                                                        userSlug = "/company/"+authorize.user_id.company_id.slug+"/wall";
+                                                                                    }
+                                                                                } else if(typeof authorize.user_id!='undefined' && typeof authorize.user_id.name!='undefined'){
+                                                                                    userName = authorize.user_id.name;
+                                                                                    if(typeof authorize.user_id.slug!='undefined'){
+                                                                                        userSlug = "/profile/"+authorize.user_id.slug+"/wall";
+                                                                                    }
+                                                                                }
+                                                                                boldData = userName;
+                                                                            }
+
+                                                                        %>
+                                                                        <div class="label-block">
+                                                                            <input type="checkbox" class="form-inline" value="<%=verifydata.id%>" name="identification" checked="checked">
+                                                                            <label for="">
+                                                                                <b><%=boldData%></b>
+                                                                                <% if(country_name) {%>
+                                                                                <span>Country Name : <%=country_name%></span>
+                                                                                <% } if(doc_num){%>
+                                                                                <span><%=dataType%> : <%=doc_num%></span>
+                                                                                <% } if(dateofbirth){%>
+                                                                                <span>Date of Birth : <%=dateofbirth%></span>
+                                                                                <% } if(issue_date){%>
+                                                                                <span>Issuance Date : <%=issue_date%></span>
+                                                                                <% } if(issue_date){%>
+                                                                                <span>Expiration Date : <%=expiry_date%></span>
+                                                                                <% } if(gender){%>
+                                                                                <span>Sex : <%=gender%></span>
+                                                                                <% } if(verifydata.address_line_1){%>
+                                                                                <span>Address Line 1 : <%=verifydata.address_line_1%></span>
+                                                                                <% } if(verifydata.address_line_2){%>
+                                                                                <span>Address Line 2 : <%=verifydata.address_line_2%></span>
+                                                                                <% } if(verifydata.country){%>
+                                                                                <span>Country : <%=verifydata.country%></span>
+                                                                                <% } if(verifydata.state){%>
+                                                                                <span>State : <%=verifydata.state%></span>            
+                                                                                <% } if(verifydata.city){%>
+                                                                                <span>City : <%=verifydata.city%></span>
+                                                                                <% } if(verifydata.zip){%>
+                                                                                <span>Zipcode : <%=verifydata.zip%></span>
+                                                                                <% } %>
+
+                                                                                <% if(verifydata.doc_url){ %>
+                                                                                <br>
+                                                                                <span><b class="attachment-icon"><i class="fa fa-paperclip" aria-hidden="true"></i></b> <b><%=verifydata.doc_url%></b></span>
+                                                                                <% } %>
+
+                                                                            </label>
+                                                                            <% 
+                                                                            if(verifydata.verify_request_id && verifydata.verify_request_id.length>0){
+                                                                                if(verifydata.verify_request_id[0].txnno && verifydata.verify_request_id[0].txnno!=''){
+                                                                            %>
+                                                                            <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                            <%
+                                                                            } 
+                                                                            }
+                                                                            %>
+                                                                        </div>
+                                                                        <% } }) } %>
+                                                                        <button type='submit' class='btn-primary p8_button_2 pull-right btnIdentificationDeny' value='identificationdeny'>Deny</button>
+                                                                        <button type='submit' class='btn btn-sm btn-primary pull-right allow_verify_request' value='allow'>Allow</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- Education Listing -->
+                                                                <% } if(authorize.educational && authorize.educational==1){ %>
+                                                                <div class="tab-pane <%=educ_active_panel%>" id="Education_<%=authorize.id%>">
+                                                                    <form action='/authorize/allowdeny' class='educationalForm' method='POST'>
+                                                                        <input type='hidden' name='to_user_id' value="<%=authorize.owner_id.id%>"><input type='hidden' name='authorize_id' value='<%=authorize.id%>'>
+                                                                        <input type='hidden' name='type' value='educational'>
+                                                                        <div class="form-group">
+                                                                            <% 
+                                                                            if(authorize.user_id.usereducations.length > 0){
+                                                                                _.each(authorize.user_id.usereducations, function(education){
+
+                                                                                    var education_from_month = (education.from_month!=null) ? education.from_month : "";
+                                                                                
+                                                                                    var education_from_year = (education.from_year!=null) ? education.from_year : "";
+                                                                                
+                                                                                    var education_to_month = (education.to_month!=null) ? education.to_month : "";
+                                                                                
+                                                                                    var education_to_year = (education.to_year!=null) ? education.to_year : "";
+                                                                            %>
+                                                                            <div class="label-block">
+                                                                                <input type="checkbox" class="form-inline"  value="<%=education.id%>" name="educational" checked="checked">
+                                                                                <label for=""><b><%=education.school%></b>  
+                                                                                    <span><%=education.degree%>
+                                                                                    <% var other_fields='';
+                                                                                     if(typeof education.study_field!='undefined' && education.study_field!=''){
+                                                                                        other_fields+= ', '+education.study_field 
+                                                                                     }
+                                                                                    if(typeof education.degree_type!='undefined' && typeof education.degree_type.title!='undefined' && education.degree_type.title!=''){
+                                                                                        other_fields+=', '+education.degree_type.title;
+                                                                                    }
+                                                                                    %>
+                                                                                    <%=other_fields%>
+                                                                                    </span>
+                                                                                    <span><%=education_from_month+' '+education_from_year+' - '+education_to_month+' '+education_to_year%></span>
+
+                                                                                    <% if(education.educationdocs && education.educationdocs.length>0 && education.educationdocs[0].doc_url){ %>
+                                                                                    <br>
+                                                                                    <span><b class="attachment-icon"><i class="fa fa-paperclip" aria-hidden="true"></i></b> <b><%=education.educationdocs[0].doc_url%></b></span>
+                                                                                    <% } %>
+
+                                                                                </label>
+                                                                                <%
+                                                                                if(education.educationdocs && education.educationdocs.length>0){
+                                                                                
+                                                                                if(education.educationdocs[0].verify_request_id && education.educationdocs[0].verify_request_id.length>0){
+                                                                            
+                                                                                if(education.educationdocs[0].verify_request_id[0].txnno){
+                                                                                %>
+                                                                                <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                                <%
+                                                                                }
+                                                                                } 
+                                                                                }
+                                                                                %>
+                                                                            </div>
+                                                                            <% }) } %>
+                                                                        </div>
+                                                                        <button type='submit' class='btnEducationaldenyDeny btn-primary p8_button_2 pull-right' value='educationaldeny'>Deny</button>
+                                                                        <button type='submit' class='btn btn-sm btn-primary pull-right allow_verify_request' value='allow'>Allow</button>
+                                                                    </form>
+                                                                </div>
+                                                                
+                                                                <!-- Experience Listing -->
+                                                                <% } if(authorize.employment && authorize.employment==1){%>
+                                                                <div class="tab-pane <%=exp_active_panel%>" id="Experience_<%=authorize.id%>">
+                                                                    <form action='/authorize/allowdeny' class='employmentForm' method='POST'>
+                                                                        <input type='hidden' name='to_user_id' value='<%=authorize.owner_id.id%>'>
+                                                                        <input type='hidden' name='authorize_id' value='<%=authorize.id%>'>
+                                                                        <input type='hidden' name='type' value='employment'>
+                                                                        <div class="form-group">
+                                                                            <% 
+                                                                            if(authorize.user_id.userexperiences.length > 0){
+                                                                            _.each(authorize.user_id.userexperiences, function(experience) {
+                                                                            %>
+                                                                            <div class="label-block">
+                                                                                <input type="checkbox" class="form-inline" value="<%=experience.id%>" name="employment" checked="checked">
+                                                                                <label for="">
+                                                                                    <b><%=(experience.title) ? experience.title : ""%></b>
+                                                                                    <span>
+                                                                                        <%
+
+                                                                                        var company_name = "";
+                                                                                        if(typeof experience.company_name!='undefined'){
+                                                                                            company_name = experience.company_name
+                                                                                        }else if(typeof experience.company_id!='undefined' && typeof experience.company_id.company_name!='undefined'){
+                                                                                            company_name = experience.company_id.company_name;
+                                                                                        }
+
+
+                                                                                        %>
+                                                                                        <%=company_name%>
+                                                                                        <span class="blue_dot_mid">
+                                                                                        <%
+                                                                                            var startDate = experience.from_year+"-"+experience.from_month+"-01";
+                                                                                            var endDate = '';
+                                                                                            if(experience.current_work != 1){
+                                                                                                endDate = experience.to_year+"-"+experience.to_month+"-01";
+                                                                                            }
+                                                                                        %>
+
+                                                                                        <%=DateDifferentService.calculateDateDiff(startDate,endDate)%>
+                                                                                        </span>
+                                                                                    </span>
+                                                                                    <span>
+                                                                                        <% 
+                                                                                        var from_month_val='';
+                                                                                        var to_month_val='';
+                                                                                        if(typeof experience.from_month!='undefined' && experience.from_month!=''){
+                                                                                            from_month_val = moment(experience.from_month).format('MMM');
+                                                                                        }
+                                                                                        if(typeof experience.to_month!='undefined' && experience.to_month!=''){
+                                                                                            to_month_val = moment(experience.to_month).format('MMM');
+                                                                                        }%>
+
+                                                                                        <%=from_month_val%> <%=experience.from_year%> - 
+                                                                                    <%=(experience.current_work != 1) ? to_month_val+' '+ experience.to_year : "Present" %>
+                                                                                    </span>
+
+                                                                                    <% if(experience.experiencedocs && experience.experiencedocs.length>0 && experience.experiencedocs[0].doc_url){ %>
+                                                                                    <br>
+                                                                                    <span><b class="attachment-icon"><i class="fa fa-paperclip" aria-hidden="true"></i></b> <b><%=experience.experiencedocs[0].doc_url%></b></span>
+                                                                                    <% } %>
+
+                                                                                </label>
+                                                                                <%
+                                                                                if(experience.experiencedocs && experience.experiencedocs.length>0){
+                                                                                
+                                                                                if(experience.experiencedocs[0].verify_request_id && experience.experiencedocs[0].verify_request_id.length>0){
+                                                                            
+                                                                                if(experience.experiencedocs[0].verify_request_id[0].txnno){
+                                                                                %>
+                                                                                <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                                <%
+                                                                                }
+                                                                                } 
+                                                                                }
+                                                                                %>
+                                                                            </div>
+                                                                            <% }) } %>
+                                                                        </div>
+                                                                        <button type='submit' class='btnEmploymentDeny btn-primary p8_button_2 pull-right' value='employmentdeny'>Deny</button>
+                                                                        <button type='submit' class='btn btn-sm btn-primary pull-right allow_verify_request' value='allow'>Allow</button>
+                                                                    </form>
+                                                                </div>
+                                                                
+                                                                <!-- Project Listing -->
+                                                                <% } if(authorize.projects && authorize.projects==1){ %>
+                                                                <div class="tab-pane <%=proj_active_panel%>" id="Projects_<%=authorize.id%>">
+                                                                    <form action='/authorize/allowdeny' class='employmentForm' method='POST'>
+                                                                        <input type='hidden' name='to_user_id' value='<%=authorize.owner_id.id%>'>
+                                                                        <input type='hidden' name='authorize_id' value='<%=authorize.id%>'>
+                                                                        <input type='hidden' name='type' value='projects'>
+                                                                        <div class="form-group">
+                                                                            <%
+                                                                            if(authorize.user_id.userprojects.length > 0){
+                                                                            _.each(authorize.user_id.userprojects, function(project) {
+                                                                            %>
+                                                                            <div class="label-block">
+                                                                                <input type="checkbox" class="form-inline" value="<%=project.id%>" name="projects" checked="checked">
+                                                                                <label for="">
+                                                                                    <b><% if(typeof project.title!='undefined'){%><%=project.title%> <% } %></b>
+                                                                                    <span>
+                                                                                    <% if(typeof project.project_url!='undefined' && project.project_url!='') {%>
+                                                                                    <a href="<%=project.project_url%>" target="_blank"><%=project.project_url%></a>
+                                                                                    <% } %>
+                                                                                    </span>
+                                                                                    <span><%=(typeof project.location!='undefined' && project.location!='') ? project.location : "" %></span>
+                                                                                    <span>
+                                                                                    <%
+                                                                                    var start_time = "";
+                                                                                    var end_time = "";
+                                                                                    if(typeof project.from_year!='undefined' && typeof project.from_month!='undefined'){
+                                                                                        if(project.from_year!='' && project.from_month!=''){
+                                                                                            start_time=project.from_year+'-'+project.from_month;
+                                                                                    %>
+                                                                                    <%=DateDifferentService.getMonth(project.from_month)%>
+                                                                                    <%=project.from_year%>
+                                                                                    <% }
+                                                                                    }   
+                                                                                    if(typeof project.to_year!='undefined' && typeof project.to_month!='undefined'){
+                                                                                            if(project.to_year!='' && project.to_month!=''){
+                                                                                                end_time=project.to_year+'-'+project.to_month;
+                                                                                            %> -
+                                                                                                <%=DateDifferentService.getMonth(project.to_month)%>
+                                                                                                <%=project.to_year%>
+                                                                                            <%
+                                                                                            }
+                                                                                        }
+                                                                                    %>
+                                                                                    <% if(start_time!=''){ %>
+                                                                                    <span class="blue_dot_mid"><%=DateDifferentService.calculateDateDiff(start_time,end_time)%></span>
+                                                                                    <% } %>
+                                                                                    </span>
+
+                                                                                <% if(project.projectdocs && project.projectdocs.length>0 && project.projectdocs[0].doc_url){ %>
+                                                                                <br>
+                                                                                <span><b class="attachment-icon"><i class="fa fa-paperclip" aria-hidden="true"></i></b> <b><%=project.projectdocs[0].doc_url%></b></span>
+                                                                                <% } %>
+
+                                                                                </label>
+                                                                                <%
+                                                                                if(project.projectdocs && project.projectdocs.length>0){
+                                                                                
+                                                                                if(project.projectdocs[0].verify_request_id && project.projectdocs[0].verify_request_id.length>0){
+                                                                            
+                                                                                if(project.projectdocs[0].verify_request_id[0].txnno){
+                                                                                %>
+                                                                                <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                                <%
+                                                                                }
+                                                                                } 
+                                                                                }
+                                                                                %>
+                                                                                
+                                                                            </div>
+                                                                            <% }) } else {%>
+                                                                            <p>No data found</p>
+                                                                            <% } %>
+                                                                        </div>
+                                                                        <button type='submit' class='btnProjectDeny btn-primary p8_button_2 pull-right' value='projectdeny'>Deny</button>
+                                                                        <button type='submit' class='btn btn-sm btn-primary pull-right allow_verify_request' value='allow'>Allow</button>
+                                                                    </form>
+                                                                </div>
+                                                                <% } %>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <% i++; }) } else {%>
+                                            <tr>
+                                                <td colspan="4">No data found</td>
+                                            </tr>
+                                            <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pad_20_10">
+                                <div class="col-sm-5 col-xs-12"><div class="showing_number">Showing <%=authorizes.startPoint%> to <%=authorizes.endPoint%> of <%=authorizes.totalRecords%> entries</div></div>
+                                <div class="col-sm-7 col-xs-12">
+                                    <div class="paging_simple_numbers">
+                                        <ul class="pagination">
+                                            <li class="paginate_button previous disabled" id="example_previous"><a href="javascript:;" aria-controls="example" data-dt-idx="0" tabindex="0"><i class="fa fa-angle-left" aria-hidden="true"></i></a></li>
+                                            <% for(i = 1; i <= authorizes.numberofpages; i++) { 
+                                               var disabledClass = (page_no==i) ? "disabled" : "";
+
+                                            %>
+
+                                            <li class="paginate_button <%=disabledClass%>"><a href="/authorize/?page_no=<%=i%>" aria-controls="example" data-dt-idx="1" tabindex="0"><%=i%></a></li>
+                                            <% } %>
+
+                                            <li class="paginate_button next disabled" id="example_next"><a href="javascript:;" aria-controls="example" data-dt-idx="4" tabindex="0"><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="section_title"><h3>Completed access document requests</h3></div>
+                    <div class="p7_content">
+                        <div id="data_table_wrapper" class="data_table_wrapper data_table">
+                            <div class="row pad_20_10">
+                                <div class="col-sm-6 col-xs-6">
+                                    <div class="p15_3010">
+                                        <label for="">Show </label><select id="" name="sort_by" class="form-control"><option value="10">10</option><option value="20">20</option><option value="30">30</option></select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-xs-6">
+                                    <div class="p15_3011">
+                                        <input type="search" class="form-control" id="CompletesearchTxt" placeholder="Type here..." /><label class="p8_label1" for="">Search </label><button type="button" class="search_button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row minus-10-margin-xs">
+                                <div class="col-sm-12">
+                                    <div class="table-responsive">
+                                        <table id="complete_history" class="table table-striped dataTable table-expandable" cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th>Request Date</th>
+                                                    <th>Name</th>
+                                                    <th>Data Type</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                    <th width="20%">Expand / Collapse</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <%
+                                                if(completeAuthorizes.data.length > 0){
+                                                    var j = 1;
+                                                    _.each(completeAuthorizes.data,function(complete){
+    
+                                                    var formatedDate = DateDifferentService.internationalDateFormat(complete.request_id.createdAt);
+
+                                                    var C_className = (j%2==0) ? "even" : "odd";
+
+                                                    var owner_name = "";
+                                                    var owner_slug = "/profile";
+
+
+                                                    if(typeof complete.request_id.owner_id.company_id!='undefined' && typeof complete.request_id.owner_id.company_id.company_name!='undefined') {
+                                                        owner_name = complete.request_id.owner_id.company_id.company_name;
+                                                        if(typeof complete.request_id.owner_id.company_id.slug!='undefined'){
+                                                            owner_slug = "/company/"+complete.request_id.owner_id.company_id.slug+"/wall";
+                                                        }
+                                                    } else if(typeof complete.request_id.owner_id!='undefined' && typeof complete.request_id.owner_id.name!='undefined'){
+                                                        owner_name = complete.request_id.owner_id.name;
+                                                        if(typeof complete.request_id.owner_id.slug!='undefined'){
+                                                            owner_slug = "/profile/"+complete.request_id.owner_id.slug+"/wall";
+                                                        }
+                                                    }
+
+
+                                                %>
+                                                <tr class="<%=C_className%>">
+                                                    <td><%=formatedDate%></td>
+                                                    <td><a href="<%=owner_slug%>"><%=owner_name%></a></td>
+                                                    <td>
+                                                        <%
+                                                            var text_name = "";
+                                                            if(complete.type=='identification'){
+                                                                text_name = "Personal Information (Data & Doc)";
+                                                            }else if(complete.type=='educational'){
+                                                                text_name = "Education (Data & Doc)";
+                                                            }else if(complete.type=='employment'){
+                                                                text_name = "Experience (Data & Doc)";
+                                                            }else if(complete.type=='projects'){
+                                                                text_name = "Projects (Data & Doc)";
+                                                            }
+                                                        %>
+                                                        <%=text_name%>    
+                                                    </td>
+                                                    <td><%=(complete.status==2) ? "Allowed" : "Deny"%></td>
+                                                    <td><a href="/authorizedatapdf/<%=complete.request_id.id%>" target="_blank">Download</a></td>
+                                                    <td><div class="table-expandable-arrow"></div> Details </td>
+                                                </tr>
+                                                <tr class="authorize-access" style="display: none;">
+                                                    <td colspan="6">
+                                                        <div class="col-xs-3">
+                                                        <%
+                                                            var C_iden_active_panel = "";
+                                                            var C_educ_active_panel = "";
+                                                            var C_exp_active_panel = "";
+                                                            var C_proj_active_panel = "";
+
+                                                            if(complete.type=='identification'){
+                                                                var C_iden_active_panel = "active";
+                                                            }else if(complete.type=='educational'){
+                                                                var C_educ_active_panel = "active";
+                                                            }else if(complete.type=='employment'){
+                                                                var C_exp_active_panel = "active";
+                                                            }else if(complete.type=='projects'){
+                                                                var C_proj_active_panel = "active";
+                                                            }
+                                                        %>
+                                                        <ul class="nav nav-tabs tabs-left">
+                                                            <% if(complete.type=='identification'){%>
+                                                            <li class="<%=C_iden_active_panel%>"><a href="#C_Identification_<%=complete.id%>" data-toggle="tab">Identification</a></li>
+                                                            <% } if(complete.type=='educational'){ %>
+                                                            <li class="<%=C_educ_active_panel%>"><a href="#C_Education_<%=complete.id%>" data-toggle="tab">Education</a></li>
+                                                            <% } if(complete.type=='employment'){%>
+                                                            <li class="<%=C_exp_active_panel%>"><a href="#C_Experience_<%=complete.id%>" data-toggle="tab">Experience</a></li>
+                                                            <% } if(complete.type=='projects'){%>
+                                                            <li class="<%=C_proj_active_panel%>"><a href="#C_Projects_<%=complete.id%>" data-toggle="tab">Projects</a></li>
+                                                            <% } %>
+                                                        </ul>
+                                                    </div>
+
+                                                    <div class="col-xs-9">
+                                                        <div class="tab-content">
+                                                            <!-- Identification Listing -->
+                                                            <% 
+                                                            if(complete.type=='identification'){
+                                                                var i_checked_email = "";
+                                                                var i_checked_phone = "";
+                                                                if(typeof complete.contact_email=='undefined'){
+                                                                    i_checked_email = '1';
+                                                                } else if(typeof complete.contact_email!='undefined' && complete.contact_email==1){
+                                                                    i_checked_email = '1';
+                                                                }
+
+                                                                if(typeof complete.contact_phone=='undefined'){
+                                                                    i_checked_phone = '1';
+                                                                } else if(typeof complete.contact_phone!='undefined' && complete.contact_phone==1){
+                                                                    i_checked_phone = 1;
+                                                                }
+                                                                var is_email_verify = 0;
+                                                                var is_phone_verify = 0;
+                                                            %>
+                                                            <div class="tab-pane <%=C_iden_active_panel%>" id="C_Identification_<%=complete.id%>">
+                                                                <div class="form-group">
+                                                                    <div class="label-block">
+                                                                        <input type="checkbox" class="form-inline" value="color Scan" checked="checked" disabled="disabled"><label for="" class="text-capitalize">
+                                                                        <%
+                                                                        if(typeof complete.request_id.user_id.company_id!='undefined' && typeof complete.request_id.user_id.company_id.company_name!='undefined'){
+                                                                        %>
+                                                                        <%=complete.request_id.user_id.company_id.company_name%>
+                                                                        <% } else {%>
+                                                                        <%=complete.request_id.user_id.name%>
+                                                                        <% } %></label>
+                                                                    </div>
+                                                                    <%
+                                                                    if(complete.request_id.user_id.user_contact_verify.length > 0){ 
+                                                                    var _contact = complete.request_id.user_id.user_contact_verify[0];
+                                                                    if(typeof _contact.email!='undefined' && _contact.email!=''){
+                                                                    is_email_verify = (_contact.is_email_verify) ? 1 : 0;
+                                                                    %>
+                                                                    <div class="label-block">
+                                                                        <input type="checkbox" class="form-inline" value="1" name="contact_email"  disabled="disabled" <% if(i_checked_email){%>checked="checked"<% }%>><label for=""> <%=_contact.email%></label>
+
+                                                                        <% if(is_email_verify){ %>
+                                                                        <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                        <% } %>
+
+                                                                    </div>
+                                                                    <% } if(typeof _contact.phone!='undefined' && _contact.phone!=''){
+                                                                        is_phone_verify = (_contact.is_phone_verify) ? 1 : 0;
+                                                                    %>
+                                                                    <div class="label-block">
+                                                                        <input type="checkbox" class="form-inline" value="1" name="contact_phone"  disabled="disabled"  <% if(i_checked_phone){%>checked="checked"<% }%>> <label for=""> <%=_contact.dial_code+' '+_contact.phone%></label>
+                                                                        <% if(is_phone_verify){ %>
+                                                                        <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                        <% } %>
+                                                                    </div>
+                                                                    <% } }
+                                                                    if(complete.request_id.user_id.UserVerifyData.length > 0) {
+                                                                        _.each(complete.request_id.user_id.UserVerifyData, function(verifydata) {
+                                                                            if(verifydata.tab_type=='identity'){
+                                                                                var i_checked = "";
+                                                                                i_checked = (complete.identification=='1') ? "1":"";
+                                                                                var boldData = "";
+                                                                                var span1 = "";
+                                                                                var span2 = "";
+                                                                                var span3 = "";
+                                                                                var span4 = "";
+                                                                                var span5 = "";
+
+                                                                                var dataTypeID = "";
+                                                                                var dataType = "";
+                                                                                var dataTypeTitle = "";
+                                                                                var country_name = "";
+                                                                                var doc_num = "";
+                                                                                var legal_name = "";
+                                                                                var gender = "";
+                                                                                var dateofbirth = "";
+                                                                                var issue_date = "";
+                                                                                var expiry_date = "";
+
+                                                                            if(verifydata.doc_type_id && verifydata.doc_type_id.id){
+                                                                                dataTypeID = verifydata.doc_type_id.id;
+                                                                            }
+                                                                            if(verifydata.doc_type_id && verifydata.doc_type_id.title){
+                                                                                dataTypeTitle = verifydata.doc_type_id.title;
+                                                                            }
+
+                                                                            if(typeof verifydata.dob != 'undefined' && verifydata.dob!=null){
+                                                                                boldData = dataTypeTitle;
+                                                                            }else if(typeof verifydata.doc_type_id!='undefined' && verifydata.doc_type_id!=''){
+                                                                                boldData = verifydata.legal_name;
+                                                                                if(dataTypeTitle){
+                                                                                    boldData = dataTypeTitle;
+                                                                                }
+                                                                            }else{
+                                                                                boldData = verifydata.legal_name;
+                                                                            }
+
+                                                                            if(typeof verifydata.doc_country!='undefined' && typeof verifydata.doc_country.name!='undefined' && verifydata.doc_country.name!=''){
+                                                                                country_name = verifydata.doc_country.name;
+                                                                            }
+                                                                            if(typeof verifydata.doc_num!='undefined' && verifydata.doc_num!=''){
+                                                                                doc_num = verifydata.doc_num;
+                                                                            }
+                                                                            if(typeof verifydata.legal_name!='undefined' && verifydata.legal_name!=''){
+                                                                                legal_name = verifydata.legal_name;
+                                                                            }
+
+                                                                            if(typeof verifydata.gender!='undefined'){
+                                                                                if(verifydata.gender==1){
+                                                                                    gender = "Male";
+                                                                                }else if(verifydata.gender==2){
+                                                                                    gender = "Female";
+                                                                                }else if(verifydata.gender==3){
+                                                                                    gender = "Not Specified";
+                                                                                }
+                                                                            }
+
+                                                                            if(typeof verifydata.dob != 'undefined' && verifydata.dob!=null && verifydata.dob!=''){
+                                                                                dateofbirth = DateDifferentService.internationalDateFormat(verifydata.dob);
+                                                                            }
+
+                                                                            if(typeof verifydata.expiry_date != 'undefined' && verifydata.expiry_date!=null && verifydata.expiry_date!=''){
+                                                                                expiry_date = DateDifferentService.internationalDateFormat(verifydata.expiry_date);
+                                                                            }
+
+                                                                            if(typeof verifydata.issue_date != 'undefined' && verifydata.issue_date!=null){
+                                                                                issue_date = DateDifferentService.internationalDateFormat(verifydata.issue_date);
+                                                                            }
+
+                                                                            if(doc_num){
+                                                                                if(boldData=="Driving License"){
+                                                                                    dataType = "License No";
+                                                                                }else if(boldData=="ID Card"){
+                                                                                    dataType = "ID Card";
+                                                                                }else if(boldData=="Birth Certificate"){
+                                                                                    dataType = "Certificate No";
+                                                                                }else if(boldData=="Aadhar Card"){
+                                                                                    dataType = "Aadhar Card No";
+                                                                                }else if(boldData=="Passport"){
+                                                                                    dataType = "Passport No";
+                                                                                }else{
+                                                                                    dataType = "Document No";
+                                                                                }
+                                                                            }
+
+
+                                                                            if(boldData==''){
+                                                                                var userName = "";
+                                                                                var userSlug = "";
+                                                                                if(typeof complete.request_id.user_id.company_id!='undefined' && typeof complete.request_id.user_id.company_id.company_name!='undefined'){
+                                                                                    userName = complete.request_id.user_id.company_id.company_name;
+                                                                                    if(typeof complete.request_id.user_id.company_id.slug!='undefined'){
+                                                                                        userSlug = "/company/"+complete.request_id.user_id.company_id.slug+"/wall";
+                                                                                    }
+                                                                                } else if(typeof complete.request_id.user_id!='undefined' && typeof complete.request_id.user_id.name!='undefined'){
+                                                                                    userName = complete.request_id.user_id.name;
+                                                                                    if(typeof complete.request_id.user_id.slug!='undefined'){
+                                                                                        userSlug = "/profile/"+complete.request_id.user_id.slug+"/wall";
+                                                                                    }
+                                                                                }
+                                                                                boldData = userName;
+                                                                            }
+
+                                                                            if(complete.identification!='1'){
+                                                                                identification_data = complete.action_data;
+                                                                                if(!Array.isArray(identification_data)) {
+                                                                                    identification_data = [identification_data];
+                                                                                }
+
+                                                                                i_checked = identification_data.filter(function (identi) { 
+                                                                                    return identi == verifydata.id;
+                                                                                });
+
+                                                                                if(i_checked==''){
+
+                                                                                    if(dataTypeID!=''){
+                                                                                        i_checked = identification_data.filter(function (identi) { 
+                                                                                            return identi == dataTypeID;
+                                                                                        });
+                                                                                    }else{
+                                                                                        i_checked = identification_data.filter(function (identi) { 
+                                                                                            return identi == "d_"+verifydata.id;
+                                                                                        });
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        %>
+                                                                        <div class="label-block">
+                                                                            <input type="checkbox" class="form-inline" value="<%=verifydata.id%>" name="identification"  disabled="disabled" <% if(i_checked!='') {%>checked="checked"<%}%>>
+                                                                            <label for="">
+                                                                                <b><%=boldData%></b>
+                                                                                <% if(country_name) {%>
+                                                                                <span>Country Name : <%=country_name%></span>
+                                                                                <% } if(doc_num){%>
+                                                                                <span><%=dataType%> : <%=doc_num%></span>
+                                                                                <% } if(dateofbirth){%>
+                                                                                <span>Date of Birth : <%=dateofbirth%></span>
+                                                                                <% } if(issue_date){%>
+                                                                                <span>Issuance Date : <%=issue_date%></span>
+                                                                                <% } if(issue_date){%>
+                                                                                <span>Expiration Date : <%=expiry_date%></span>
+                                                                                <% } if(gender){%>
+                                                                                <span>Sex : <%=gender%></span>
+                                                                                <% } if(verifydata.address_line_1){%>
+                                                                                <span>Address Line 1 : <%=verifydata.address_line_1%></span>
+                                                                                <% } if(verifydata.address_line_2){%>
+                                                                                <span>Address Line 2 : <%=verifydata.address_line_2%></span>
+                                                                                <% } if(verifydata.country){%>
+                                                                                <span>Country : <%=verifydata.country%></span>
+                                                                                <% } if(verifydata.state){%>
+                                                                                <span>State : <%=verifydata.state%></span>            
+                                                                                <% } if(verifydata.city){%>
+                                                                                <span>City : <%=verifydata.city%></span>
+                                                                                <% } if(verifydata.zip){%>
+                                                                                <span>Zipcode : <%=verifydata.zip%></span>
+                                                                                <% } %>
+                                                                                <% if(verifydata.doc_url){ %>
+                                                                                <br>
+                                                                                <span><b class="attachment-icon"><i class="fa fa-paperclip" aria-hidden="true"></i></b> <b><%=verifydata.doc_url%></b></span>
+                                                                                <% } %>
+                                                                            </label>
+                                                                                    <% 
+                                                                                    if(verifydata.verify_request_id && verifydata.verify_request_id.length>0){
+                                                                                        if(verifydata.verify_request_id[0].txnno && verifydata.verify_request_id[0].txnno!=''){
+                                                                                    %>
+                                                                                    <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+
+                                                                                    <a href="javascript:;" class="showMyModal b30 pull-right" data-id="<%=verifydata.verify_request_id[0].verify_id%>">View Blockchain Detail &nbsp;</a>
+                                                                                    
+                                                                                    <%
+                                                                                    } 
+                                                                                    }
+                                                                                    %>
+
+                                                                                </div>
+                                                                                <%  } }) } %>
+                                                                </div>
+                                                            </div>
+                                                            <% } %>
+
+                                                            <% if(complete.type=='educational'){%>
+                                                            <div class="tab-pane <%=C_educ_active_panel%>" id="C_Education_<%=complete.id%>">
+                                                                <div class="form-group">
+                                                                <% 
+                                                                if(complete.request_id.user_id.usereducations.length > 0){
+                                                                    _.each(complete.request_id.user_id.usereducations, function(education){
+                                                                        var edu_checked = "";
+                                                                        edu_checked = (complete.educational=='1') ? "1":"";
+
+                                                                        var education_from_month = (education.from_month!=null) ? education.from_month : "";
+                                                                    
+                                                                        var education_from_year = (education.from_year!=null) ? education.from_year : "";
+                                                                    
+                                                                        var education_to_month = (education.to_month!=null) ? education.to_month : "";
+                                                                    
+                                                                        var education_to_year = (education.to_year!=null) ? education.to_year : "";
+
+                                                                        if(complete.educational!='1'){
+                                                                            educational_data = complete.action_data;
+                                                                            
+                                                                            if(!Array.isArray(educational_data)){
+                                                                                educational_data=[educational_data];
+                                                                            }
+
+                                                                            edu_checked = educational_data.filter(function (person) { 
+                                                                                return person == education.id;
+                                                                            });
+                                                                        }
+                                                                %>
+                                                                    <div class="label-block">
+                                                                        <input type="checkbox" class="form-inline"  value="<%=education.id%>" name="educational" disabled="disabled" <% if(edu_checked!='') { %> checked="checked" <% } %>>
+
+                                                                        <label for=""><b><%=education.school%></b>  
+                                                                            <span><%=education.degree%>
+                                                                            <% var other_fields='';
+                                                                             if(typeof education.study_field!='undefined' && education.study_field!=''){
+                                                                                other_fields+= ', '+education.study_field 
+                                                                             }
+                                                                            if(typeof education.degree_type!='undefined' && typeof education.degree_type.title!='undefined' && education.degree_type.title!=''){
+                                                                                other_fields+=', '+education.degree_type.title;
+                                                                            }
+                                                                            %>
+                                                                             <%=other_fields%>
+                                                                            </span>
+                                                                            <span><%=education_from_month+' '+education_from_year+' - '+education_to_month+' '+education_to_year%></span>
+
+                                                                            <% if(education.educationdocs && education.educationdocs.length>0 && education.educationdocs[0].doc_url){ %>
+                                                                            <br>
+                                                                            <span><b class="attachment-icon"><i class="fa fa-paperclip" aria-hidden="true"></i></b> <b><%=education.educationdocs[0].doc_url%></b></span>
+                                                                            <% } %>
+
+                                                                        </label>
+                                                                        <%
+                                                                        if(education.educationdocs && education.educationdocs.length>0){
+                                                                        
+                                                                        if(education.educationdocs[0].verify_request_id && education.educationdocs[0].verify_request_id.length>0){
+                                                                    
+                                                                        if(education.educationdocs[0].verify_request_id[0].txnno){
+                                                                        %>
+                                                                        <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+
+                                                                        <a href="javascript:;" class="showMyModal b30 pull-right" data-id="<%=education.educationdocs[0].verify_request_id[0].verify_id%>">View Blockchain Detail &nbsp;</a>
+
+                                                                        <!-- <a href="/comparedata/<%=education.educationdocs[0].verify_request_id[0].verify_id%>/<%=education.educationdocs[0].verify_request_id[0].user_id%>" class="btn btn-primary show_verify_button btn-primary-b30 pull-right" style="color: #FFF">View Blockchain Detail</a> -->
+                                                                        <%
+                                                                        }
+                                                                        } 
+                                                                        }
+                                                                        %>
+                                                                    </div>
+                                                                <% }) } %>
+                                                                </div>
+                                                            </div>
+                                                            <% } if(complete.type=='employment'){%>
+                                                            <div class="tab-pane <%=C_exp_active_panel%>" id="C_Experience_<%=complete.id%>">
+                                                                <div class="form-group">
+                                                                    <% 
+                                                                    if(complete.request_id.user_id.userexperiences.length > 0){
+                                                                    _.each(complete.request_id.user_id.userexperiences, function(experience) {
+
+                                                                    var emp_checked = "";
+                                                                    employment_data = complete.action_data;
+                                                                    
+                                                                    if(!Array.isArray(employment_data)){
+                                                                        employment_data=[employment_data];
+                                                                    }
+
+                                                                    emp_checked = employment_data.filter(function (person1) { 
+                                                                        return person1 == experience.id;
+                                                                    });
+                                                                    %>
+                                                                    <div class="label-block">
+                                                                        <input type="checkbox" class="form-inline" value="<%=experience.id%>" name="employment" disabled="disabled" <% if(emp_checked!='') { %> checked="checked" <% } %>>
+                                                                        <label for="">
+                                                                            <b><% if(typeof experience.title!='undefined'){%> <%=experience.title%><% }%></b>
+                                                                            <span>
+
+                                                                                <%
+                                                                                var company_name = "";
+                                                                                if(typeof experience.company_name!='undefined'){
+                                                                                    company_name = experience.company_name
+                                                                                }else if(typeof experience.company_id!='undefined' && typeof experience.company_id.company_name!='undefined'){
+                                                                                    company_name = experience.company_id.company_name;
+                                                                                }
+
+                                                                                %>
+                                                                                <%=company_name%>
+                                                                                <span class="blue_dot_mid">
+                                                                                <%
+                                                                                    var startDate = experience.from_year+"-"+experience.from_month+"-01";
+                                                                                    var endDate = '';
+                                                                                    if(experience.current_work != 1){
+                                                                                        endDate = experience.to_year+"-"+experience.to_month+"-01";
+                                                                                    }
+                                                                                %>
+
+                                                                                <%=DateDifferentService.calculateDateDiff(startDate,endDate)%>
+                                                                                </span>
+                                                                            </span>
+                                                                            <%
+                                                                                var from_month_val2='';
+                                                                                var to_month_val2='';
+                                                                                if(typeof experience.from_month!='undefined' && experience.from_month!=''){
+                                                                                    from_month_val2 = moment(experience.from_month).format('MMM');
+                                                                                }
+                                                                                if(typeof experience.to_month!='undefined' && experience.to_month!=''){
+                                                                                    to_month_val2 = moment(experience.to_month).format('MMM');
+                                                                                }
+                                                                            %>
+                                                                            <span><%=from_month_val2%> <%=experience.from_year%> - 
+                                                                            <%=(experience.current_work != 1) ? to_month_val2+' '+ experience.to_year : "Present" %>
+                                                                            </span>
+
+                                                                            <% if(experience.experiencedocs && experience.experiencedocs.length>0 && experience.experiencedocs[0].doc_url){ %>
+                                                                            <br>
+                                                                            <span><b class="attachment-icon"><i class="fa fa-paperclip" aria-hidden="true"></i></b> <b><%=experience.experiencedocs[0].doc_url%></b></span>
+                                                                            <% } %>
+
+                                                                        </label>
+                                                                        <%
+                                                                        if(experience.experiencedocs && experience.experiencedocs.length>0){
+                                                                        
+                                                                        if(experience.experiencedocs[0].verify_request_id && experience.experiencedocs[0].verify_request_id.length>0){
+                                                                    
+                                                                        if(experience.experiencedocs[0].verify_request_id[0].txnno){
+                                                                        %>
+                                                                        <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+
+                                                                        <a href="javascript:;" class="showMyModal b30 pull-right" data-id="<%=experience.experiencedocs[0].verify_request_id[0].verify_id%>">View Blockchain Detail &nbsp;</a>
+
+                                                                        <!-- <a href="/comparedata/<%=experience.experiencedocs[0].verify_request_id[0].verify_id%>/<%=experience.experiencedocs[0].verify_request_id[0].user_id%>" class="btn btn-primary show_verify_button btn-primary-b30 pull-right" style="color: #FFF">View Blockchain Detail</a> -->
+
+                                                                        <%
+                                                                        }
+                                                                        } 
+                                                                        }
+                                                                        %>
+                                                                    </div>
+                                                                    <% }) } %>
+                                                                </div>
+                                                            </div>
+                                                            <% } if(complete.type=='projects'){ %>
+                                                            <div class="tab-pane <%=C_proj_active_panel%>" id="C_Projects_<%=complete.id%>">
+                                                                <div class="form-group">
+                                                                    <%
+                                                                    if(complete.request_id.user_id.userprojects.length > 0){
+                                                                        _.each(complete.request_id.user_id.userprojects, function(project) {
+
+                                                                        var pro_checked = "";
+                                                                        pro_checked = (complete.projects=='1') ? "1":"";
+
+                                                                        project_data = complete.action_data;
+                                                                        if(!Array.isArray(project_data)){
+                                                                            project_data=[project_data];
+                                                                        }
+                                                                        
+                                                                        pro_checked = project_data.filter(function (person2) { 
+                                                                            return person2 == project.id;
+                                                                        });
+                                                                    %>
+                                                                        <div class="label-block">
+                                                                            <input type="checkbox" class="form-inline" value="<%=project.id%>" name="projects" disabled="disabled" <% if(pro_checked!='') { %> checked="checked" <% } %>>
+                                                                            <label for="">
+                                                                                <b>
+																				<% if(typeof project.title!='undefined'){%>
+																				<%=project.title%><% } %>
+																				</b>
+                                                                                <span>
+                                                                                <% if(typeof project.project_url!='undefined' && project.project_url!='') {%>
+                                                                                <a href="<%=project.project_url%>" target="_blank"><%=project.project_url%></a>
+                                                                                <% } %>
+                                                                                </span>
+                                                                                <span><%=(typeof project.location!='undefined' && project.location!='') ? project.location : "" %></span>
+                                                                                <span>
+                                                                                <%
+                                                                                var start_time = "";
+                                                                                var end_time = "";
+                                                                                if(typeof project.from_year!='undefined' && typeof project.from_month!='undefined'){
+                                                                                    if(project.from_year!='' && project.from_month!=''){
+                                                                                        start_time=project.from_year+'-'+project.from_month;
+                                                                                %>
+                                                                                <%=DateDifferentService.getMonth(project.from_month)%>
+                                                                                <%=project.from_year%>
+                                                                                <% }
+                                                                                }   
+                                                                                if(typeof project.to_year!='undefined' && typeof project.to_month!='undefined'){
+                                                                                        if(project.to_year!='' && project.to_month!=''){
+                                                                                            end_time=project.to_year+'-'+project.to_month;
+                                                                                        %> -
+                                                                                            <%=DateDifferentService.getMonth(project.to_month)%>
+                                                                                            <%=project.to_year%>
+                                                                                        <%
+                                                                                        }
+                                                                                    }
+                                                                                %>
+                                                                                <% if(start_time!=''){ %>
+                                                                                <span class="blue_dot_mid"><%=DateDifferentService.calculateDateDiff(start_time,end_time)%></span>
+                                                                                <% } %>
+                                                                                </span>
+
+                                                                                <% if(project.projectdocs && project.projectdocs.length>0 && project.projectdocs[0].doc_url){ %>
+                                                                                <br>
+                                                                                <span><b class="attachment-icon"><i class="fa fa-paperclip" aria-hidden="true"></i></b> <b><%=project.projectdocs[0].doc_url%></b></span>
+                                                                                <% } %>
+                                                                                
+                                                                            </label>
+                                                                            <%
+                                                                            if(project.projectdocs && project.projectdocs.length>0){
+                                                                            
+                                                                            if(project.projectdocs[0].verify_request_id && project.projectdocs[0].verify_request_id.length>0){
+                                                                        
+                                                                            if(project.projectdocs[0].verify_request_id[0].txnno){
+                                                                            %>
+                                                                            <span class="green-checked pull-right"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+
+                                                                            <a href="javascript:;" class="showMyModal b30 pull-right" data-id="<%=project.projectdocs[0].verify_request_id[0].verify_id%>">View Blockchain Detail &nbsp;</a>
+
+                                                                            <!-- <a href="/comparedata/<%=project.projectdocs[0].verify_request_id[0].verify_id%>/<%=project.projectdocs[0].verify_request_id[0].user_id%>" class="btn btn-primary show_verify_button btn-primary-b30 pull-right" style="color: #FFF">View Blockchain Detail</a> -->
+                                                                            <%
+                                                                            }
+                                                                            } 
+                                                                            }
+                                                                            %>
+                                                                        </div>
+                                                                        <% }) } else {%>
+                                                                        <p>No data found</p>
+                                                                        <% } %>
+                                                                    </div>
+                                                            </div>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+
+
+                                                <% j++; }) } else {%>
+                                                <tr>
+                                                    <td colspan="6">No data found</td>
+                                                </tr>
+                                                <% } %>
+                                            </tbody>
+                                            
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pad_20_10">
+                                <div class="col-sm-5 col-xs-12"><div class="showing_number">Showing <%=completeAuthorizes.startPoint%> to <%=completeAuthorizes.endPoint%> of <%=completeAuthorizes.totalRecords%> entries</div></div>
+                                <div class="col-sm-7 col-xs-12">
+                                    <div class="paging_simple_numbers">
+                                        <ul class="pagination">
+                                            <li class="paginate_button previous disabled" id="example_previous"><a href="javascript:;" aria-controls="example" data-dt-idx="0" tabindex="0"><i class="fa fa-angle-left" aria-hidden="true"></i></a></li>
+                                            <% for(i = 1; i <= completeAuthorizes.numberofpages; i++) { 
+                                               var disabledClass = (page_no==i) ? "disabled" : "";
+
+                                            %>
+
+                                            <li class="paginate_button <%=disabledClass%>"><a href="/authorize/?page=<%=i%>" aria-controls="example" data-dt-idx="1" tabindex="0"><%=i%></a></li>
+                                            <% } %>
+
+                                            <li class="paginate_button next disabled" id="example_next"><a href="javascript:;" aria-controls="example" data-dt-idx="4" tabindex="0"><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Sidebar nav verification Starts -->
+            <%- partial('../includes/sidebar-nav-verification.ejs') %>
+            <!-- Sidebar nav verification Ends -->
+        </div>
+    </div>
+</div>
+
+<!-- Select verifier user Modal pop up -->
+<%- include send-authenticate-popup.ejs %>
+
+<!-- Select verifier user Modal pop up -->
+<%- include verify_authentication_popup.ejs %>
+
+<script type="text/javascript" src="/themes/frontend/js/ajax_functions.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/send-request-authenticate.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/verify_authentication_popup.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/verification-history.js"></script>
+
+<script type="text/javascript">
+    $(document).on("keyup","#searchTxt",function(){
+        var searchTerm = $(this).val().toLowerCase();
+        $('#upload_history tbody tr').each(function(){
+            var lineStr = $(this).text().toLowerCase();
+            if(lineStr.indexOf(searchTerm) === -1){
+                $(this).hide();
+            }else{
+                $(this).show();
+            }
+        });
+    });
+
+    $(document).on("keyup","#CompletesearchTxt",function(){
+        var searchTerm = $(this).val().toLowerCase();
+        $('#complete_history tbody tr').each(function(){
+            var lineStr = $(this).text().toLowerCase();
+            if(lineStr.indexOf(searchTerm) === -1){
+                $(this).hide();
+            }else{
+                $(this).show();
+            }
+        });
+    });
+
+    $(document).on("click",".btnEmploymentDeny, .btnEducationaldenyDeny, .btnIdentificationDeny, .btnProjectDeny",function(event){
+        event.preventDefault();
+        ajaxindicatorstart('LOADING');
+        var form = $(this).closest('form')[0];
+        var formData = new FormData(form);
+        var value = $(this).val();
+        $.ajax({
+            type: 'POST',
+            url: '/authorize/allowdeny?deny='+value,
+            data:  formData,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            success: function (response)
+            {
+                location.reload();
+            }
+        });
+        ajaxindicatorstop();
+    });
+
+    $(document).on("click",".allow_verify_request",function(event){
+        event.preventDefault();
+        ajaxindicatorstart('LOADING');
+        var closestForm = $(this).closest("form");
+        var check = closestForm.find('input[type=checkbox]:checked').length;
+        if(check){
+            var form = closestForm[0];
+            var formData = new FormData(form);
+            var value = $(this).val();
+            
+            $.ajax({
+                type: 'POST',
+                url: '/authorize/allowdeny',
+                data:  formData,
+                processData: false,
+                contentType: false,
+                enctype: 'multipart/form-data',
+                success: function (response)
+                {
+                    if(response.status=="OK"){
+                        $.bootstrapGrowl(response.msg, {type: 'success', delay: 1000});
+                        location.reload();
+                    }else{
+                        $.bootstrapGrowl(response.msg, {type: 'danger', delay: 1000});
+                    }
+                }
+            });
+        }else{
+            $.bootstrapGrowl("Please select atleast one checkbox", {type: 'danger', delay: 1000});
+        }
+        ajaxindicatorstop();
+
+        // ajaxindicatorstart('LOADING');
+        // event.preventDefault();
+        // var closestForm = $(this).closest("form");
+        // var check = closestForm.find('input[type=checkbox]:checked').length;
+        // if(check){
+        //     closestForm.submit();
+        // }else{
+        //     $.bootstrapGrowl("Please select atleast one checkbox", {type: 'danger', delay: 1000});
+        //     return false;
+        // }
+        // ajaxindicatorstop();
+    });
+
+
+</script>

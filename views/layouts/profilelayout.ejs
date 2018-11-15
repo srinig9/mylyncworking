@@ -1,0 +1,128 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html>
+<!--<![endif]-->
+<head>
+    <title><%=typeof title == 'undefined' ? 'Lynked.World' : title%></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="keywords" content="Lynked.world">
+    <meta name="description" content="Lynked.World is a platform built upon Blockchain Technology to verify digital identity, education and professional experience. Blockchain security provides an irrefutable digitally verified block of information that is never compromised. The platform enables users to control their digital information and share directly with employers, institutions & businesses. We are moving towards a global platform that not only serves the purpose of digitalizing identities but will also become a network of trusted professionals.">
+    <meta name="author" content="Lynked.World">
+    <link rel="shortcut icon" href="/themes/frontend/images/favicon.png">
+    <!-- Library CSS -->
+    <link href="https://fonts.googleapis.com/css?family=Baloo|Open+Sans:300,400,400i,600,600i,700&amp;subset=devanagari,latin-ext,vietnamese" rel="stylesheet">
+    <link type="text/css" href="/themes/frontend/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="/themes/frontend/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link type="text/css" href="/themes/frontend/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom CSS-->
+    <link type="text/css" href="/themes/frontend/css/lib.css" rel="stylesheet">
+    <link type="text/css" href="/themes/frontend/css/local.css" rel="stylesheet">
+    <link type="text/css" href="/themes/frontend/css/responsive.css" rel="stylesheet">
+    <link type="text/css" href="/themes/frontend/css/select2/select2.min.css" rel="stylesheet"/>
+    <link type="text/css" href="/themes/frontend/css/select2/select2_custom.css" rel="stylesheet"/>
+    <script src="/themes/frontend/js/jquery.min.js"></script>
+	<style>
+	.special_header .main-container {
+		padding-top:60px;
+	}
+	.header_user_block  {
+		height: 50px;
+    	padding: 15px 0;
+    	margin: 0;
+	}
+	.header_user_block .mt_user_name {
+		margin: 0;
+		padding: 0 15px;
+	}
+	</style>
+</head>
+<body class="feed-page special_header">
+	<div class="mt_header_container">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padd-xs margin-xs-0">
+					<a class="logo pull-left" href="/"><img src="/themes/frontend/images/white-logo.svg" class="logo-img" alt="Lynked" width="33" height="33" /></a>
+					<div class="mt_form_search">
+						<form action="/search/" method="get">
+							<input type="text" name="keyword" id="formSearch" class="form-control" value="" title="" required="required" placeholder="Search">
+							<button type="submit" ><i class="fa fa-search" aria-hidden="true"></i></button>
+						</form>
+					</div>
+					<div class="header_right_block dropdown_selection">
+					<div class="header_user_block">
+						<a class="mt_user_block" href="/" title="Login Now">
+							<span class="mt_user_name">Sign In</span>
+						</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<%- body %>
+<!-- Footer Starts -->
+	<%- partial('../includes/footer.ejs') %>
+	<!-- Footer Ends -->
+
+	<script src="/js/dependencies/sails.io.js"></script>
+	<script src="/themes/frontend/js/bootstrap.min.js"></script>
+	<script src="/themes/frontend/js/bootstrap-datepicker.js"></script>
+	<script src="/themes/frontend/js/jquery.bootstrap-growl.min.js"></script>
+	<script src="/themes/frontend/js/owl.carousel.min.js"></script>
+	<script src="/themes/frontend/js/jquery.validate.js"></script>
+	<script src="/themes/frontend/js/general.js"></script>
+	<script src="/themes/frontend/js/local.js"></script>
+	<script src="/themes/frontend/js/select2/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('.js-example-basic-multiple').select2();
+		});
+		$('.form_datetime').datepicker({
+			pickTime: false,
+			format: 'dd/mm/yyyy',
+			weekStart: 1,
+			todayBtn:  0,
+			autoclose: 1,
+			todayHighlight: 1
+		});
+		$('.from_date, .to_date').datepicker({
+			pickTime: false,
+			format: 'MM, yyyy',
+			weekStart: 1,
+			todayBtn:  0,
+			autoclose: 1,
+			todayHighlight: 1,
+			minViewMode: 1
+		});
+		
+		(function ($) {
+			$(function () {
+				$('.table-expandable').each(function () {
+					var table = $(this);
+					table.children('thead').children('tr').append('<th></th>');
+					//table.children('tbody').children('tr').filter(':odd').hide();
+					table.children('tbody').children('tr').filter(':even').click(function () {
+						var element = $(this);
+						element.next('tr').toggle('slow');
+						element.find(".table-expandable-arrow").toggleClass("up");
+					});
+					table.children('tbody').children('tr').filter(':even').each(function (i) {
+						var element = $(this);
+						if(i == 0){
+							element.append('<td><div class="table-expandable-arrow up"></div></td>');
+						} else {
+							element.append('<td><div class="table-expandable-arrow"></div></td>');
+						}
+					});
+				});
+			});
+		})(jQuery);
+	</script>
+</body>
+</html>

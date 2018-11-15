@@ -1,0 +1,97 @@
+<style>
+.event-calender {
+		    padding: 0px 0 60px 0;
+    		background: linear-gradient(0deg,rgba(19, 116, 193, 0.79),rgba(19, 116, 193, 0.79)),url('themes/frontend/images/event-calender-bg.jpg') center center no-repeat;
+    			background-size: cover;
+    			background-attachment: fixed;
+	}
+.event-calender {
+		position: relative;
+	}
+	.event-calender .event-title {
+		background: rgba(44,47,49,0.83);
+		padding: 20px 0;
+		margin: 0;
+		height: 73px;
+	}
+.fixed-header {
+		  position: fixed;
+		  top:50px; left:0;
+		  width: 100%;
+		  z-index: 11;
+		  height: 73px; 
+		}
+
+</style>
+	
+	<section class="event-calender">
+		<h2 class="text-center event-title">Lynked.World - Event Calender</h2>
+		<div class="container">
+			<div id="" class="col-md-12" data-ride="carousel">
+                <div class="row" style="padding-bottom: 60px;">
+					<div class="col-md-12">
+						<h3 class="text-center text-uppercase">HRD WORLD CONGRESS -MUMBAI &nbsp;&nbsp; FEB 15-17, 2018</h3>
+						<br>
+						<a href="https://lynked.world/company/unirunners-5133/wall" target="_blank"><img src="/themes/frontend/images/event-calender1.png" class="img-responsive" width="100%"></a>
+					</div>
+                </div>
+                <!--/row-fluid-->
+
+                <div class="row" style="padding-bottom: 60px;">
+                	<div class="col-md-12">
+						<h3 class="text-center text-uppercase">Unirunners Wellness Chanllenge -DELHI &nbsp;&nbsp; FEB 18 - MARCH 17, 2018</h3>
+						<br>
+						<a href="https://lynked.world/company/unirunners-5133/wall" target="_blank"><img src="/themes/frontend/images/event1.jpeg" class="img-responsive" width="100%"></a>
+					</div>    
+                </div>
+                <!--/row-fluid-->
+            
+                <div class="row">
+            		<div class="col-md-12">
+						<h3 class="text-center text-uppercase last-title">NATIONAL COST CONVENTION -NEW DELHI &nbsp;&nbsp; MARCH 16-17, 2018</h3>
+						<br>
+						<a href="http://icmai.in/NCC-2018/index.html" target="/blank"><img src="/themes/frontend/images/event-calender2.jpg" class="img-responsive" width="100%"></a>
+					</div>        
+                </div>
+                <!--/row-fluid-->
+			</div>
+		</div>
+	</section>
+
+	<script type="text/javascript">
+ 	var scroller_anchor = 0
+ 	var scroller_anchor1 = 0
+        $(document).ready(function(){ 
+			$("#gallery-slider").owlCarousel({
+	            margin: 20,
+		        loop: true,
+		        nav:true, 
+		        dots: false,
+		        navText:  [
+	            "<i class='fa fa-angle-left'></i>",
+	            "<i class='fa fa-angle-right'></i>"],  
+		        responsive: {
+		          0: {
+		            items: 1
+		          },
+		          768: {
+		            items: 3
+		          },
+		          1200: {
+		            items: 4
+		          }
+		        }
+	        });
+	        scroller_anchor = $(".event-title").offset().top;
+	        scroller_anchor1 = $(".last-title").offset().top;
+        });
+        $(window).scroll(function(){
+
+		    if ($(window).scrollTop()+100 <= scroller_anchor1 && $(window).scrollTop() >= scroller_anchor - 50) {
+		       $('.event-title').addClass('fixed-header');
+		    } else {
+		       $('.event-title').removeClass('fixed-header');
+		    }
+		});
+
+    </script>

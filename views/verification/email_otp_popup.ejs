@@ -1,0 +1,67 @@
+<div id="email_otpModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Verify Email</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <form method="post" id="form_email_otp" class="form-inline">
+                        <div class="row">
+                        <% 
+                            var email_id_val='';
+                            if(typeof userverify!='undefined'){
+                               if(typeof userverify.email!='undefined' && userverify.email!=''){
+                                    email_id_val = userverify.email;
+                               }
+                            }
+                            if(typeof email_id_val!='undefined' && email_id_val!=''){%>
+                                <div class="col-sm-12 email_otp_load">
+                                <center><h3>Thank You!</h3></center><br/>
+                                <p>A verification email has been sent to  <span class="darkblue"><%=email_id_val%></span></p>
+                                   <p>Please check your email and follow the link to validate your email.</p>
+                                    <br/>
+                                </div>
+                            <% } %>
+
+                            <div class="col-sm-12 email_otp_quick">
+                                <center><h3>Thank You!</h3></center><br/>
+                                <p>A verification email has been sent to  <span class="darkblue email_id"></span></p>
+                                   <p>Please check your email and follow the link to validate your email.</p>
+                                    <br/>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="text" name="email_otp" placeholder="Enter received OTP" class="form-control" id="email_otp" maxlength="6" required>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn verify_email_otp form-control btn-primary">Submit</button>
+                                </div>
+                                <div class="clerfix"></div><br>
+                            <% if(typeof email_id_val!='undefined' && email_id_val!=''){%>
+                            <div class="origin_email_msg1">
+                                <div class="col-sm-12 text-center">
+                                    <center><a href="javscript:;" id="verify_email_btn" class="btn btn-primary btn-primary-b30">Resend OTP</a></center>
+                                    <br/>
+                                </div>
+                                <div class="col-sm-12 text-center">
+                                    <p>Make sure to check your junk or spam folder.The sender is noreply@lynked.world</p>
+                                </div>
+                            </div>
+                           <% } %>
+                            <div class="origin_email_msg2" style="display: none;">
+                                <div class="col-sm-12 text-center">
+                                    <center><a href="javscript:;" id="verify_email_btn" class="btn btn-primary btn-primary-b30">Resend OTP</a></center>
+                                    <br/>
+                                </div>
+                                <div class="col-sm-12 text-center">
+                                    <p>Make sure to check your junk or spam folder.The sender is noreply@lynked.world</p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

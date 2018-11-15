@@ -1,0 +1,349 @@
+<%
+var title='';
+var industry='';
+var company_id='';
+var location = '';
+var job_type_id = '';
+var experience_id = '';
+var salary = '';
+var feed_details = '';
+var contact_job_poster = '';
+var job_id='';
+var status='';
+
+if(typeof job!='undefined'){
+    
+    if(typeof job.id!='undefined' && job.id!=''){
+        job_id = job.id
+    }
+    if(typeof job.title!='undefined' && job.title!=''){
+        title = job.title;
+    }
+    if(typeof job.company_id!='undefined' && job.company_id!='' && job.company_id!='null'){
+        company_id = job.company_id;
+    }
+    if(typeof job.industrie_id!='undefined' && job.industrie_id!=''){
+        industry = job.industrie_id;
+    }
+    if(typeof job.location!='undefined' && job.location!=''){
+        location = job.location;
+    }
+    if(typeof job.job_type_id!='undefined' && job.job_type_id!=''){
+        job_type_id = job.job_type_id;
+    }
+    if(typeof job.experience_id!='undefined' && job.experience_id!=''){
+        experience_id = job.experience_id;
+    }
+    if(typeof job.salary!='undefined' && job.salary!=''){
+        salary = job.salary;
+    }
+    if(typeof job.feed_details!='undefined' && job.feed_details!=''){
+        feed_details = job.feed_details;
+    }
+    if(typeof job.contact_job_poster!='undefined' && job.contact_job_poster!=''){
+        contact_job_poster = job.contact_job_poster;
+    }
+
+    if(typeof job.status!='undefined' && job.status!=''){
+        status = job.status;
+    }
+}
+%>
+<form method="post" enctype="multipart/form-data" id="edit_Job_Form">
+    <input type="hidden" name="id" id="job_id" value="<%=job_id%>">
+    <div class="p9_container p9_main_form">
+            <% flash.get('success').forEach(function (message) { %>
+                <div style="color:green;">
+                    <%= message %>
+                </div>
+            <% }) %>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="job_title">Title</label></div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <input type="text" name="title" id="title" placeholder="Title" required="" class="form-control" value="<%=title%>" title="">
+            </div>
+        </div>
+        <% if(CurrentCompanys != undefined && CurrentCompanys.length > 0) { %>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="company">Company</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="company" name="company" class="form-control">
+                    <% if(userData.company_id == undefined) { %>
+                        <option value="">Select company</option>
+                        <% if(CurrentCompanys != undefined) {
+                                _.each(CurrentCompanys, function (CurrentCompany) {
+                                var select=''; 
+                                if(CurrentCompany.company_id != undefined){ 
+                                    if(company_id==CurrentCompany.company_id.id){
+                                        select='selected';
+                                    }
+                                %>  
+                                    <option value="<%- CurrentCompany.company_id.id %>" <%=select%>><%- CurrentCompany.company_id.company_name %></option>
+                                <% }
+                                });
+                            }
+                        } else { 
+                            var selected='';   
+                             if(company_id==userData.company_id.id){
+                                selected='selected';
+                            }
+                        %>
+                        <option value="<%- userData.company_id.id %>" <%=selected%>><%- userData.company_id.company_name %></option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <% } %>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="Industries">Industry</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="Industries" name="industrie" class="form-control" required="">
+                    <option value="">Select industry</option>
+                    <% _.each(Industries, function (Industrie) {
+                        var selected = '';
+                        if(industry==Industrie.id){
+                            selected="selected";
+                        }
+                     %>
+                    <option <%=selected%> value="<%- Industrie.id %>"><%- Industrie.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="autocomplete">Location</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <input type="text" name="location" required="" onFocus="geolocate()" id="autocomplete" placeholder="Enter location" class="form-control" value="<%=location%>" title="">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="job_type">Job Type</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="job_type" name="job_type" class="form-control" required="">
+                    <option value="">Select job type</option>
+                    <% _.each(job_types, function (job_type) { 
+                        var selected = '';
+                        if(job_type_id==job_type.id){
+                            selected="selected";
+                        }
+                    %>
+                    <option value="<%- job_type.id %>" <%=selected%>><%- job_type.title %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="skills">Skill</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="skills" multiple="true" name="skills" class="form-control">
+                    <option value="">Select job type</option>
+                    <% _.each(skill_lists, function (skill_list) {
+                        var selected='';
+                        if(typeof my_skill!='undefined' && my_skill.length>0){
+                            if(my_skill.indexOf(skill_list.id) != -1)
+                            {  
+                               selected='selected';
+                            }
+                        }
+
+                     %>
+                    <option value="<%- skill_list.id %>" <%=selected%>><%- skill_list.title %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="fgtdsdh">Experience</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="experience" name="experience" class="form-control">
+                    <option value="">Not Specified</option>
+                    <% _.each(job_experiences, function (job_experience) {
+                        var selected = '';
+                        if(experience_id==job_experience.id){
+                            selected="selected";
+                        }
+                    %>
+                        <option value="<%- job_experience.id %>" <%=selected%>><%- job_experience.title %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="salary">Salary</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <input type="text" name="salary" placeholder="Salary" class="form-control" value="<%=salary%>" >
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="job_details">Description</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <textarea name="description" id="job_details" required="" class="form-control" placeholder="Job Description" rows="8"><%=feed_details%></textarea>
+            </div>
+            <p></p>
+        </div>
+         <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="job_status">Status</label>
+            </div>
+            <%
+            var active_check='';
+            var inactive_check='';
+                if(status==1){
+                    active_check='checked=""';
+                }else if(status==0){
+                    inactive_check='checked=""';
+                }else{
+                    active_check='checked=""';
+                }
+            %>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <label class="radio-inline">
+                  <input type="radio" <%=active_check%> name="status" value="1">Active
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" <%=inactive_check%> name="status" value="0">In-Active
+                </label>
+            </div>
+            <p></p>
+        </div>
+        <div class="form-group p9_submit_button">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">&nbsp;</div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 a-right">
+                <div class="display-inline pull-left poster_label">
+                    <label class="label" for="contact_job_poster">
+                        <%
+                            var checked='';
+                            if(contact_job_poster==1){
+                                checked='checked="checked"';  
+                            }
+                        %>
+                        <input class="input_check" type="checkbox" value="1" <%=checked%> name="contact_job_poster" id="contact_job_poster" /> 
+                        Post me as contact job poster
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>&nbsp;&nbsp;
+                 <a href="/jobs/myjob" title="Cancel Job" class="btn btn-primary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $('form#edit_Job_Form').submit(function (event) {
+        var job_id = $('#job_id').val();
+
+        if(job_id==''){
+            $.bootstrapGrowl('ID not found',{type: 'danger', delay:1000});
+            return false;
+        }
+
+        var ajax_url  = '/job/update';
+        var form_id  = '#edit_Job_Form';
+            var form = $(form_id)[0];
+            var formData = new FormData(form);
+            ajaxindicatorstart('LOADING');
+
+            $.ajax({
+                type: "POST",
+                url: ajax_url,
+                data: formData,
+                contentType: false,
+                processData: false,
+                enctype: 'multipart/form-data',
+                success: function (result) {
+                    if(result.status=='OK'){
+                        ajaxindicatorstop();
+                        $.bootstrapGrowl(result.msg, {type: 'success', delay: 700,width:350});
+                        setTimeout(function() { window.location.href='/jobs/myjob'; },900);
+                    }else{
+                           ajaxindicatorstop();
+                        $.bootstrapGrowl(result.msg, {type: 'danger', delay:1000});
+                    }
+                },
+                error: function (err) {
+                    ajaxindicatorstop();
+                    console.log(err);
+                }
+            });
+        event.preventDefault();
+    });
+
+    $('select#skills').select2({tags: true});
+    $(function(){
+        $('#job_details').froalaEditor({
+            key: '<%-sails.config.froala_key%>'
+        });
+    });
+    var placeSearch, autocomplete;
+    var componentForm = {
+        locality: 'long_name',
+        administrative_area_level_1: 'long_name',
+        country: 'long_name'
+    };
+     function geolocate() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var geolocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                var circle = new google.maps.Circle({
+                    center: geolocation,
+                    radius: position.coords.accuracy
+                });
+                autocomplete.setBounds(circle.getBounds());
+            });
+        }
+    }
+    function initAutocomplete() {
+        // Create the autocomplete object, restricting the search to geographical
+        // location types.
+        autocomplete = new google.maps.places.Autocomplete(
+        /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+        {types: ['geocode']});
+
+        // When the user selects an address from the dropdown, populate the address
+        // fields in the form.
+        //autocomplete.addListener('place_changed', fillInAddress);
+    }
+
+    function fillInAddress() {
+        // Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+
+        console.log(component);
+
+        for (var component in componentForm) {
+            document.getElementById(component).value = '';
+            document.getElementById(component).readonly = false;
+        }
+
+        // Get each component of the address from the place details
+        // and fill the corresponding field on the form.
+        for (var i = 0; i < place.address_components.length; i++) {
+            var addressType = place.address_components[i].types[0];
+            if (componentForm[addressType]) {
+                var val = place.address_components[i][componentForm[addressType]];
+                document.getElementById(addressType).value = val;
+            }
+        }
+    }
+</script>

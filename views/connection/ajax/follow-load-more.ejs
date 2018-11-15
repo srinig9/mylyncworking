@@ -1,0 +1,39 @@
+<% if(follows.length > 0) {
+    _.each(follows,function(_follow){
+
+        var userimage   = '/themes/frontend/images/default-user.png';
+        var userSlug    = '/profile';
+        var displayname ='';
+        var company_id  = '';
+        
+        if(typeof _follow.company_id!='undefined'){
+            company_id = _follow.company_id.id;
+            
+            if(typeof _follow.company_id.slug!='undefined' &&  typeof _follow.company_id.slug!=''){
+                userSlug ='/company/'+_follow.company_id.slug;
+            }
+
+            if(typeof _follow.company_id.company_name!='undefined' && _follow.company_id.company_name!=''){
+                displayname=_follow.company_id.company_name;
+            }
+            
+            if(_follow.company_id.companydata && _follow.company_id.companydata.length>0 && _follow.company_id.companydata[0].profile_image){
+                userimage = "/uploads/users/"+_follow.company_id.companydata[0].profile_image;
+            }
+
+        }
+%>
+<li class="first list_connection">
+    <div class="p16_1011">
+        <a href="<%=userSlug%>"><img src="<%=userimage%>" width="65" height="65" alt="Michele Show"></a>
+        <div class="p16_1012">
+            <div class="p16_1013"><a href="<%=userSlug%>" class="p16_1014"><%=displayname%></a></div>
+            <div class="p16_1016">
+                Connected <%=DateDifferentService.time_ago_full(_follow.createdAt)%> ago
+            </div>
+        </div>
+        <button type="button" value="<%=company_id%>" class="btn btn-primary p15_message Unfollow_company">Unfollow</a>
+    </div>
+</li>
+<% }) 
+} %>

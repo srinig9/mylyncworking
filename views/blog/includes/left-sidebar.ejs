@@ -1,0 +1,103 @@
+<% if(typeof isLogin!='undefined' && isLogin==1){%>
+<div class="p51_sidebar first">
+    <div class="p51_content">
+        <div class="p51_user_info">
+            <% var profile_image = "/themes/frontend/images/default-user.png";
+			if(typeof userData!="undefined" && typeof userData.profile_image!="undefined" &&  userData.profile_image!="") {
+				profile_image = "/uploads/users/"+userData.profile_image;
+			}
+			if(typeof userData!="undefined" && typeof userData.name!="undefined" && userData.name!="") {
+				var print_user_name = userData.name
+			} else {
+                var print_user_name = (typeof req.user!='undefined' && req.user!='')?req.user.name:'';
+			} %>
+            <div class="p51_user_img"><img src='<%=profile_image%>' alt='<%=print_user_name%>' width="95" height="95" /></div>
+            <div class="p51_user_name">
+				<%=print_user_name%>
+            </div>
+            <div class="p51_user_designation">
+            <%
+                var user_position='';
+                var user_company ='';
+                if(typeof userData!='undefined' && typeof userData.userexperiences[0]!='undefined'){
+                    var experience = userData.userexperiences[0];
+                    if(typeof experience['title']!='undefined'){
+                        user_position = experience['title'];
+                    }
+                    if(typeof experience['company_id']!='undefined' && typeof experience['company_id']['company_name']!='undefined'){
+                        if(experience['company_id']['company_name']!=''){
+                            if(user_position!=''){
+                                user_company = ' at '+experience['company_id']['company_name'];
+                            }else{
+                                user_company = experience['company_id']['company_name'];
+                            }
+                        }
+                    }
+                }
+            %>
+            <%=user_position%> <%=user_company%>
+            <%
+                var my_income =0;
+                if(typeof userData!='undefined' && typeof userData.wallet!='undefined'){
+                    my_income = userData.wallet;
+                }
+            %>
+            </div>
+            <div class="p51_user_location"><%=typeof req.user!='undefined' && typeof req.user.location!= 'undefined' ? req.user.location :''%></div>
+            <div class="p51_user_total_lynked"><a href="/blogs"><span class="lynked_bal">Blog (<% if(typeof userData!='undefined' && typeof userData.blogCount!='undefined'){ %><%=userData.blogCount %><% } %>)</span></a><span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span><a href="/wallet"><span class="lynked_bal">LBD ($<%=my_income.toFixed(2)%>)</span></a> <span class="p51_user_info_i"><i class="fa fa-info-circle" aria-hidden="true"></i></span></div>
+        </div>
+    </div>
+</div>
+<div class="p51_sidebar">
+    <div class="p51_title_container_new">
+        <span class="p51_title_icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></span>
+        <a href="/blogs/create">Post a blog</a>
+    </div>
+</div>
+<% } %>
+<%
+if(typeof archives!='undefined' && archives!=''){%>
+<div class="p51_sidebar">
+    <div class="p51_title_container"><span class="p51_title_icon"><i class="fa fa-calendar" aria-hidden="true"></i></span> Blog Archive<span class="closed"></span></div>
+    <div class="p51_content">
+        <ul class="p51_sidebar_menu">
+            <% 
+                _.each(archives,function(archive,key){
+            %>
+            <li class="first" data-toggle="collapse" data-target="#archive-dropdown<%=key%>">
+                <a href="javascript:;"><%=key%></a> <span class="open"></span>
+                <ul class="mt_sidebar_sub_menu collapse" id="archive-dropdown<%=key%>">
+                    <% _.each(archive, function(dataval){%>
+                    <li><a href="javascript:;"><%=dataval.month%> (<%=dataval.total%>)</a></li>
+                    <% }) %>
+                </ul>
+            </li>
+            <% }) %>
+        </ul>
+    </div>
+</div>
+<% } %>
+<div class="p51_sidebar last">
+    <div class="p51_title_container"><span class="p51_title_icon"><i class="fa fa-tags" aria-hidden="true"></i></span> Labels<span class="closed"></span></div>
+    <div class="p51_content">
+        <ul class="p51_sidebar_menu">
+            <% if(labels.length > 0) {
+                _.each(labels,function(label){
+            
+            %>
+
+            <li class="first">
+                <% if(typeof isLogin!='undefined' && isLogin==1){%>
+                <a href="/blogs/?label=<%=label.id%>"><%=label.name%> (<%=label.blogcategories.length%>) </a>
+                <% } else {%>
+                <a href="javascript:;"><%=label.name%> (<%=label.blogcategories.length%>) </a>
+                <% } %>
+            </li>
+            <% }) } else { %>
+            <li class="first">
+                <a href="javascript:;">No data found</a>
+            </li>
+            <% } %>
+        </ul>
+    </div>
+</div>

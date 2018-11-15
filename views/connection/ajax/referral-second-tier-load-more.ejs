@@ -1,0 +1,29 @@
+<% if(connections_tier2.length > 0) {
+	for(var _index=0; _index < connections_tier2.length; _index++) {
+		var _connection = connections_tier2[_index].user_id;
+		var _referral	= connections_tier2[_index];
+		var _slug_url	= '/profile/';
+		var _msg_url	= '/messages';
+		var _image		= '/themes/frontend/images/default-user.png';
+									
+		if(typeof _connection.slug!="undefined" && _connection.slug!=""){
+			_slug_url += "/" + _connection.slug;
+			_msg_url  += "/" + _connection.slug;
+		}
+		if(typeof _connection.profile_image!="undefined" && _connection.profile_image!=""){
+			_image = sails.config.profile_image_url+_connection.profile_image;
+		}
+	%>
+<li class="first list_connection">
+	<div class="p16_1011">
+		<a href="<%=_slug_url%>"><img src="<%=_image%>" width="65" height="65" alt="Michele Show"></a>
+		<div class="p16_1012">
+			<div class="p16_1013"><a href="<%=_slug_url%>" class="p16_1014"><%=_connection.name%></a></div>
+			<!-- <div class="p16_1015">Sr Software Engineer at Ahmedabad Gujarat India </div> -->
+			<div class="p16_1016">Connected <%=DateDifferentService.time_ago_full(_referral.createdAt)%> ago</div>
+		</div>
+		<a href="<%=_msg_url%>"><button type="submit" data-id="1" class="btn btn-primary p15_message">Message</button></a>
+	</div>
+</li>
+<% }
+} %>

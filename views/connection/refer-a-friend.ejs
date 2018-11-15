@@ -1,0 +1,130 @@
+<style type="text/css">
+    #refer-form .form-group textarea {
+        border: 1px solid #7eb4c0 !important;
+}
+</style>
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <%- partial('../left-sidebar.ejs') %>
+            </div>
+            <%
+                if(typeof req.user.referral=="undefined"){
+                    req.user.referral = '';
+                }
+            %>
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 wallet no-padd-left">
+                <div class="p51_feed">
+                    <div class="refer-banner">
+                        <h1><strong>Referral Program</strong></h1>
+                        <h2><i>It pays to have friends!</i></h2>
+                    </div>
+                    <div class="how-refer">
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <div class="info-box">
+                                <h3>You Invite</h3>
+                                <p>Tell friends about Lynked.World via email, Facebook, WhatsApp or Twitter.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <div class="info-box">
+                                <h3>Your Friends Join</h3>
+                                <p>They click your link and signup for a Lynked.World account.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <div class="info-box">
+                                <h3>You both Win</h3>
+                                <p>Enjoy 5 LBD ($5) as referral bonus immediately. No Limit on the number of referral bonus.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="referral-codes">
+                        <div class="p16_sidebar text-left">
+                            <b class="blued">Your Referral Code:</b> <strong><a href="javascript:;" id="refla_code_element"><%- RefferalCode.displayReferral({ code: req.user.referral }) %></a></strong>
+                            &nbsp;<a href="javascript:;" onClick="copyToClipboard('refla_code_element')"><i class="fa fa-clone" aria-hidden="true" title="Copy Code"></i></a>
+                            <input type="hidden" id="referral_code1" class="" value="<%- RefferalCode.displayReferral({ code: req.user.referral }) %>">
+                        </div>
+                        <div class="p16_sidebar text-left">
+                            <b class="blued">Your Referral Link:</b> <strong><a href="javascript:;" id="text_element"><%- sails.config.appUrlwPort%>/?ref=<%- RefferalCode.displayReferral({ code: req.user.referral }) %></a></strong>
+                            &nbsp;<a href="javascript:;" onClick="copyToClipboard('refla_code_element')"><i class="fa fa-clone" aria-hidden="true" title="Copy Link"></i></a>
+                            <input type="hidden" id="referral_code2" class="" value="https://lynked.world/?ref=<%- RefferalCode.displayReferral({ code: req.user.referral }) %>">
+                        </div>
+                        <div class="p16_sidebar social-sharing">
+                            <b class="blued">Share:</b> <a href="#refer-form" class="via-mail" data-toggle="collapse"><i class="fa fa-envelope"></i></a>
+                            <!-- <a href="javascript:;" class="via-fb"><i class="fa fa-facebook"></i></a>
+                            <a href="javascript:;" class="via-twt"><i class="fa fa-twitter"></i></a>
+                            <a href="javascript:;" class="via-whatsup"><i class="fa fa-whatsapp"></i></a> -->
+                        </div>
+                        <div class="share-with-email">
+                        <div class="col-md-7 col-sm-8 col-xs-12">
+                            <form id="refer-form" class="" action="/refer-a-friend" method="POST">
+                                <h4>Share with E-mail</h4>
+                                <input type="hidden" class="form-control" name="referral_code" value="<%- RefferalCode.displayReferral({ code: req.user.referral }) %>">
+                                <!-- <div class="form-group">
+                                    <label class="label">Your Email Address</label>
+                                    <input type="email" class="form-control" id="your-email" name="your_email" placeholder="eg. abc@gmail.com" required="">
+                                </div> -->
+                                <div class="form-group">
+                                    <label class="label">Your Friend's Email Address</label>
+                                    <input type="text" class="form-control" id="friend-email" name="friend_email" placeholder="Add one of more e-mail addresses separated by commas and space" required="required">
+                                </div>
+                                <div class="form-group">
+                                    <label class="label">Your Message</label>
+                                    <div class="default-message">
+                                        Join Lynked.World and earn 5 LBD as reward. <br> My Referral Link:<br> <a href="javascript:;" target="_blank" onClick="copyToClipboard('refla_code_element')"><%- sails.config.appUrlwPort%>/?ref=<%- RefferalCode.displayReferral({ code: req.user.referral }) %></a>
+                                    </div>
+                                    <textarea class="form-control" type="textarea" id="message" name="message" maxlength="140" rows="7" placeholder="Type additional message (optional)"></textarea>
+                                </div>
+                                <input type="submit" name="submit" class="btn btn-primary" value="Send E-mail">
+                            </form>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="how-it-works">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <h3>How It Works</h3>
+                            <ul class="blue_dots">
+                                <li>Tell friends about Lynked.World by copying your referral link and share via email, Facebook, WhatsApp or Twitter</li>
+                                <li>Your friend can click the referral link (or the link in the email) and sign up for a Lynked.World account.</li>
+                                <li>If your friend successfully joins Lynked.World using the referral link you both will receive a 5 LBD ($5) as referral bonus.</li>
+                                <li>If your friend refers his friend and his friend successfully joins Lynked.World, you will receive 2 LBD ($2) as 1st indirect referral.</li>
+                                <li>If your friend’s friend refers his friend and his friend successfully joins Lynked.World you will receive 1 LBD ($1) as 2nd indirect referral.</li>
+                            </ul>
+                        </div>
+                    </div>      
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link type="text/css" href="/themes/frontend/plugin/tagsinput/bootstrap-tagsinput.css" rel="stylesheet"/>
+<script src="/themes/frontend/plugin/tagsinput/bootstrap-tagsinput.js"></script>
+
+<script>
+    $(document).ready(function(){
+        // $('input#friend-email').tagsinput({});
+    })
+
+	function copyToClipboard(elementId) {
+		// Create an auxiliary hidden input
+		var aux = document.createElement("input");
+		// Get the text from the element passed into the input
+		var copy_url = '<%=sails.config.appUrlwPort%>/?ref=';
+		copy_url = copy_url+document.getElementById(elementId).innerHTML;
+
+		aux.setAttribute("value",copy_url);
+		// Append the aux input to the body
+		document.body.appendChild(aux);
+		// Highlight the content
+		aux.select();
+		// Execute the copy command
+		document.execCommand("copy");
+		// Remove the input from the body
+		document.body.removeChild(aux);
+		$.bootstrapGrowl("Referral Code is copied", {type: 'success', delay: 1000});
+	}
+</script>

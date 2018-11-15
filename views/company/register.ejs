@@ -1,0 +1,159 @@
+<div class="clearfix"></div>
+<!-- Left Sidebar -->
+<div class="middle-content">
+	<section class="job-posting-form">
+		<div class="bgbox" style="background-image: url('../themes/frontend/images/banner-plain.png');height: auto;">
+			<div class="container">
+				<div class="row">
+					<div class="center-block text-center jobposting" id="visit-form">
+						<h1>Lynking World Through Blockchain</h1> 
+						<h2>An Instant Identity and Background Verification Platform</h2>
+						<div class="form-block">
+							<div class="form-title">
+								<label>Become Our Partner</label>
+							</div>
+							<div class="form-group cf">
+								<form action="/job-posting/register" id="RegisterForm" method="post">
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<input type="text" name="company_name" id="company_name" placeholder="Company Name">
+										<input type="hidden" name="slug" id="slug" placeholder="Company Name">
+
+									</div>
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<input type="text" name="name" placeholder="Name">
+									</div>
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<input type="text" name="loginid" placeholder="Login ID">
+									</div>
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<input type="password" name="password" placeholder="Password">
+									</div>
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<div class="agree-text">
+											<p>By clicking Create your profile, you agree to the Lynked.World </p>
+											<p><a href="/terms-and-conditions">Terms & Conditions</a>,
+												<a href="/privacy-policy">Privacy Policy</a>, and <a href="/cookie-policy">Cookie Policy</a>.</p>
+											
+										</div>
+									</div>
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<button type="submit" class="gradient-btn">Join Now</button>
+									</div>
+								</form>
+							</div>
+						</div>
+
+						<div class="app-link">
+							<div class="left">
+								<h3>Download Lynked.World App :</h3>
+							</div>
+							<div class="right">
+								<ul>
+									<li>
+										<a href="https://itunes.apple.com/us/app/lynked-world/id1363700735?platform=iphone&preserveScrollPosition=true#platform/iphone" name="">
+											<i class="fa fa-apple" aria-hidden="true"></i>
+										</a>
+										<a href="https://play.google.com/store/apps/details?id=com.world.lynkedworld" name="">
+											<i class="fa fa-android" aria-hidden="true"></i>
+										</a>
+									</li>
+								 </ul>
+							</div>
+						</div>
+					</div>
+				</div>        
+			</div>
+		</div>
+	</section>
+
+	<div class="clearfix"></div>
+
+	<section class="cf">
+		<div class="container"> 
+			<div class="verification-type businesssolutionvtype cf">
+				<div class="row">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<ul>
+							<li>
+								<div class="verification-inner">
+									<i class="cfa-link" aria-hidden="true"></i>
+									<h4>Peer to Peer</h4>
+									<!-- <p>Adipiscing Etiam Fringilla Quam</p> -->
+								</div>
+							</li>
+							<li>
+								<div class="verification-inner">
+									<i class="cfa-hand-grab-o" aria-hidden="true"></i>
+									<h4>Instant</h4>
+									<!-- <p>Adipiscing Etiam Fringilla Quam</p> -->
+								</div>
+							</li>
+							<li>
+								<div class="verification-inner">
+									<i class="cfa-thumb" aria-hidden="true"></i>
+									<h4>End to End encryption</h4>
+									<!-- <p>Adipiscing Etiam Fringilla Quam</p> -->
+								</div>
+							</li>
+							<li>
+								<div class="verification-inner">
+									<i class="cfa-shield" aria-hidden="true"></i>
+									<h4>Secure &#38; Trusted</h4>
+									<!-- <p>Blockchain based solutions</p> -->
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section> 
+</div>
+
+	<!-- Client Text testimonials Section Start -->
+	<%- partial('../includes/testimonials-texts.ejs') %>
+	<!-- Client Text testimonials Section End -->
+
+<script type="text/javascript">
+    $( "#company_name" ).blur(function() {
+        var string = $(this).val();
+        var slug = string.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-').toLowerCase();
+        $("#slug").val(slug);
+    });
+	$("#RegisterForm").submit(function(event) {
+		event.preventDefault();
+		var formData = new FormData( this );
+		$.ajax({
+			url: '/job-posting/register',
+			method: 'POST',
+			data:  formData,
+			mimeType:"multipart/form-data",
+			processData: false,
+			contentType: false,
+			success: function(results) {
+				var json_obj = jQuery.parseJSON( results );
+				if(json_obj.status=='OK'){
+					window.location.href="/";
+				}else{
+					var msg = "";
+					jQuery.each(json_obj.errors.invalidAttributes, function(key, error){
+						console.log();
+						jQuery.each(error, function(key1, error){
+							msg += "<p>"+error.message+"</p>"
+						});
+					});
+
+					$.bootstrapGrowl(msg, {
+						type: 'danger',
+						width: 'auto'
+					});
+
+					// $.bootstrapGrowl(json_obj.message, {
+					// 	type: 'danger',
+					// 	width: 'auto'
+					// });
+				}
+			}
+		});
+	});
+</script>

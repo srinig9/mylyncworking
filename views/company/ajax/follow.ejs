@@ -1,0 +1,24 @@
+<% 
+    if(followdata.length > 0 ){
+        for(var _index=0; _index < followdata.length; _index++) {
+            var _follower = followdata[_index];
+    %>
+    <li class="first">
+        <div class="p16_1011">
+            <a href=""><img src="/themes/frontend/images/default-user.png" width="55" height="55" alt="Michele Show"></a>
+            <div class="p16_1012">
+                <div class="p16_1013"><a href="/profile" class="p16_1014"><%=_follower.user_id.name%></a></div>
+                <div class="p16_1015">
+                    <%=_follower.user_id.headline%>  
+                    <%=typeof _follower.user_id.address == 'undefined' ? "" : "at " + _follower.user_id.address %>
+                </div>
+                <div class="p16_1016">Connected 3 minutes ago</div>
+            </div>
+            <div class="p16_1021">
+                <button type="button" class="p16_1022 btnaccept" value="<%=_follower.id%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+                <button type="button" class="p16_1023 btnreject" value="<%=_follower.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </li>
+    <% } %>
+<% } %>

@@ -1,0 +1,131 @@
+<div id="profileCoverModalPopovers" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalPopoversLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+                <input type="hidden" name="is_upload_cover" id="is_upload_cover" value="0">
+
+                      <div class="modal-header">Profile cover update</div>
+                      <div class="resize-crop">
+                            <div class="row">
+                                <div class="col-md-12 text-center">                                    
+                                    <div id="cover-image"></div>
+                                    <label class="p9_1003 p9_1003_file_upload" for="cover_upload"><i class="fa fa-camera" aria-hidden="true"></i><span>Select image</span></label>&nbsp;&nbsp;
+                                    <label class="p9_1003 p9_1003_file_upload remove_cover_image" for="remove"><i class="fa fa-times-circle" aria-hidden="true"></i>Remove image</label>
+                                </div>
+                                <div class="col-md-4 hide" style="padding-top:30px;">
+                                    <strong>Select Image:</strong>
+                                    <br/>
+                                    <input clsss="hide" type="file" id="cover_upload" accept="image/*">
+                                    <br/>
+                                    <!--<button class="btn btn-success upload-result">Upload Image</button>-->
+                                </div>
+                          </div>
+                      </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary cover-upload-result">Upload</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    #profileCoverModalPopovers .p9_1003_file_upload{
+        /*position: absolute;*/
+        /*right: 5px;*/
+        bottom: 9px !important;
+        top:auto;
+        width: 136px;
+        height: 30px;
+        background: #025ba2;
+        border-radius: 30px;
+        line-height: 30px;
+        color: white;
+        z-index: 10;
+    }
+    #profileCoverModalPopovers .modal-dialog{
+        width: 900px !important;
+    }
+    .resize-crop {
+        padding-top: 10px;
+    }
+</style>
+<script>
+     $('#is_upload_cover').val(0);
+    $uploadCrop = $('#cover-image').croppie({
+        enableExif: true,
+        viewport: {
+            width: 868,
+            height: 268
+        },
+        url: "<%=profile_image%>",
+        points: [77,469,280,739],
+        boundary: {
+            width: 888,
+            height: 278
+        }
+    });
+    
+    
+    $('#cover_upload').on('change', function () { 
+        var reader = new FileReader();
+        $('#is_upload_cover').val(0);
+        reader.onload = function (e) {
+            $('#is_upload_cover').val(1);
+            $uploadCrop.croppie('bind', {
+                url: e.target.result
+            }).then(function(){
+                console.log('jQuery bind complete');
+            });
+        }
+        reader.readAsDataURL(this.files[0]);
+    });
+    
+    $('.remove_cover_image').click(function(){
+        var uid      = '<%=req.user.id%>';
+        if(uid!=''){
+            var ajax_url = '/remove_cover_image/'+uid;
+            $.ajax({
+                url: ajax_url,
+                method: 'GET',
+                success: function(results)
+                {
+                    if(results.status=='OK'){
+                        $.bootstrapGrowl(results.msg, {type: 'success', delay: 1000});
+                        setTimeout(function() { location.reload(); }, 1000);
+                    }
+                    else{
+                        $.bootstrapGrowl(results.msg, {type: 'danger', delay: 1000});
+                    }
+                }
+            });
+        }
+    });
+
+    $('.cover-upload-result').on('click', function (ev) {
+        $uploadCrop.croppie('result', {
+            type: 'canvas',
+            size: 'viewport'
+        }).then(function (resp) {
+            ajaxindicatorstart('LOADING');
+            var is_upload_cover = $('#is_upload_cover').val();
+            $.ajax({
+                url: "/update_profile_cover",
+                type: "POST",
+                data: {"image":resp,"is_upload_cover":is_upload_cover},
+                success: function (data) {
+                    if(data.status=="OK"){
+                        $("#CoverImage").attr({'src':resp});
+                        $('#profileCoverModalPopovers').modal('toggle');
+                         setTimeout(function() { ajaxindicatorstop(); },2000);
+                        $.bootstrapGrowl(data.msg, {type: 'success', delay:3000});
+                        
+                        $('#is_upload_cover').val(0);
+                        setTimeout(function() { location.reload(); },3200);
+                    }else{
+                         $.bootstrapGrowl(data.msg, {type: 'danger', delay: 1000});
+                         ajaxindicatorstop();
+                    }
+                }
+            });
+        });
+    });
+</script>

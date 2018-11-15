@@ -1,0 +1,49 @@
+<% if(typeof Jobs!='undefined' && Jobs.length > 0) {
+    _.each(Jobs, function (Job) {  %>
+<div class="col-md-4 col-sm-4 col-xs-12">
+    <a href="#" class="featured-job">
+            <div class="company-icon">
+            <% if(typeof Job.company_id != 'undefined') {
+                if(typeof Job.company_id.companydata[0].profile_image != 'undefined'){ %>
+                    <img class="p12_f302" src="<%- sails.config.appUrlwPort+sails.config.profile_image_url+Job.company_id.companydata[0].profile_image %>" alt="<% if(typeof Job.company_id != 'undefined' && typeof Job.company_id.company_name != 'undefined') { %><%- Job.company_id.company_name %><% } %>" width="65" height="65">
+                <% } else { %>
+                    <span class="first-letter">
+                        <%=Job.company_id.company_name[0].toUpperCase()%>
+                    </span>
+                <% } 
+            } else { 
+                if(typeof Job.user_id.profile_image != 'undefined') { %>
+                    <img class="p12_f302" src="<%- sails.config.appUrlwPort+sails.config.profile_image_url+Job.user_id.profile_image %>" width="65" height="65">
+                <% } else { %>
+                    <span class="first-letter">
+                        <%=Job.user_id.name[0].toUpperCase()%>
+                    </span>
+                <% } 
+             } %>
+            </div>
+        <div class="job-type"><%- Job.title %></div>
+        <% if(typeof Job.company_id != 'undefined' && typeof Job.company_id.company_name != 'undefined') { %>
+            <div class="job-company"><%- Job.company_id.company_name %></div>
+        <% } 
+        if(typeof Job.location != 'undefined' && Job.location != '') { %>
+            <div class="job-location"><i class="fa fa-map-marker" aria-hidden="true"></i> <%- Job.location %> </div>
+        <% } %>
+        <% if(typeof Job.job_type_id != 'undefined' && typeof Job.job_type_id.title != 'undefined'){ %>
+            <div class="job-company"> <%- Job.job_type_id.title %></div>
+        <% } %>
+        <hr class="no-margin">
+        <div class="job-post-time"> <%- DateDifferentService.calculateFullDateDiff(Job.createdAt,'') %> ago</div>
+    </a>
+</div>
+<% }); %>
+<div class="load_more_job_without_login"></div>
+
+<% }else{ %>
+<div class="col-md-4 col-sm-4 col-xs-12 job_data_empty" style="display:none;">
+        <div class="feed_list poll_list p51_feed post">
+            <div style="text-align: center;padding: 20px;" class="p51_feed_post">
+                No data found
+            </div>  
+        </div>
+    </div>
+<% } %>

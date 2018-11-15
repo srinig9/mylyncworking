@@ -1,0 +1,60 @@
+<% _.each(notifications,function(notification){
+    var profile_image = "/themes/frontend/images/default-user.png";
+
+    if(typeof notification!="undefined" && typeof notification.from_user_id.profile_image!="undefined" &&  notification.from_user_id.profile_image!=""){
+        profile_image = "/uploads/users/"+notification.from_user_id.profile_image;
+    }
+
+    var from_user_slug = "/profile";
+    if(typeof notification.from_user_id!='undefined' && typeof notification.from_user_id.slug!='undefined' && notification.from_user_id.slug!=''){
+        from_user_slug = "/profile/"+notification.from_user_id.slug+"/wall";
+    }
+
+%>
+<div class="p27_content">
+    <a class="p27_110" href="<%=from_user_slug%>"><img src="<%=profile_image%>" alt="<%=notification.from_user_id.name%>" height="55" width="55" /></a>
+    <div class="p27_115">
+        <p>
+            <% 
+            var feed_text = "";
+            var feed_url = "";
+            if(typeof notification.feed_id != 'undefined') { 
+                feed_url = "/post/"+notification.feed_id.id;
+
+                if(typeof notification.feed_id.title != 'undefined' && notification.feed_id.title != '') {
+                    feed_text = notification.feed_id.title.substring(0,100);
+                }else{
+                    feed_text = notification.feed_id.feed_details.substring(0,100);
+                }
+            %>
+                <%=notification.from_user_id.name%>
+                <%-notification.notification_text%>
+            <% if(typeof notification.feed_id.to_user_id =='undefined') {%>
+            your post
+            <% } %>
+            <% } else if(typeof notification.feed_id != 'undefined') { %>
+
+            <% } else{ 
+                if(typeof notification.notification_type!='undefined' && notification.notification_type=='myconnection'){
+            %>
+            <span class="myconnection" style="cursor: pointer"><%-notification.notification_text%></span>
+            <% }else if(typeof notification.notification_type!='undefined' && notification.notification_type=='DataAccessRequest') { %> 
+                <%-notification.notification_text+" <a href='"+from_user_slug+"'>"+notification.from_user_id.name+"</a>"%>
+            <%}else{ %>
+                <%-notification.notification_text%>
+            <% } %>
+
+            <% } %>
+        </p>
+        <% if(feed_text!=""){%>
+        <span class="post-slug"><a href="<%=feed_url%>"><%-feed_text%></a></span>
+        <% } %>
+        <div class="p27_120 hidden-lg hidden-md"><i class="fa fa-clock-o" aria-hidden="true"></i><span class="p27_121"><%=DateDifferentService.time_ago(notification.createdAt)%></span>
+        </div>
+    </div>
+
+    <div class="p27_120"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+        <span class="p27_121"><%=DateDifferentService.time_ago(notification.createdAt)%></span>
+    </div>
+</div>
+<% }) %>

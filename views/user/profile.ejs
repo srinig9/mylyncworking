@@ -1,0 +1,308 @@
+<%
+//profile image
+var profile_image = '/themes/frontend/images/default-user.png';
+var cover_image = '/themes/frontend/images/company-profile.jpg';
+
+if(typeof user!='undefined'){
+    if(typeof user.profile_image!='undefined' &&  user.profile_image!=''){
+        profile_image = '/uploads/users/'+user.profile_image;
+    }
+    if(typeof user.cover_image!='undefined' &&  user.cover_image!=''){
+        cover_image = '/uploads/users/'+user.cover_image;
+    }
+}
+%>
+    <div class="main-container">
+        <div class="container">
+            <div class="row">
+
+                <%- include ./user-left-sidebar.ejs %>
+
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                    <form method="post" action="/profile/updateprofile">
+                        <div class="p9_container p9_main_form">
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Full name</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <input type="text" name="name" id="" placeholder="Your Name" class="form-control" value="<%=user.name%>" title="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Login ID</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <input type="text" name="loginid" id="" placeholder="Login ID" class="form-control" value="<% if(user.loginid){%><%=user.loginid%><% } %>"
+                                        title="" required="required" disabled="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Your Digital Address</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <input type="text" name="etherID" id="" placeholder="Ether ID" class="form-control" value="<% if(user.ethaddress){%><%=user.ethaddress%><% } %>"
+                                        title="" required="required" disabled="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Headline</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <input type="text" name="headline" id="" placeholder="Headline" class="form-control" value="<% if(user.headline){%><%=user.headline%><% } %>"
+                                        title="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Current Position</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <% if(typeof user.userexperiences!='undefined' && user.userexperiences.length>0){
+                                        %>
+                                    <select id="current_position" name="current_position" class="form-control">
+                                        <option value="">Select One</option>
+                                        <% 
+                                            if(user.userexperiences.length<2){
+                                                var checked = '';
+                                                checked = 'selected';
+                                            }
+                                            for(var i=0; i<user.userexperiences.length; i++) {
+                                                var checked = ''; 
+                                                var company_name='';
+                                                if(typeof user.userexperiences[i].display_status!='undefined' && user.userexperiences[i].display_status==1){
+                                                   checked = 'selected';
+                                                }
+
+                                                if(typeof user.userexperiences[i].company_id!='undefined' && user.userexperiences[i].company_id.company_name!='undefined'){
+                                                    company_name = user.userexperiences[i].company_id.company_name;    
+                                                }
+                                             %>
+                                            <option <%=checked%> value="<%=user.userexperiences[i].id%>"><%=user.userexperiences[i].title%>
+                                                <% if(company_name!=''){%>
+                                                    &nbsp;(<b><%=company_name%></b>)
+                                                <%}%>
+                                            </option>
+                                        <% } %>
+                                    </select>
+                                    <% }else{ %>
+                                    <a href="JavaScript:;" id="experience_popup"><i class="fa fa-plus" aria-hidden="true"></i> Click to Add Experience</a>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Education</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <% if(typeof user.usereducations!='undefined' && user.usereducations.length>0){ %>
+                                    <select id="current_education" name="current_education" class="form-control">
+                                        <option value="">Select One</option>
+                                            <%
+                                            if(user.usereducations.length<2){
+                                                var selected='';
+                                                selected = 'selected';
+                                            }
+                                            for(var i=0; i<user.usereducations.length; i++) {
+                                                 var selected='';
+                                                if(typeof user.usereducations[i].display_status!='undefined' && user.usereducations[i].display_status==1){
+                                                    selected = 'selected';
+                                                }
+                                             %>
+                                            <option <%=selected%> value="<%=user.usereducations[i].id%>">
+                                                <%=user.usereducations[i].school%>
+                                            </option>
+                                            <% } %>                                            
+                                        </select>
+                                        <%
+                                        }else{ %>
+                                        <a href="JavaScript:;" id="education_popup"><i class="fa fa-plus" aria-hidden="true"></i> Click to Add Education</a>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="autocomplete2">Location</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <input type="text" name="location" id="autocomplete" placeholder="Enter your city name" class="form-control" value="<%=(user.location==undefined)?'':user.location%>" title="">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Country</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-3 col-lg-3 sepb15">
+                                    <input class="form-control" name="country" id="country" value="<%=(user.country==undefined)?'':user.country %>" readonly="true">
+                                </div>
+
+                                <div class="col-xs-12 col-sm-4 col-md-2 col-lg-2">
+                                    <label class="label" for="">Province/State</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-3 col-lg-3">
+                                    <input class="form-control" name="state" id="administrative_area_level_1" readonly="true" value="<%=(user.state==undefined)?'':user.state%>">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">City/District</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <input class="form-control" id="locality" name="city" readonly="true" value="<%=(user.city==undefined)?'':user.city%>">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Industry</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <select id="industry_id" name="industry_id" class="form-control">
+                                        <option value="">Select One</option>
+                                        <%
+                							for(var _index=0; _index < industry.length; _index++) {
+                								var ins = industry[_index];
+                								var selected='';
+                								if(ins.id==user.industry_id){
+                									var selected='selected';
+                								}
+                							%>
+                                            <option <%=selected%> value='<%=ins.id%>'><%=ins.name%></option>
+                                            <%}%>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Language Prefered</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <select id="language_id" name="language_id" class="form-control">
+                                        <option value="">Select One</option>
+                                        <%
+                							for(var _index=0; _index < language.length; _index++) {
+                								var lan = language[_index];
+                								var selected='';
+                								if(lan.id==user.language_id){
+                									var selected='selected';
+                								}
+                							%>
+                                            <option <%=selected%> value='<%=lan.id%>'><%=lan.name%></option>
+                                            <%}%>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="label" for="">Summary/Mission</label>
+                                </div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <textarea name="about_me" id="" class="form-control" placeholder="Summary/Mission" rows="8"><% if(user.about_me){%><%=user.about_me%><% } %></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group a-center p9_submit_button">
+                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">&nbsp;</div>
+                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                    <button type="submit" class="btn btn-primary">Save</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a href="/" class="btn btn-primary">Discard</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include popups/education.ejs %>
+    <%- include popups/experience.ejs %>
+    <style>
+        div.pac-container {
+           z-index: 1050 !important;
+        }
+    </style>
+    <script type="text/javascript" src="/themes/frontend/js/ajax_functions.js"></script>
+
+
+    <script language="JavaScript">
+        $(document).ready(function(){
+            //datepicker
+            $('#from_year,#to_year').datepicker({
+                // language:  'fr',
+                minViewMode: 2,
+                format: 'yyyy',
+                autoclose: true 
+            });
+            /* $('.ex_company_name').select2({
+				minimumInputLength: 1,
+				tags: true,
+				dropdownParent: $("#edit_experience"),
+				placeholder: "Type name from Company or Organization",
+				createSearchChoice:function(term, data) {
+					if ($(data).filter(function() { 
+						return this.text.localeCompare(term)===0; 
+					}).length===0) 
+					{return {id:term, text:term};} 
+				},
+            }); */
+
+            
+            $("#autocomplete").blur(function(){
+                if($(this).val()==''){
+                    $('#country').val('');
+                    $('#administrative_area_level_1').val('');
+                    $('#locality').val('');
+                }
+            });
+
+        });
+
+        // This example displays an address form, using the autocomplete feature
+        // of the Google Places API to help users fill in the information.
+
+        // This example requires the Places library. Include the libraries=places
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+        $("#experience_popup").click(function () {        
+            $('#edit_experience').modal('show');
+            $('#form_experience')[0].reset();
+            $('#pid').val(null);
+            $(".ex_company_name").val('').change();
+
+            $('.ex_title').html('Add Experience');
+            
+        });
+
+        $("#education_popup").click(function () {
+            $('#edit_education').modal('show');
+            $('#form_Education')[0].reset();
+            $('#id').val(null);
+             $('.edu_title').html('Add Education');
+        });
+
+        $('form#form_experience').submit(function (event) {
+            var ajax_url  = '/store_experience';
+            var pid = $('form#form_experience #pid').val();
+            var source_id = '#edit_experience';
+            var form_id  = '#form_experience';
+            
+            StoreModalData(ajax_url,source_id,form_id,"");
+            event.preventDefault();
+        });
+
+        $('form#form_Education').submit(function (event){
+            var ajax_url  = '/store_education';
+            var pid = $('form#form_Education #id').val();
+            var source_id = '#edit_education';
+            var form_id  = '#form_Education';
+            
+            StoreModalData(ajax_url,source_id,form_id,"");
+            event.preventDefault();
+        });
+</script>

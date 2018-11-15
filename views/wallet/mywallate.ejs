@@ -1,0 +1,193 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p9_left_sidebar">
+                    <ul class="p9_ls_1001">
+                        <li class="first active"><a href="javascript:;">Lynk Boost Dollar (LBD)</a><span class="open"></span></li>
+                    </ul>
+                </div>
+                <br>
+                <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                  <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/suvE6ZAPTDQ?rel=0" height="300" allowfullscreen ></iframe>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 wallet no-padd-left">
+                <div class="p23_6031 sepb20">
+                    <div class="section_title">
+                        <div class="p23_6032_1">Balances</div>
+						<div class="p23_6032">
+							<button type="button" class="btn btn-primary btn-primary-sw disabled">Withdrawal</button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-primary btn-primary-sw disabled">Deposit</button>
+						</div>
+					</div>
+                    <div class="p23_6500">
+                        <div class="p23_6500_li">
+                            <div class="col-xs-7 col-sm-8 col-md-8 col-lg-8">
+                                <div class="p23_6501">
+									Lynk Boost Dollar (LBD)  
+									<% if(typeof req.user.is_verify_phone == "undefined" || req.user.is_verify_phone == 0){ %>
+										- <span style="color: #ff3c08;">Pending</span>
+									<% } %>
+								</div>
+                            </div>
+                            <div class="col-xs-5 col-sm-4 col-md-4 col-lg-4 a-right">
+                                <div class="p23_6503 v-middle"><%=walletData.totalLBD.toFixed(2)%> <img class="v-bottom" src="/themes/frontend/images/color-logo.svg" width="30" height="30" alt="lynked" /></div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="p23_6502">LBD gives you more control over payouts and transfers on Lynked.World.</div>
+                            </div>
+                        </div>
+                        <div class="p23_6500_li">
+                            <div class="col-xs-7 col-sm-8 col-md-8 col-lg-8">
+                                <div class="p23_6501">Lynk</div>
+                            </div>
+                            <div class="col-xs-5 col-sm-4 col-md-4 col-lg-4 a-right">
+                                <div class="p23_6503 v-middle">0.00  <img class="v-bottom" src="/themes/frontend/images/color-logo.svg" width="30" height="30" alt="lynked" /></div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="p23_6502">Tradeable tokens that may be transferred anywhere at anytime.</div>
+                            </div>
+                        </div>
+                        <div class="p23_6500_li last">
+                            <div class="col-xs-7 col-sm-8 col-md-8 col-lg-8">
+                                <div class="p23_6501">Estimated Value</div>
+                            </div>
+                            <div class="col-xs-5 col-sm-4 col-md-4 col-lg-4 a-right">
+                                <div class="p23_6503 v-middle"><span class="p23_6510"><i class="fa fa-dollar" aria-hidden="true"></i></span><%=walletData.LBDTotalValue.toFixed(2)%> </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="p23_6502">The estimated value is based on value of Lynk & LBD in US Dollar.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="p23_301 sepb20">
+                    <div class="section_title"><h3>LBD History</h3></div>
+                    <div id="data_table_wrapper1" class="data_table_wrapper data_table">
+                        <div class="row pad_20_10">
+                            <div class="col-sm-6 col-xs-6">
+                                <div class="p15_3010">
+                                    <label for="">Show </label><select id="" name="sort_by" class="form-control"><option value="10">10</option><option value="20">20</option><option value="30">30</option></select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-6">
+                                <div class="p15_3011">
+                                    <input type="search" class="form-control" id="searchTxt" placeholder="Type here..." /><label class="margin_r10" for="">Search </label><button type="button" class="search_button"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row minus-10-margin-xs">
+                            <div class="col-sm-12">
+                                <div class="table-responsive">
+                                    <table id="wallet_history" class="table table-striped dataTable" cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr role="row">
+                                                <th>Date</th>
+                                                <th class="a-left">Transaction</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <% _.each(earns,function(earn){ %>
+                                        <tr class="">
+                                            <td><%=DateDifferentService.getDateFormat(earn.createdAt)%></td>
+                                            <td class="a-left">
+                                                <% if(typeof earn.type !="undefined" && earn.type=="referral" && typeof earn.used_referral_id !="undefined") { %>
+													Earned <%=parseInt(earn.amount).toFixed(2)%> LBD as referral bonus (<a href="/profile/<%=earn.used_referral_id.user_id.slug%>" class="blue_underline"><%=earn.used_referral_id.user_id.name%></a> -> <a href="/profile/<%=earn.used_referral_id.referral_user_id.slug%>" class="blue_underline"><%=earn.used_referral_id.referral_user_id.name%></a>)
+													
+                                                <% } else if(typeof earn.type !="undefined" && earn.type=="account_create") { %>
+													Earned 5 LBD for successful account creation!
+                                                <% } else { %>
+													You earned LBD rewards!
+                                                <% } %>
+												<!-- Earned 5 LBD as referral bonus -->
+                                            </td>
+                                            <td class="v-middle"><%=parseInt(earn.amount).toFixed(2)%> <img class="v-bottom" src="/themes/frontend/images/color-logo.svg" width="20" height="20" alt="lynked" /></td>
+                                        </tr>
+                                        <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row pad_20_10">
+                            <div class="col-sm-5 col-xs-12"><div class="showing_number"><%=startPoint%> to <%=endPoint%> of <%=totalRecords%> entries</div></div>
+                            <div class="col-sm-7 col-xs-12">
+                                <div class="paging_simple_numbers">
+                                    <ul class="pagination">
+                                        <li class="paginate_button previous disabled" id="example_previous"><a href="javascript:;" aria-controls="example" data-dt-idx="0" tabindex="0"><i class="fa fa-angle-left" aria-hidden="true"></i></a></li>
+                                        <% for(i = 1; i <= numberofpages; i++) { 
+                                           var disabledClass = (currentPage==i) ? "disabled" : "";
+
+                                        %>
+
+                                        <li class="paginate_button <%=disabledClass%>"><a href="/wallet/?page_no=<%=i%>" aria-controls="example" data-dt-idx="1" tabindex="0"><%=i%></a></li>
+                                        <% } %>
+
+                                        <li class="paginate_button next disabled" id="example_next"><a href="javascript:;" aria-controls="example" data-dt-idx="4" tabindex="0"><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $('th').each(function(col) {
+            $(this).hover(
+                function() { $(this).addClass('focus'); },
+                function() { $(this).removeClass('focus'); }
+            );
+            $(this).click(function() {
+                if ($(this).is('.asc')) {
+                    $(this).removeClass('asc');
+                    $(this).addClass('desc selected');
+                    sortOrder = -1;
+                }
+                else {
+                    $(this).addClass('asc selected');
+                    $(this).removeClass('desc');
+                    sortOrder = 1;
+                }
+                $(this).siblings().removeClass('asc selected');
+                $(this).siblings().removeClass('desc selected');
+                var arrData = $('table').find('tbody >tr:has(td)').get();
+                arrData.sort(function(a, b) {
+                var val1 = $(a).children('td').eq(col).text().toUpperCase();
+                var val2 = $(b).children('td').eq(col).text().toUpperCase();
+                if($.isNumeric(val1) && $.isNumeric(val2))
+                    return sortOrder == 1 ? val1-val2 : val2-val1;
+                else
+                    return (val1 < val2) ? -sortOrder : (val1 > val2) ? sortOrder : 0;
+                });
+                $.each(arrData, function(index, row) {
+                    $('tbody').append(row);
+                });
+            });
+        });
+    });
+
+    $(document).on("keyup","#searchTxt",function(){
+        var searchTerm = $(this).val().toLowerCase();
+        $('#wallet_history tbody tr').each(function(){
+            var lineStr = $(this).text().toLowerCase();
+            if(lineStr.indexOf(searchTerm) === -1){
+                $(this).hide();
+            }else{
+                $(this).show();
+            }
+        });
+    });
+</script>

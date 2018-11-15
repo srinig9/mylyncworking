@@ -1,0 +1,82 @@
+<%
+    var formAction = "/helps/create";
+    console.log(data.id);
+    if(typeof data.id != 'undefined')
+    {
+        formAction = "/helps/edit/"+data.id;
+    }
+%>
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p9_left_sidebar">
+                    <ul class="p9_ls_1001">
+                        <li class="first">
+                            <a href="/helps/list">List</a>
+                            <span class="open"></span>
+                        </li>
+                        <li class="active">
+                            <a href="/helps/create">Create</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                <form method="post" action="<%=formAction%>">
+                    <div class="p9_container p9_main_form">
+                        <div class="form-group">
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                <label class="label" for="question">Question</label>
+                            </div>
+                            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                <input type="text" name="question" id="question" placeholder="Enter Question" class="form-control" value="<%= (typeof data.question !='undefined') ? data.question : ''%>">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                <label class="label" for="answer">Answer</label>
+                            </div>
+                            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                <div id="editor" class="myspecialdiv">
+                                    <textarea class="form-control" id="answer" placeholder="Enter Answer" rows="8" required="required" name="answer" cols="50"><%- (typeof data.answer !='undefined') ? data.answer : ''%></textarea>
+                                </div>
+                                <p></p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                <label class="label" for="question">Status</label>
+                            </div>
+                            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                <select name="status" class="form-control">
+                                    <option value="1" <%=(typeof data.status !='undefined' && data.status==1) ? selected="selected" : ''%>>Enable</option>
+                                    <option value="0"  <%=(typeof data.status !='undefined' && data.status==0) ? selected="selected" : ''%>>Disable</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group a-center p9_submit_button">
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">&nbsp;</div>
+                            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                <button type="submit" class="btn btn-primary"><%=(typeof data.id != 'undefined') ? "Update" : "Save" %></button>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="/" class="btn btn-primary">Discard</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        $('#answer').froalaEditor({
+            key: '<%-sails.config.froala_key%>'
+        });
+    });    
+</script>

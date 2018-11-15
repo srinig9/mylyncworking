@@ -1,0 +1,68 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <% if(req.user.company_id){%>
+            <%- include ../company/company-left-sidebar.ejs %>
+            <% } else {%>
+            <%- include ./user-left-sidebar.ejs %>
+            <% } %>
+
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+        		<form method="post" action="" id="closingAccount">
+            		<div class="p9_container p9_main_form">
+            			<div class="form-group">
+							<h1 class=""><span class="text-capitalize"><%=req.user.name%></span>, we’re sorry to see you go</h1>
+							<p>Are you sure you want to close your account? You’ll lose your connections, messages, and verifications.</p>
+							<p><b>Tell us why you’re closing your account:</b></p>
+						</div>
+            			<div class="form-group">
+                            <% if(typeof result!='undefined' && result.length>0){
+                            _.each(result,function(data){ %>
+							<div class="radio">
+								<label><input type="radio" required="" name="reason" value="<%=data.id%>"><%=data.title%></label>
+							</div>
+                            <% }); } %>
+						</div>
+            			<div class="form-group">
+            				<p>Your feedback matters. Is there anything else you’d like us to know?</p>
+            				<textarea name="feedback" id="feedback" class="form-control"></textarea>
+            			</div>
+            			<div class="form-group">
+            				<a href="/" class="btn btn-primary">Back to Home</a>&nbsp;&nbsp;
+            				<input type="submit" name="" value="Close My Account" class="btn btn-primary">
+            			</div>
+					</div>
+				</form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+	$("#closingAccount").submit(function(event){
+		event.preventDefault();
+		var check = $(this).find('input[type=radio]:checked').length;
+		var formData = new FormData( this );
+		if(check){
+			$.ajax({
+                type: 'POST',
+                url: '/closeMyAccount',
+                data:  formData,
+                processData: false,
+                contentType: false,
+                enctype: 'multipart/form-data',
+                success: function (response)
+                {
+                    if(response.status=="OK"){
+                        $.bootstrapGrowl(response.message, {type: 'success', delay: 1000});
+                        location.reload();
+                    }else{
+                        $.bootstrapGrowl(response.message, {type: 'danger', delay: 1000});
+                    }
+                }
+            });
+		}else{
+			$.bootstrapGrowl("Please select one option", {type: 'danger', delay: 1000});
+		}
+	});
+</script>

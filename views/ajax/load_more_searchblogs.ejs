@@ -1,0 +1,29 @@
+<% 
+    _.each(blogs,function(postblog) {
+
+    var user_slug   = '/';
+    var profile_img = sails.config.appUrlwPort+'/themes/frontend/images/default-user.png';
+    _user = postblog.user_id;
+
+    if(typeof _user.slug!='undefined' && _user.slug!=''){
+        user_slug ='/profile/'+_user.slug+'/wall';
+    }
+
+    if(typeof _user.profile_image!='undefined' &&  _user.profile_image!=''){
+        profile_img = sails.config.appUrlwPort+'/uploads/users/'+_user.profile_image;
+    }
+%>
+<li class="first">
+    <div class="p32_1011">
+        <a href="<%=user_slug%>">
+            <img src="<%=profile_img%>" width="75" height="75" alt="<%=_user.name%>" /> 
+        </a>
+        <div class="p32_1012">
+            <div class="p32_1013 name"><a href="/blogs/<%=postblog.slug%>" class="p16_2004"><%=postblog.title.substring(0,40)%> <%=(postblog.title.length > 40) ? "..." : "" %></a></div>
+            <div class="p32_1014 post_by">Post by - <%=postblog.user_id.name%></div>
+            <div class="p32_1015 post_date"><%=DateDifferentService.time_ago(postblog.createdAt)%></div>
+        </div>
+        <a href="/blogs/<%=postblog.slug%>" class="btn btn-primary p32_message">Read More</a>
+    </div>
+</li>
+<% }) %>

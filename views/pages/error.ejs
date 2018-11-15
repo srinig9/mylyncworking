@@ -1,0 +1,57 @@
+
+<style>
+.first-letter {
+    font-size: 30px !important;
+    font-weight: bold !important;
+    line-height: 45px !important;
+    display: inline-block !important;
+    float: left !important;
+    width: 45px !important;
+    height: 45px !important;
+}
+.p32_companies.p32_1010 li {
+    min-height: 119px !important;
+}
+</style>
+<div class="main-container guest-search">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padd-right">
+                <div class="p_31_mc">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sepb20">
+                            <div class="section_title"><h3>Oops, Something goes wrong</h3></div>
+                            <div class="no-data-found center-block">
+                                <p><img src="/themes/frontend/images/error.png" class="img-responsive center-block"></p>
+                                <p><a href="/" class="btn btn-primary search_btn">Home</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span style="display:none;">::CLOUDFLARE_ERROR_500S_BOX::</span>
+    </div>
+</div>
+</div>
+<%
+if(!req.isAuthenticated()) {
+%>
+<link type="text/css" href="/themes/frontend/css/local.css" rel="stylesheet">
+<style type="text/css">
+    body {
+        margin-bottom: 0;
+    }
+    footer {
+        position: relative;
+    }
+</style>
+<% } %>
+<%
+    if(typeof is_login!='undefined' && is_login==0){
+%>
+<script type="text/javascript" defer="">
+    $(document).ready(function(){
+        $(".main-container").css({"padding-top":$('.mainnav-main').height() + 20});
+    });
+ </script>
+ <% } %>

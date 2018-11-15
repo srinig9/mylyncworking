@@ -1,0 +1,93 @@
+<%
+    var id = req.param("id");
+%>
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar nav polls Starts -->
+            <%- partial('../includes/sidebar-nav-polls.ejs') %>
+            <!-- Sidebar nav polls Ends -->
+            
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-left">
+                <% if(status=='Error'){%>
+                    <div class="alert alert-danger">
+                      <strong>Opps!</strong> <%=message%>
+                    </div>
+                <% } %>
+
+                <div class="p_28_mc">
+                    <div class="">
+                        <div class="section_title"><h3>Create Poll Survey</h3></div>
+                        <form method="POST" id="pollCreate" action="/polls/edit/<%=id%>">
+                        <div class="p28_section_content">
+                            <div class="pad20 pad_tb30 p28_11">
+                                <h3 class="title_18s">Type your poll/ survey question here</h3>
+                                <div id="editor">
+                                    <textarea class="form-control" id="feed_details" placeholder="Write Blog Description" rows="8" required="required" name="feed_details" cols="150"><%-polls.feed_details%></textarea>
+                                </div>
+                            </div>
+                            <div class="pad20 pad_tb30 p28_12">
+                                <h3 class="title_18s">Options (Either 2 or 4)</h3>
+
+
+                                <% 
+                                    for(var _index=0; _index < 4; _index++) {
+                                        var polloption = polls.polloptions[_index];
+
+                                        var option = (polloption != undefined) ? polloption.poll_option : "";
+                                        var poll_id = (polloption != undefined) ? polloption.id : "";
+                                %>
+                                <div class="row sepb20">
+                                    <div class="col-xs-9 col-sm-6 col-md-6 col-lg-6">
+                                        <input type="text" name="poll_option[<%=_index%>][poll_option]" id="id10" placeholder="Option <%=_index+1%>" class="form-control" value="<%=option%>">
+                                        <input type="hidden" name="poll_option[<%=_index%>][id]" id="id10" placeholder="Option A" class="form-control" value="<%=poll_id%>">
+                                    </div>
+                                    <div class="col-xs-3 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="label" for="id10"><i class="fa fa-upload" aria-hidden="true"></i></label>
+                                    </div>
+                                </div>
+                                <% } %>
+                            </div>
+                            <div class="pad20 pad_tb30 p28_13">
+                                <div class="row sepb20">
+                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                        <input type="text" name="max_lynk_boosts" id="id2" placeholder="Max wallet Lynk Boosts" class="form-control" value="<%=polls.max_lynk_boosts%>">
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="label" for="id2">Lynk Boosts allocate to this poll/survey.</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                        <input type="text" name="min_lynk_boosts" id="id1" placeholder="Min Lynk Boosts per option select to user" class="form-control" value="<%=polls.min_lynk_boosts%>">
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="label" for="id1">Lynk Boosts per poll/ Survey option select to user.</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pad20 p28_14">
+                                <div class="form-group a-center">
+                                    <input type="submit" value="Update" class="btn btn-primary bc0070b2" />
+                                </div>
+                                <p>&nbsp;</p>
+                                <p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Maecenas faucibus mollis interdum. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus.</p>
+                                <p>&nbsp;</p>
+                                <p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Vestibulum id ligula porta felis euismod semper. Maecenas sed diam eget risus varius blandit sit amet non magna. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</p>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function(){
+      $('#feed_details').froalaEditor({
+			key: '<%-sails.config.froala_key%>'
+		});
+    });
+</script>

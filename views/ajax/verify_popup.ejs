@@ -1,0 +1,138 @@
+<div id="verifyModel" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Email and Phone Verification <span style="font-weight: normal;">&nbsp;(This is required to use all our features)</span></h4>
+      </div>
+      <div class="modal-body">		
+        <div class="row no-margin">
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <div class="form-group">
+                    <label class="label" for="">Email</label>
+                    <%
+                       var readonly='';
+                       var email_val='';
+                       var email_btn='Verify';
+                       var phone_val='';
+                       var phone_read='';
+                       var phone_btn = 'Verify';
+                       var dial_disable = '';
+                       var is_email_verify=0;
+                       var is_phone_verify=0;
+
+                       if(typeof userverify!='undefined'){
+                          if(typeof userverify.email!='undefined' && userverify.email!=''){
+                              email_val = userverify.email;
+                              if(userverify.is_email_verify==1){
+                                  readonly = '';
+                                  is_email_verify=1;
+                              }
+                              email_btn = 'Verify';
+                          }
+                          if(typeof userverify.phone!='undefined' && userverify.phone!=''){
+                              phone_val = userverify.phone;
+                              phone_btn = 'Verify';
+                              if(userverify.is_phone_verify==1){
+                                  is_phone_verify=1;
+                              }
+                          }
+                       }
+                       %>
+                      <input type="hidden" value="<%=is_email_verify%>" name="verify_email_flag" id="verify_email_flag">  
+                    <input type="email"  name="email" <%=readonly%> id="verify_email" placeholder="Email" class="p7_input form-control email_verify_field" value="<%=email_val%>" required="required">
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+              <p>&nbsp;</p>
+			<% if(typeof userverify!="undefined" && typeof userverify.is_email_verify!="undefined" && userverify.is_email_verify==0) {%>
+                <a href="javscript:;" id="verify_email_btn" class="btn btn-primary btn-primary-b30"><%=email_btn%></a>
+                &nbsp; &nbsp; <a href="javascipt:;" data-target="#email_otpModal" data-toggle="modal" class="text_underline">I have OTP</a>
+			<% } else if(typeof userverify!="undefined" && typeof userverify.is_email_verify!="undefined" && userverify.is_email_verify==1) { %>
+          <span class="green-checked email_verify_check"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+          <a href="javscript:;" id="verify_email_reset" style="display:none;" class="btn btn-primary show_verify_button btn-primary-b30"><%=email_btn%></a>
+			<% }else{ %>
+              <a href="javscript:;" id="verify_email_btn" class="btn btn-primary btn-primary-b30"><%=email_btn%></a> &nbsp; <a href="javascipt:;" data-target="#email_otpModal" data-toggle="modal" class="text_underline">I have OTP</a> &nbsp;
+			<% } %>
+            </div>
+        </div>
+        <div class="row no-margin">
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <div class="form-group">
+                    <label class="label" for="">Phone </label>&nbsp;(Phone verification is required to get referral reward)<br>
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                        <select <%=dial_disable%> class="form-control" name="dial_code" id="dial_code">
+                          <option value="">Country Code</option>
+                          <%
+                          if(typeof dial_code!='undefined' && dial_code.length>0){
+                            _.each(dial_code,function(code){ 
+                                 var selected='';
+                                 var dial_final = '';
+                                 if(typeof userverify!='undefined' && typeof userverify.dial_code!='undefined' && userverify.dial_code==code.dial_code){
+                                    selected = 'selected'; 
+                                }
+                                
+                                //dial_final = code.dial_code.replace("+", "");
+                                dial_final = code.name + " (" + code.dial_code + ")";
+                          %>
+                          <option <%=selected%> value="<%=code.dial_code%>"><%=dial_final%></option>
+                          <% }) 
+                          }%>
+                        </select>
+                      </div>
+                    <div class="col-xs-12 col-sm-6 col-md-8 col-lg-8">
+                        <input type="hidden" value="<%=is_phone_verify%>" name="verify_phone_flag" id="verify_phone_flag">
+                    <input type="tel" name="phone" id="verify_phone" placeholder="Phone" <%=phone_read%> class="p7_input phone_verify_field form-control" value="<%=phone_val%>" required="required">
+                    </div>
+                    </div>
+                </div>
+            </div>
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                  <p>&nbsp;</p>
+				<% if(typeof userverify!="undefined" && typeof userverify.is_phone_verify!="undefined" && userverify.is_phone_verify==0) {%>
+                    <a href="javascript:;" id="verify_phone_btn" class="btn btn-primary btn-primary-b30"><%=phone_btn%></a> &nbsp; <a href="javascipt:;" data-target="#otpModal" data-toggle="modal" class="text_underline">I have OTP</a> &nbsp;
+				<% } else if(typeof userverify!="undefined" && typeof userverify.is_phone_verify!="undefined" && userverify.is_phone_verify==1) { %>
+                  <span class="green-checked phone_verify_check"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                  <a href="javascript:;" id="verify_phone_reset" class="btn btn-primary show_verify_phone_button btn-primary-b30"><%=phone_btn%></a> &nbsp;
+				<% }else{%>
+                  <a href="javascript:;" id="verify_phone_btn" class="btn btn-primary btn-primary-b30"><%=phone_btn%></a> &nbsp; <a href="javascipt:;" data-target="#otpModal" data-toggle="modal" class="text_underline">I have OTP</a> &nbsp;
+                <% } %>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+  <script>
+  $('.show_verify_button').hide();
+   $('.show_verify_phone_button').hide();
+
+   if($('#verify_email_flag').val()==1){
+       var email_data =  $(".email_verify_field").val();
+        $(".email_verify_field").keyup(function(){
+            if(email_data!=$('.email_verify_field').val()){
+                $(".email_verify_check").hide();
+                $('.show_verify_button').show();
+            }else{
+                $(".email_verify_check").show();
+                $('.show_verify_button').hide();
+            }
+        });
+    }
+    
+    if($('#verify_phone_flag').val()==1){
+        var phone_data = $('.phone_verify_field').val();
+        $('.phone_verify_field').keyup(function(){
+            if(phone_data!=$('.phone_verify_field').val()){
+                $(".phone_verify_check").hide();
+                $('.show_verify_phone_button').show();
+            }else{
+                $(".phone_verify_check").show();
+                $('.show_verify_phone_button').hide();
+            }
+        });
+    }
+  </script>

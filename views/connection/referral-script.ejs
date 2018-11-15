@@ -1,0 +1,66 @@
+<script type="text/javascript">
+	/* $('#referral').keyup(function() {
+		if(checkValidReferral()==true) {
+		} else {
+			alert('Enter valid referral');
+		}
+	}); */
+	
+	function checkValidReferral() {
+		var ref = $('#referral').val();
+		ref = ref.trim();
+		ref = ref.replace(/\-/g,'');
+		ref = ref.replace(/ /g, '');
+		
+		console.log(ref.length);
+		if(ref.length == 12) {
+			var position = 0,
+				total = 0,
+				m_pos = 1,
+				loop_end = ref.length;
+			while (position < loop_end) {
+				if (position == 6) {
+					m_pos = 8;
+					position=7;
+				}
+				actualNum = m_pos * ref[position];
+				total += actualNum;
+				position++;
+				m_pos++;
+			}
+			chksm = total % 10;
+			chksm_pos = 6;
+			ref_chksm = ref[chksm_pos];
+			if(chksm == ref_chksm){
+				return true;
+			}
+		}
+        $.bootstrapGrowl('Enter valid referral', {type: 'danger', delay: 2000});
+		$('#referral').focus();
+		return false;
+	}
+	
+	$(".ajax-call-form").submit(function(event) {
+		event.preventDefault();
+		if(checkValidReferral()==true) {
+			var formData = new FormData( this );
+			$.ajax({
+				url: '/use-referral',
+				method: 'POST',
+				data:  formData,
+				mimeType:"multipart/form-data",
+				processData: false,
+				contentType: false,
+				success: function(results)
+				{
+					var json_obj = jQuery.parseJSON( results );
+					if(json_obj.status=='OK'){
+						window.location.href=json_obj.return_location;
+					}else{
+        				$.bootstrapGrowl(json_obj.message, {type: 'danger', delay: 2000});
+					}
+				}
+			});
+		}
+	});
+</script>

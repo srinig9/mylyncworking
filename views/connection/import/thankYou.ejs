@@ -1,0 +1,28 @@
+<%
+    var totalInvitation = req.flash('totalInvitation');
+    var invitations = (typeof totalInvitation !='undefined') ? totalInvitation : 0;
+    var totalEarn = 5*invitations;
+%>
+
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <p>&nbsp;</p>
+                <div class="max_width1000">
+                    <div class="p5_rc1001">
+                        <div class="p5_rc1002 p5_rc1008">
+                            <img src="/themes/frontend/images/sent-invite-thank-you-link.png" width="99" height="84" class="" alt="Thank you">
+                            <p class="p5_rc1004">You have invited <%=invitations%> peoples and successfully earned <%=totalEarn%> Lynks</p>
+                            <div class="clearfix p5_rc1007">
+                                <a class="btn-primary btn-left" href="/connections">Manage Invitations</a>
+                                <a class="btn-primary btn-right" href="/import-from-mail">Try Another Email</a>
+                            </div>
+                            <a class="p5_rc1005 skip_now" href="/">Skip for now &nbsp;&nbsp;<i class="fa fa-angle-double-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

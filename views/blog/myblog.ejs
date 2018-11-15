@@ -1,0 +1,349 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p9_left_sidebar">
+                    <ul class="p9_ls_1001">
+                        <li class="first"><a href="/blogs/create">Post Blog</a><span class="open"></span></li>
+                        <li class="last active"><a href="javascript:;">My Blog List</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                <% if(blogs.length > 0) { 
+                    _.each(blogs,function(_blog){
+                %>
+                <%
+                    var userimage = '/themes/frontend/images/default-user.png';
+                    var user_slug   ='/profile/';
+                    var postedBy    = '';
+                    var my_position =  '';
+                    var my_company = '';
+                    var bloginfo = '';
+
+                    var userimage = '/themes/frontend/images/default-user.png';
+                            var user_slug   = '/profile/';
+                            var postedBy    = '';
+                            var my_position = '';
+                            var my_company  = '';
+                            var bloginfo    = '';
+                            var share_url   = '';
+                            
+                            if(typeof _blog.slug!='undefined'){
+                                share_url = 'blogs/'+_blog.slug;
+                            }
+
+                            if(typeof _blog.user_id!='undefined'){
+                                bloginfo=_blog.user_id;
+                            
+                            if(typeof bloginfo.profile_image!='undefined' && bloginfo.profile_image!=''){
+                                userimage = '/uploads/users/'+bloginfo.profile_image;
+                            }
+
+                            if(typeof bloginfo.company_id!='undefined' && typeof bloginfo.company_id.company_name!='undefined' && bloginfo.company_id.company_name!=''){
+                                postedBy = bloginfo.company_id.company_name;
+                            }else{
+                                 postedBy = bloginfo.name;
+                            }
+                            if(typeof bloginfo.company_id!='undefined' && typeof bloginfo.company_id.slug!='undefined' && bloginfo.company_id.slug!=''){
+                                user_slug = '/company/'+bloginfo.company_id.slug;
+                            }else{
+                                if(typeof bloginfo.slug!='undefined' && bloginfo.slug!=''){
+                                    user_slug = '/profile/'+bloginfo.slug;
+                                }
+                            }
+
+                            if(typeof bloginfo.userexperiences!='undefined' && bloginfo.userexperiences.length>0){
+
+                                if(typeof bloginfo.userexperiences[0]['title']!='undefined' && bloginfo.userexperiences[0]['title']!=''){
+                                    my_position = bloginfo.userexperiences[0]['title'];
+                                }
+
+                                if(typeof bloginfo.userexperiences[0]['company_id']!='undefined' && typeof bloginfo.userexperiences[0]['company_id']['company_name']!='undefined'){
+                                    
+                                    if(bloginfo.userexperiences[0]['company_id']['company_name']!=''){
+                                        if(my_position!=''){
+                                            my_company = ' at '+bloginfo.userexperiences[0]['company_id']['company_name'];
+                                        }else{
+                                            my_company = bloginfo.userexperiences[0]['company_id']['company_name'];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                %>
+                <div class="list_connection">
+                    <div class="p51_feed post feed_list" data-id="<%=_blog.id%>">
+                        <div class="p51_feed_post">
+                            <div class="p51_feed_post_user_block dropdown_selection">
+                                <div class="dropdown p51_feed_post_more_info">
+                                    <button class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                                    <ul class="dropdown-menu p51_feed_fpa">
+                                        <li><a href="/blogs/edit/<%=_blog.id%>" class="p51_feed_fpa1">Edit my post</a></li>
+                                        <li><button class="p51_feed_fpa1 btnDeleteFeed" type="button">Delete my post</button></li>
+                                    </ul>
+                                </div>
+                                <div class="p51_feed_post_user_info">
+                                    <a href="<%=user_slug%>"><img class="p51_feed_post_user_img" src='<%=userimage%>' alt='<%=postedBy%>' width="65" height="65" /></a>
+                                    <div class="p51_feed_post_user_feed_info">
+                                        <div class="fmc5001"><a href="/blogs/<%=_blog.slug%>"><%=_blog.title%></a></div>
+                                        <div class="fmc5002">Posted by - <a href="<%=user_slug%>"><%=postedBy%></a></div>
+                                        <div class="fmc5003">
+                                            <% if(my_company!='' || my_position!=''){%>
+                                            <span style="font-size:12px;"><%=my_position%> <%=my_company%></span>
+                                            <% } %>
+                                            &nbsp;&nbsp;<%=DateDifferentService.time_ago(_blog.createdAt)%> <i class="fa fa-globe" aria-hidden="true"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p51_feed_post_feeds">
+                                <%
+                                if(_blog.feedmedias.length > 0 ){
+                                    var feedmedias =  _blog.feedmedias;
+                                    for(var _mindex=0; _mindex < feedmedias.length; _mindex++) {
+                                        var _media = feedmedias[_mindex];
+
+                                %>
+                                <div class="feed-images">
+                                    <img src="<%=sails.config.appUrlwPort%>/uploads/feeds/<%=_media.image%>" class="img-responsive" width="150">
+                                </div>
+                                <% } } %>
+                                <div class="myspecialdiv">
+                                    <%-_blog.feed_details%>
+                                </div>
+                            </div>
+                            <% 
+                                var totalLikes = 0;
+                                var totaldislikes = 0;
+                                var isliked = 0;
+                                var isdisliked = 0;
+                                feedlikes = _blog.feedlikes;
+
+                                _.each(feedlikes, function (feedlike) {
+                                    temp2 = [];
+                                    temp2 = feedlike;
+                                    if(feedlike.status==1){
+                                        totalLikes = totalLikes+1;
+                                    }
+                                    if(feedlike.status==2){
+                                        totaldislikes = totaldislikes+1;
+                                    }
+                                    if(feedlike.status==2 && feedlike.user_id==req.user.id){
+                                        isdisliked = 1;
+                                    }
+                                    if(feedlike.status==1 && feedlike.user_id==req.user.id){
+                                        isliked = 1;
+                                    }
+                                })
+                                totalLikes = totalLikes;
+                                totaldislikes = totaldislikes;
+                                isliked = isliked;
+                                isdisliked = isdisliked;
+                            %>                            
+                            <div class="p51_feed_post_feed_not">
+                                <div class="pull-left p51_feed_pfn1 p51_feed_pfn2"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="total_likes"> &nbsp; <%=totalLikes%> Likes</span></div>
+
+                                <!-- <div class="pull-left p51_feed_pfn1 p51_feed_pfn2"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="total_dislikes"> &nbsp; <%=totaldislikes%> Disikes</span></div> -->
+
+                                <div class="pull-right p51_feed_pfn2 total_comments"><%=_blog.feedcomments.length%> Comments</div>
+                                
+                                <div class="pull-right p51_feed_pfn3">0 Shares</div>
+                            </div>
+                            <div class="p51_feed_post_action bloglist">
+                                <button type="button" class="p51_feed_world_share_lynked"><img src="/themes/frontend/images/color-logo.svg" class="" width="25" height="25" alt="share with lynked"><span class=""> &nbsp; LBD ($3)</span> &nbsp; <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+
+                                <button type="button" class="active-action p51_fw12 marlr8 btnlike <% if(isliked==1){ %> active <% } %>" title="Like"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Like</span></button>
+
+                                <!-- <button type="button" class="active-action p51_fw12 btndislike <% if(isdisliked==1){ %> active <% } %>" title="Dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Dislike</span></button> -->
+
+                                <button type="button" class="p51_fw12 marlr8" title="Comment"><i class="fa fa-comment" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Comment</span></button>
+
+                                <button type="button" class="p51_fw12" onclick="copyShareURL('<%=share_url%>')" title="Share"><i class="fa fa-share" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Share</span></button>
+
+                                <div class="row">
+                                    <div class="">
+                                        <div class="comment-form">
+                                        <div class="comments mycomments">
+                                        <% if(_blog.feedcomments.length > 3 ){ %>
+                                        <a href="javascript:;" class="see-more">
+                                            <i class="fa fa-repeat"></i> Load Previous Comments
+                                        </a>
+                                        <% } %>
+
+                                            <% 
+                                            if(_blog.feedcomments.length > 0 ){
+                                                var feedcomments =  _blog.feedcomments;
+                                                for(var _cindex=0; _cindex < feedcomments.length; _cindex++) {
+                                                    var _feedcomment = feedcomments[_cindex];
+
+                                                    var userimage = '/themes/frontend/images/default-user.png';
+                                                    var user_slug   ='/profile/';
+                                                    var postedBy    = '';
+
+                                                    if(typeof _feedcomment.user_id!='undefined' && typeof _feedcomment.user_id.profile_image!='undefined' && _feedcomment.user_id.profile_image!=''){
+                                                        userimage = '/uploads/users/'+_feedcomment.user_id.profile_image;
+                                                    }
+
+                                                    if(typeof _feedcomment.user_id.company_id!='undefined' && typeof _feedcomment.user_id.company_id.company_name!='undefined' && _feedcomment.user_id.company_id.company_name!=''){
+                                                        postedBy = _feedcomment.user_id.company_id.company_name;
+                                                    }else{
+                                                         postedBy = _feedcomment.user_id.name;
+                                                    }
+
+
+                                                    if(typeof _feedcomment.user_id.company_id!='undefined' && typeof _feedcomment.user_id.company_id.slug!='undefined' && _feedcomment.user_id.company_id.slug!=''){
+                                                        user_slug = '/company/'+_feedcomment.user_id.company_id.slug;
+                                                    }else{
+                                                        if(typeof _feedcomment.user_id!='undefined' && typeof _feedcomment.user_id.slug!='undefined' && _feedcomment.user_id.slug!=''){
+                                                            user_slug = '/profile/'+_feedcomment.user_id.slug;
+                                                        }
+                                                    }
+
+                                            %>
+                                            <div class="comment-wrap" data-fid="<%=_feedcomment.feed_id%>">
+                                                <div class="photo">
+                                                    <div class="avatar" style="background-image: url('<%=userimage%>')"></div>
+                                                </div>
+                                                <div class="comment-block">
+                                                    <p class="comment-user"><a href="<%=user_slug%>"><%=postedBy%></a></p>
+                                                    <p class="comment-text"><%=_feedcomment.comments%></p>
+                                                    <div class="p6_comment_count pull-left">
+                                                        <a href="javascript:;" class="btncommentlike" data-cid="<%=_feedcomment.id%>">Like</a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                        <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                        <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_feedcomment.commentlikes.length%></span></a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> <%=_feedcomment.commentreply.length%></a>
+                                                    </div>
+                                                    <% 
+                                                    if(_feedcomment.commentreply.length > 0 ){
+                                                        var commentreply =  _feedcomment.commentreply;
+                                                        for(var _crindex=0; _crindex < commentreply.length; _crindex++) {
+                                                            var _commentreply = commentreply[_crindex];
+
+                                                    
+                                                            var cr_userimage =  '/themes/frontend/images/default-user.png';
+                                                            var cr_user_slug  = '/profile';
+                                                            var display_name  = '';
+                                                            
+                                                            if(typeof _commentreply.user_id!='undefined' && typeof _commentreply.user_id.profile_image!='undefined' && _commentreply.user_id.profile_image!=''){
+                                                                cr_userimage = '/uploads/users/'+_commentreply.user_id.profile_image;
+                                                            }
+
+                                                            if(typeof _commentreply.user_id.company_id!='undefined' && typeof _commentreply.user_id.company_id.slug!='undefined' && _commentreply.user_id.company_id.slug!=''){
+                                                                cr_user_slug = '/company/'+_commentreply.user_id.company_id.slug;
+                                                            }else{
+                                                                 if(typeof _commentreply.user_id!='undefined' && typeof _commentreply.user_id.slug!='undefined' && _commentreply.user_id.slug!=''){
+                                                                    cr_user_slug = '/profile/'+_commentreply.user_id.slug;
+                                                                }
+                                                            }
+                                                            
+                                                            if(typeof _commentreply.user_id.company_id!='undefined' && typeof _commentreply.user_id.company_id.company_name!='undefined' && _commentreply.user_id.company_id.company_name!=''){
+                                                                display_name = _commentreply.user_id.company_id.company_name;
+                                                            }else{
+                                                                 display_name = _commentreply.user_id.name;
+                                                            }
+                                                        %>
+
+
+                                                    <div class="comment-wrap ember-mode" style="display: block;">
+                                                        <div class="photo">
+                                                            <div class="avatar" style="background-image: url('<%=cr_userimage%>')">
+                                                            </div>
+                                                        </div>
+                                                        <div class="comment-block">
+                                                            <p class="comment-user"><a href="<%=cr_user_slug%>"><%=display_name%></a></p>
+                                                            <p class="comment-text"><%=_commentreply.comments%></p>
+                                                            <div class="p6_comment_count pull-left">
+                                                                <a href="javascript:;"  class="btncommentlike" data-cid="<%=_commentreply.id%>">Like</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_commentreply.commentlikes.length%></span></a>
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> 0</a>
+                                                            </div>
+                                                            <div class="bottom-comment">
+                                                                <div class="comment-date">1 Week</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } } %>
+                                                    
+                                                    <form method="post" class="form-comment formReply commentForm" style="display: none;">
+                                                        <div class="form-group">
+                                                            <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                            <input name="parent_id" value="<%=_feedcomment.id%>" class="parent_id" type="hidden">
+                                                            <input name="feed_id" value="" type="hidden">
+                                                            <button type="submit" class="send-comment" value="replyform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </form>
+
+
+
+                                                    <div class="bottom-comment">
+                                                        <div class="comment-date">10 Mins </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } } %>
+                                        </div>
+                                            <form method="post" class="form-comment commentForm">
+                                                <div class="form-group">
+                                                    <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                    <input name="parent_id" class="parent_id" value="" type="hidden">
+                                                    <input name="feed_id" value="<%=_blog.id%>" type="hidden">
+                                                    <button type="submit" class="send-comment" value="mainform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }) } %>
+
+                <% if(totalblogs > 10){%>
+                <div class="p51_p61 a-center load-feed">
+                    <input type="hidden" name="blog_page_no" value="1" class="feed_page_no">
+                    <a  href="javascript:;" id="load_more_blog">Load More</a> 
+                    <span class="load_more refresh"></span> 
+                    <i class="fa fa-spin fa-refresh hide" aria-hidden="true"></i>
+                </div>
+                <% } %>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/themes/frontend/js/like_comment.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( ".myspecialdiv ul li" ).css( "list-style-type", "initial" );
+        $( ".myspecialdiv ol li" ).css( "list-style-type", "number" );
+    })
+
+    $(document).on("click","#load_more_blog",function(){
+        var pages = $('input[name="blog_page_no"]').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('input[name="blog_page_no"]').val(page_no);
+
+        $.ajax({
+            type: "GET",
+            url: "/load_more_blog/"+page_no+"/O",
+            success: function (data) {
+                if(data.blogs!=undefined && data.blogs==false){
+                    $('.load-feed').hide();
+                }else{
+                    $(data).insertBefore('.load-feed');
+                }
+            }
+        });
+    });
+</script>

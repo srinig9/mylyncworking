@@ -1,0 +1,44 @@
+<%
+if(pendingrecives.length > 0){
+for(var _index=0; _index < pendingrecives.length; _index++) {
+    var _pendingrecive = pendingrecives[_index].user_id;
+
+    var UserImage2 = '/themes/frontend/images/default-user.png';
+    if(_pendingrecive.profile_image &&  _pendingrecive.profile_image!=''){
+        UserImage2 = '/uploads/users/'+_pendingrecive.profile_image;
+    }
+
+    var profile_slug2 ='/profile/';
+     var displayname2 ='';
+    if(typeof _pendingrecive.company_id!='undefined' && typeof _pendingrecive.company_id.slug!='undefined'){
+        if(_pendingrecive.company_id.slug!=''){
+             profile_slug2='/company/'+_pendingrecive.company_id.slug;
+        }
+    }else{
+        if(typeof _pendingrecive.slug!='undefined' && _pendingrecive.slug!=''){
+            profile_slug2='/profile/'+_pendingrecive.slug+'/wall';
+        }
+    }
+
+%>
+<li class="first received_request_li">
+    <div class="p16_1011">
+        <a href="<%=profile_slug2%>"><img src="<%=UserImage2%>" width="65" height="65" alt="<%=_pendingrecive.name%>"></a>
+        <div class="p16_1012">
+            <div class="p16_1013"><a href="<%=profile_slug2%>" class="p16_1014"><%=_pendingrecive.name%></a></div>
+            <div class="p16_1015"><%=typeof _pendingrecive.headline == 'undefined' ? '' : _pendingrecive.headline%> <%=typeof _pendingrecive.location == 'undefined' ? '' : _pendingrecive.location%></div>
+            <div class="p16_1016">
+            <%
+            if(typeof _pendingrecive.receiverequest!='undefined' && typeof _pendingrecive.receiverequest[0]['createdAt']!='undefined' && _pendingrecive.receiverequest[0]['createdAt']!=''){
+            %>
+            Received <%=DateDifferentService.time_ago_full(_pendingrecive.receiverequest[0]['createdAt'])%> ago
+            <% } %>
+                </div>
+            </div>
+        <div class="p16_1021">
+            <button type="button" class="p16_1022 btnaccept" value="<%=_pendingrecive.id%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+            <button type="button" class="p16_1023 btnreject" value="<%=_pendingrecive.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+        </div>
+    </div>
+</li>
+<% } } %>

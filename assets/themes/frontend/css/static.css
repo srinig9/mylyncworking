@@ -1,0 +1,116 @@
+	.main-container {
+		padding: 35px 0 60px;
+	}
+	hr {
+		margin-bottom: 20px;
+		margin-top: 20px;
+	}
+	.static-pages small b {
+		font-size: 24px;
+		font-weight: 600;
+	}
+	.static-pages a {
+		color: #025ba2;
+	}
+	.static-container {
+		background:#fff;
+	}
+	.p12_job_search .p12_f30 {
+		padding: 20px 20px 20px 20px;
+	}
+	.p12_content li .input_check {
+		padding: 0;
+	}
+	.static-pages {
+		background: rgb(255, 255, 255);
+		border-width: 1px 1px 2px;
+		border-style: solid;
+		border-color: transparent;
+		padding: 15px;
+		margin-top: 40px;
+		font-family: "PT Serif","Palatino Linotype",Palatino,Palladio,"URW Palladio L","Book Antiqua",Baskerville,"Bookman Old Style","Bitstream Charter","Nimbus Roman No9 L",Garamond,"Apple Garamond","ITC Garamond Narrow","New Century Schoolbook","Century Schoolbook","Century Schoolbook L",Georgia,serif;
+    	line-height: 1.5;
+    	font-size: 18px;
+    	text-align: justify;
+	}
+	.static-title {
+		color: white;
+		font-size: 36px;
+		margin: 0;
+	    position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    margin-right: -50%;
+	    transform: translate(-50%, -50%);
+	    font-family: "Montserrat",Corbel,"Lucida Grande","Lucida Sans Unicode","Lucida Sans","DejaVu Sans","Bitstream Vera Sans","Liberation Sans",Verdana,"Verdana Ref",sans-serif;
+		font-weight: 600;
+    	letter-spacing: .040em;
+	}
+	.topic-title {
+		color: #025ba2;
+		display: block;
+		font-size: 30px;
+		font-family: "Montserrat",Corbel,"Lucida Grande","Lucida Sans Unicode","Lucida Sans","DejaVu Sans","Bitstream Vera Sans","Liberation Sans",Verdana,"Verdana Ref",sans-serif;
+		/*font-weight: 500;*/
+    	letter-spacing: .040em;
+    	line-height: 1.5;
+	}
+	.topic-subtitle {
+		color: #025ba2;
+		display: block;
+		font-size: 24px;
+		font-family: "Montserrat",Corbel,"Lucida Grande","Lucida Sans Unicode","Lucida Sans","DejaVu Sans","Bitstream Vera Sans","Liberation Sans",Verdana,"Verdana Ref",sans-serif;
+		font-weight: 600;
+    	letter-spacing: .040em;
+	}
+	.breadcrumb-banner {
+		background: linear-gradient(0deg,rgba(1, 127, 136, 0.8),rgba(4, 49, 130, 0.8)),url('../images/br-bg.jpg') center center no-repeat;
+	    background-size: cover;
+	    height: 178px;
+	    position: relative;
+	    overflow: hidden;
+	}
+	.static-listing {
+		padding-left: 30px;
+	}
+	.static-listing li {
+		list-style: circle;
+	}
+	ol.static-listing li {
+		list-style: decimal;
+	}
+	/*.main-text {
+		font-size: 14px;
+		text-align: center;
+	}*/
+	#contact-form .form-group textarea {
+		border: 1px solid #7eb4c0 !important;
+	}
+	.pemphlet {
+		-webkit-box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.55);
+		-moz-box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.55);
+		box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.55);
+	}
+	.team-title {
+		font-size: 18px;
+    	color: #232323 !important;
+    	font-weight: 600;
+		font-family: "Montserrat",Corbel,"Lucida Grande","Lucida Sans Unicode","Lucida Sans","DejaVu Sans","Bitstream Vera Sans","Liberation Sans",Verdana,"Verdana Ref",sans-serif;
+
+	}
+	.media-heading {
+		font-weight: lighter;
+		color: #232323;
+		font-family: "Montserrat",Corbel,"Lucida Grande","Lucida Sans Unicode","Lucida Sans","DejaVu Sans","Bitstream Vera Sans","Liberation Sans",Verdana,"Verdana Ref",sans-serif;
+		font-size: 16px;
+    	line-height: 20px;	
+
+	}
+	.media-body {
+		font-family: "Montserrat",Corbel,"Lucida Grande","Lucida Sans Unicode","Lucida Sans","DejaVu Sans","Bitstream Vera Sans","Liberation Sans",Verdana,"Verdana Ref",sans-serif;
+		font-size: 13px;
+	}
+	.first-row {
+		overflow: hidden;
+		margin-bottom: 30px;
+	}

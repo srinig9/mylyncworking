@@ -1,0 +1,219 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p9_left_sidebar">
+                    <ul class="p9_ls_1001">
+                        <li class="first active"><a href="">Post Blog</a><span class="open"></span></li>
+                        <li class="last"><a href="/blogs/myblogs">My Blog List</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right no-padd-left">
+                <div class="p9_container p9_main_form">
+                    <form method="POST" action="<%=actionurl%>" accept-charset="UTF-8" class="form-horizontal" id="addEditBlog">
+                    <div class="myfileuploads"></div>
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="title">Title <span class="">*</span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input class="form-control" id="blog_title" placeholder="Write Blog Title" required="required" name="title" type="text" value="<%=blogs.title%>">
+                            <input type="hidden" name="id" value="<%=blogs.id%>">
+                            <input type="hidden" name="slug" id="slug" value="">
+                            <input type="hidden" name="privacy" id="privacy" value="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="sdsdsw">Description <span class="">*</span></label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <div id="editor" class="myspecialdiv">
+                                <textarea class="form-control" id="feed_details" placeholder="Write Blog Description" rows="8" required="required" name="feed_details" cols="50"><%-blogs.feed_details%></textarea>
+                            </div>
+                            <p></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="sdsdsw">Category</label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <select class="form-control" id="category_id" name="category_id">
+                                <option value="">Select Category</option>
+                                <% 
+                                if(categories.length > 0) { 
+                                    _.each(categories,function(_category){
+                                %>
+                                <option value="<%=_category.id%>" <% if(_category.id == blogs.category_id) { %>selected="selected"<% } %> > <%=_category.name%> </option>
+                                <% }) } %>
+                                <option value="0">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group manual-category hide">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="sdsdsw">Category Name</label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <input class="form-control" id="category_name" placeholder="Manual category" data-required="" name="category_name" type="text">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="image_url">Upload Image</label></div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <!-- image-preview-filename input [CUT FROM HERE]-->
+                            <div class="input-group image-preview" data-original-title="" title="">
+                                <input type="text" class="form-control image-preview-filename" disabled="disabled"> <!-- don't give a name === doesn't send on POST/GET -->
+                                <span class="input-group-btn">
+                                    <!-- image-preview-clear button -->
+                                    <button type="button" class="btn btn-default image-preview-clear" style="display:none;">
+                                        <span class="glyphicon glyphicon-remove"></span> Clear
+                                    </button>
+                                    <!-- image-preview-input -->
+                                    <div class="btn btn-default image-preview-input">
+                                        <span class="fa fa-upload" aria-hidden="true"></span>
+                                        <span class="image-preview-input-title"> Choose File</span>
+                                        <input type="file" name="avatar" id="avatar" accept="image/jpg, image/png, image/jpeg, image/gif"> 
+                                        <!-- rename it -->
+                                    </div>
+                                </span>
+                            </div><!-- /input-group image-preview [TO HERE]-->
+
+                            <div class="file-upload">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group p9_submit_button">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">&nbsp;</div>
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 a-right">
+                            <button type="submit" class="btn btn-primary"><%=btnname%></button>
+                        </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $("#addEditBlog").validate({});
+        $( ".myspecialdiv ul li" ).css( "list-style-type", "initial" );
+        $( ".myspecialdiv ol li" ).css( "list-style-type", "number" );
+    });
+
+    $( "#blog_title" ).blur(function() {
+        var string = $(this).val();
+        var slug = string.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-').toLowerCase();
+        $("#slug").val(slug);
+    });
+
+    $(document).on('change', '#category_id', function() {
+        $(this).parents('.p9_main_form').find('.manual-category').addClass("hide");
+
+        if($(this).val()=='0'){
+            $(this).parents('.p9_main_form').find('.manual-category').removeClass("hide");
+        }
+    });
+
+
+
+    $(document).on('click', '#close-preview', function(){ 
+        $('.image-preview').popover('hide');
+        // Hover befor close the preview
+        $('.image-preview').hover(
+            function () {
+                $('.image-preview').popover('show');
+            }, 
+            function () {
+                $('.image-preview').popover('hide');
+            }
+        );
+    });
+
+    $(function(){
+        //$('#feed_details').froalaEditor();
+		$('#feed_details').froalaEditor({
+			key: '<%-sails.config.froala_key%>'
+		});
+    });
+
+    $(function() {
+        // Create the close button
+        var closebtn = $('<button/>', {
+            type:"button",
+            text: 'x',
+            id: 'close-preview',
+            style: 'font-size: initial;',
+        });
+        closebtn.attr("class","close pull-right");
+        // Set the popover default content
+        $('.image-preview').popover({
+            trigger:'manual',
+            html:true,
+            title: "<strong>Preview</strong>"+$(closebtn)[0].outerHTML,
+            content: "There's no image",
+            placement:'bottom'
+        });
+        // Clear event
+        $('.image-preview-clear').click(function(){
+            $('.image-preview').attr("data-content","").popover('hide');
+            $('.image-preview-filename').val("");
+            $('.image-preview-clear').hide();
+            $('.image-preview-input input:file').val("");
+            $(".image-preview-input-title").text("Browse"); 
+        }); 
+        // Create the preview image
+        $(".image-preview-input input:file").change(function (){
+            var img = $('<img/>', {
+                id: 'dynamic',
+                width:250,
+                height:200
+            });      
+            var file = this.files[0];
+            var reader = new FileReader();
+            // Set preview image into the popover data-content
+            reader.onload = function (e) {
+                $(".image-preview-input-title").text("Change");
+                $(".image-preview-clear").show();
+                $(".image-preview-filename").val(file.name);            
+                img.attr('src', e.target.result);
+                $(".image-preview").attr("data-content",$(img)[0].outerHTML).popover("show");
+            }        
+            reader.readAsDataURL(file);
+        });
+    });
+
+    $("#avatar").on("change", function(e) {
+        uploadFiles();
+    });
+
+    function uploadFiles(){
+        ajaxindicatorstart('LOADING');
+        var form = $("#addEditBlog")[0]; // You need to use standard javascript object here
+        var formData = new FormData(form);
+        $.ajax({
+            type: 'POST',
+            url: "/blogs/fileupload",
+            data:  formData,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            success: function (response)
+            {
+                var Datahtml = "";
+                $.each(response, function( index, value ) {
+                    Datahtml += "<input type='hidden' name='files' value='"+value.image+"'>";
+                });
+                $("form#addEditBlog").find(".myfileuploads").html(Datahtml);
+                ajaxindicatorstop();
+            }
+        });
+    }    
+</script>

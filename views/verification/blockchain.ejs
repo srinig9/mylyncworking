@@ -1,0 +1,43 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="p7_main_container">
+                    <div class="p7_201">
+                        <div class="p7_i102">
+                            <div class="page_section_title p7_section_title">
+                                <h3>Email Verification</h3>
+                            </div>
+                            <div class="p7_section_content" style="background: white;">
+                                <div class="row no-margin">
+                                    <% if(typeof isLogin!='undefined'){%>
+                                        <br/><br/>
+                                    <% } %>
+                                    <% if(typeof status!='undefined' && status=='OK'){%>    
+                                        <% if(typeof msg!='undefined' && msg!='') {%>
+                                            <div class="alert alert-success">
+                                                <strong>Success!</strong> <%=msg%>
+                                            </div>
+                                            <% } %>
+                                        <% }else{%>
+                                            <% if(typeof msg!='undefined' && msg!='') {%>
+                                            <div class="alert alert-danger">
+                                                <strong>Fail!</strong> <%=msg%>
+                                            </div>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                    <% if(typeof isLogin!='undefined'){%>
+                                        <br/><br/>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    setTimeout(function() { window.location.href='/'; },1000);
+</script>

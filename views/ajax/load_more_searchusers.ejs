@@ -1,0 +1,81 @@
+<%
+_.each(searchusers,function(_user){
+
+    var user_slug   = '/';
+    var position    = '';
+    var company     = '';
+    var profile_img = sails.config.appUrlwPort+'/themes/frontend/images/default-user.png';
+    var message_url = '/messages/';
+
+    if(typeof _user.slug!='undefined' && _user.slug!=''){
+        user_slug ='/profile/'+_user.slug+'/wall';
+        message_url = message_url+_user.slug;
+    }
+
+    if(typeof _user.profile_image!='undefined' &&  _user.profile_image!=''){
+        profile_img = sails.config.appUrlwPort+'/uploads/users/'+_user.profile_image;
+    }
+
+    if(typeof _user.userexperiences!='undefined' && _user.userexperiences.length>0){
+        if(typeof _user.userexperiences[0]['title']!='undefined' && _user.userexperiences[0]['title']!=''){
+           position=_user.userexperiences[0]['title'];
+        }
+        
+        if(typeof _user.userexperiences[0]['company_id']!='undefined' && _user.userexperiences[0]['company_id']!=''){
+            if(typeof _user.userexperiences[0]['company_id']['company_name']!='undefined'){
+                company=' at '+_user.userexperiences[0]['company_id']['company_name'];
+            }
+        }
+    }
+%>
+    <li class="first">
+        <div class="p32_1011">
+            <a href="<%=user_slug%>"><img src="<%=profile_img%>" width="75" height="75" alt="<%=_user.name%>" /> </a>
+            <div class="p32_1012">
+                <div class="p32_1013 name"><a href="<%=user_slug%>" class="p16_2004"><%=_user.name%></a></div>
+                <div class="p32_1014 designation"><%=position%> <%=company%></div>
+                <div class="p32_1016 location_city"><%= (_user.address==undefined || _user.address=="") ? "" : _user.address %></div>
+            </div>
+                <% 
+                var checked = '';
+                var message = 0;
+                var recReq = 0;
+                var sentReq = 0;
+                _.each(connections, function (connection) {
+                    if((connection.user_id == user_id && connection.to_user_id == _user.id) || (connection.to_user_id == user_id && connection.user_id == _user.id)){
+                        if(connection.status==1){
+                            message = message+1;
+                        }else if(connection.status==0 && connection.to_user_id==user_id){
+                            recReq = recReq+1;
+                        }else if(connection.status==0 && connection.user_id==user_id){
+                            sentReq = sentReq+1;
+                        }
+                    }
+                })
+                %>
+
+                <% if(typeof req.user !='undefined' && req.user.id !='') {%>
+                    <% if(message > 0) {%>
+                    <a href="<%=message_url%>" title="send message" class="btn btn-primary p32_message">Message</a>
+                    <% }else if(recReq > 0){ %>
+                    <div class="p16_1021">
+                        <button type="button" class="p16_1022 btnaccept" value="<%=_user.id%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+                        <button type="button" class="p16_1023 btnreject" value="<%=_user.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+                    </div>
+
+                    <% }else if(sentReq > 0){ %>
+                    <div class="p16_1021">
+                        <button type="button" class="p16_1023 cancelsent" value="<%=_user.id%>" data-toggle="tooltip" title="Cancel Sent Request" data-placement="left"><i class="fa fa-close" aria-hidden="true"></i></button>
+                    </div>
+                    <% } else {%>
+                    <div class="p16_1021">
+                        <form method="post" class="userknown">
+                            <input name="to_user_id" value="<%=_user.id%>" type="hidden">
+                            <button type="submit" class="btn btn-primary p32_message">Connect</button>
+                        </form>
+                    </div>
+                    <% } %>
+                <% } %>
+        </div>
+    </li>
+<% }) %>

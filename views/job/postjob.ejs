@@ -1,0 +1,140 @@
+<form method="post" enctype="multipart/form-data" id="post_job_form">
+    <div class="p9_container p9_main_form">
+            <% flash.get('success').forEach(function (message) { %>
+                <div style="color:green;">
+                    <%= message %>
+                </div>
+            <% }) %>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><label class="label" for="bjj">Title</label></div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <input type="text" name="title" id="title" placeholder="Title" required="" class="form-control" value="" title="">
+            </div>
+        </div>
+        <% if(CurrentCompanys != undefined && CurrentCompanys.length > 0) { %>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="company">Company</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="company" name="company" class="form-control">
+                    <% if(userData.company_id == undefined) { %>
+                        <option value="">Select company</option>
+                        <% if(CurrentCompanys != undefined) {
+                                _.each(CurrentCompanys, function (CurrentCompany) { 
+                                if(CurrentCompany.company_id != undefined){ %>
+                                    <option value="<%- CurrentCompany.company_id.id %>"><%- CurrentCompany.company_id.company_name %></option>
+                                <% }
+                                });
+                            }
+                        } else { %>
+                        <option value="<%- userData.company_id.id %>"><%- userData.company_id.company_name %></option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <% } %>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="Industries">Industry</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="Industries" name="industrie" class="form-control" required="">
+                    <option value="">Select industry</option>
+                    <% _.each(Industries, function (Industrie) { %>
+                    <option value="<%- Industrie.id %>"><%- Industrie.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="autocomplete">Location</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <input type="text" name="location" required="" onFocus="geolocate()" id="autocomplete" placeholder="Enter location" class="form-control" value="" title="">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="job_type">Job Type</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="job_type" name="job_type" class="form-control" required="">
+                    <option value="">Select job type</option>
+                    <% _.each(job_types, function (job_type) { %>
+                    <option value="<%- job_type.id %>"><%- job_type.title %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="skills">Skill</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="skills" multiple="true" name="skills" class="form-control">
+                    <option value="">Select job type</option>
+                    <% _.each(skill_lists, function (skill_list) { %>
+                    <option value="<%- skill_list.id %>"><%- skill_list.title %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="fgtdsdh">Experience</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <select id="experience" name="experience" class="form-control">
+                    <option value="">Not Specified</option>
+                    <% _.each(job_experiences, function (job_experience) { %>
+                        <option value="<%- job_experience.id %>"><%- job_experience.title %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="salary">Salary</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <input type="text" name="salary" placeholder="Salary" class="form-control" >
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label class="label" for="job_details">Description</label>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <textarea name="description" id="job_details" class="form-control" placeholder="Job Description" rows="8">
+                </textarea>
+            </div>
+            <p></p>
+        </div>
+        <div class="form-group p9_submit_button">
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">&nbsp;</div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 a-right">
+                <div class="display-inline pull-left poster_label">
+                    <label class="label" for="contact_job_poster">
+                        <input class="input_check" type="checkbox" value="1" checked="checked" name="contact_job_poster" id="contact_job_poster" /> 
+                        Post me as contact job poster
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Post Job</button>&nbsp;&nbsp;
+                 <a href="/jobs" title="Cancel Job" class="btn btn-primary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $('select#skills').select2({tags: true});
+    $(function(){
+        $('#job_details').froalaEditor({
+			key: '<%-sails.config.froala_key%>'
+		});
+    });
+</script>

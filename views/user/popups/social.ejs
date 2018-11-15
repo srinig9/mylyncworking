@@ -1,0 +1,45 @@
+<div id="edit_social" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Manage Social Links</h4>
+			</div>
+			<form method="post" class="form-group" id="form_social">
+			<input type="hidden" name="user_id" value="<%=user.id%>">
+			<div class="modal-body">
+				<div id="form-errors"></div>
+				<div class="row">
+				<% 
+				if(typeof social!='undefined'){
+					for(var i=0; i < social.length; i++) {
+						var link='';
+						if(typeof user.usersociallinks!='undefined'){
+                        	for(var j=0; j<user.usersociallinks.length;j++) {
+						 		if(user.usersociallinks[j].social_id==social[i].id){
+						 			link = user.usersociallinks[j].link;
+						 		}
+					 		}
+						}
+					 %> 
+					<div class="col-md-12">
+						<div class="form-group">
+							<label for="service_desc"><%=social[i].name%></label>
+							<input type="text" name="social[<%=social[i].id%>]" value="<%=link%>" class="form-control" id="<%=social[i].name%>">
+						</div>
+					</div>
+					<% 		
+					}
+				} %>
+				
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pid" name="pid">
+				<button type="submit" class="btn btn-primary mBottom0">Save</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			</div>
+		</form>
+		</div>
+	</div>
+</div>

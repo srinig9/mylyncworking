@@ -1,0 +1,307 @@
+<div id="myModal" class="popup_container modal fade connection-select-modal-lg p8_popup" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+		<form method="post" id="form_verify_request">
+			<input type="hidden" name="id">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-close" aria-hidden="true"></i></button>
+			<div class="pop_up_main_block">
+				<div class="section_title" id="myModalTitle" ><h3><span id="title_name"></span><span id="title_type"></span><span id="title_data"></span><span id="title_doc_id"></span></h3></div>
+				<div id="myDataHTML"></div>
+				<div><input type="hidden" name="myDataId"  id="myDataId" >   </div>
+				<div class="slider_container owl-side-narrow">
+					<ul id="slider_p8" class="owl-carousel owl-theme">
+						<li class="itme">
+							<div class="modal-content" >
+								<div class="row">
+									<div class="col-md-12">
+										<label class="checkbox-inline pull-left" style="margin:5px 10px 10px 10px;">
+                                        <input type="checkbox" name="to_verify_data" value="1" checked class="col-sm-3"> Data
+                                    	</label>
+										<input type="hidden" id="to_verify_data" name="to_verify_data_h" value="1">
+										<table class="table table-striped table-bordered info_table_1" style="width: 98%; margin: 0 auto;">
+											<tbody>
+												<tr>
+													<td>Data</td>
+													<td><span style="text-transform:capitalize;" id="tab_type"></span></td>
+												</tr>
+												<tr>
+													<td>Type</td>
+													<td><span id="doc_type_id"></span></td>
+												</tr>
+												<tr>
+													<td>Legal Name</td>
+													<td><span id="legal_name"></span></td>
+												</tr>
+												<tr>
+													<td>Legal Name</td>
+													<td><span id="first_name"></span> &nbsp;<span id="last_name"></span></td>
+												</tr>
+												<tr>
+													<td><span id="doc_name"></span> Number</td>
+													<td><span id="doc_num"></span></td>
+												</tr>
+												<tr>
+													<td>Gender</td>
+													<td><span id="gender"></span></td>
+												</tr>
+												<tr>
+													<td>Other Doc Info</td>
+													<td><span id="other_doc_info"></span></td>
+												</tr>
+												<tr>
+													<td>Issue Country</td>
+													<td>
+														<span id="issue_country"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Place of issue</td>
+													<td>
+														<span id="issue_place"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Issuance Date</td>
+													<td>
+														<span id="issue_date"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Expiration Date</td>
+													<td>
+														<span id="expiry_date"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Address</td>
+													<td>
+														<span style="text-transform:capitalize;" id="address_line_1"></span>
+														<span style="text-transform:capitalize;" id="address_line_2"></span>
+														<span id="zip"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>City</td>
+													<td>
+														<span id="city"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>State</td>
+													<td>
+														<span id="state"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Country</td>
+													<td>
+														<span id="country"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Birth Date</td>
+													<td>
+														<span id="dob"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Birth Place</td>
+													<td>
+														<span style="text-transform:capitalize;" id="birth_place"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>School/Institute Name</td>
+													<td>
+														<span id="edu_school"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Degree Name</td>
+													<td>
+														<span id="edu_degree"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Study Fields</td>
+													<td>
+														<span id="edu_study_field"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Grade</td>
+													<td>
+														<span id="edu_grade"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Year of Completion</td>
+													<td>
+														<span id="edu_from_year"></span> - <span id="edu_to_year"></span>
+													</td>
+												</tr>
+												<tr>
+													<td>Description</td>
+													<td><span id="edu_description"></span></td>
+												</tr>
+												<tr>
+													<td>Company Name</td>
+													<td><span id="company_name"></span></td>
+												</tr>
+												<tr>
+													<td>Position</td>
+													<td><span id="exp_title"></span></td>
+												</tr>
+												<tr>
+													<td>Location</td>
+													<td><span id="exp_location"></span></td>
+												</tr>
+												<tr>
+													<td>Description</td>
+													<td><span id="exp_description"></span></td>
+												</tr>
+												<tr>
+													<td>From</td>
+													<td><span id="exp_from_month"></span> <span id="exp_from_year"></span></td>
+												</tr>
+												<tr>
+													<td>To</td>
+													<td><span id="exp_to_month"></span> <span id="exp_to_year"></span></td>
+												</tr>
+												<tr>
+													<td><i class="fa fa-check"></i></td>
+													<td colspan="2"><span id="exp_current_work"></span></td>
+												</tr>
+
+												<tr>
+													<td>Company Name</td>
+													<td><span id="project_company"></span></td>
+												</tr>
+												<tr>
+													<td>Project Name</td>
+													<td><span id="project_title"></span></td>
+												</tr>
+												<tr>
+													<td>Project URL</td>
+													<td><span id="project_url"></span></td>
+												</tr>
+												<tr>
+													<td>Location</td>
+													<td><span id="project_location"></span></td>
+												</tr>
+												<tr>
+													<td>Description</td>
+													<td><span id="project_description"></span></td>
+												</tr>
+												<tr>
+													<td>From</td>
+													<td><span id="project_from_year"></span></td>
+												</tr>
+												<tr>
+													<td>To</td>
+													<td><span id="project_to_year"></span></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<div class="col-md-12">
+										<label class="checkbox-inline pull-left" style="margin:5px 10px 10px 10px;">
+                                        <input type="checkbox" name="to_verify_doc" value="1" checked class="col-sm-3"> Document
+                                    	</label>
+										<input type="hidden" id="to_verify_doc" name="to_verify_doc_h" value="1">
+										<table class="table table-striped table-bordered info_table_2" style="width: 98%; margin: 0 auto;">
+											<tbody>
+												<tr>
+													<td>Document ID</td>
+													<td><span id="doc_id"></span></td>
+												</tr>
+												<tr><td>Document URL</td>
+													<td><a href="#" id="doc_url_link" class="verify_doc_url_link" target="_blank"><i class="fa fa-download" aria-hidden="true"></i> <span id="doc_url"></span></a></td>
+												</tr>
+												<!-- <tr>
+													<td>Color Scan</td>
+													<td><span id="color_scan"></span></td>
+												</tr>
+												<tr>
+													<td>Government Issue ID</td>
+													<td><span id="govt_issue_id"></span></td>
+												</tr>
+												<tr>
+													<td>Has Expirey Date</td>
+													<td><span id="has_expirey_date"></span></td>
+												</tr>
+												<tr>
+													<td>Document Has DOB</td>
+													<td><span id="doc_has_dob"></span></td>
+												</tr> -->
+											</tbody>
+										</table>
+									</div>
+									<input type="hidden" name="connection" id="connection_input" value=""/>
+									<div class="col-sm-12" style="margin-bottom: 10px;">
+										<div class="form-group" style="margin: 5px 14px 15px 0px !important; text-align:left;">
+											<label style="padding-left: 10px;">
+												Comment : <span id="comment"></span>
+											</label>
+										</div>
+									</div>
+									<div class="uploadbar_row" style="margin: 15px 10px 10px 10px !important">
+										<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+											<div class="form-group">
+												<textarea name="comment" id="comment_input_box" class="p7_textarea form-control" placeholder="Write Comment" rows="6" ></textarea>
+												
+												<input type="hidden" name="tab_type" id="tab_type_input" />
+											</div>
+										</div>
+										<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+											<div id="verify_general_block_upload" class="form-group input-upload general_block_upload pull-right">
+												<input type="file" name="doc_file" class="upload_doc_id input-upload-button">
+												<div class="upload-file-text">
+													<i class="fa fa-cloud-upload" aria-hidden="true"></i> Drag and drop file here<br>or<br><span>Browse files</span>
+												</div>
+												<span class="file_name"></span>
+											</div>
+										</div>
+									</div>
+								</div> 
+							</div>
+							<div class="verified_time"><i class="fa fa-calendar" aria-hidden="true"></i> Uploaded Date : <span id="createdAt"></span></div>
+						</li>
+					</ul>
+				</div>
+				<div class="p8_v_1000">
+					<div class="p8_v_1000_title">
+						<select id="connection" class="connection form-control verify_friends_list" required>
+						</select>
+					</div>
+					<div class="col-md-12">
+						<table class="table table-bordered request_data" style="margin-top: 15px;">
+							<thead><tr style="background-color: #e3eeef;"><th><b>Request No</b></th><th><b>User / Organization</b></th><th><b>Request Type</b></th><th><b>View Trxs</b></th></tr></thead>
+							<tbody class="request_data_inner">
+							<tr><td colspan="3">request data......</td></tr>
+							</tbody>
+						</table>
+					</div>
+					<!-- <div class="p8_v_1000_li" id="verifiers"></div> -->
+					<div class="modal-footer">
+						<div class="form-group">
+							<button type="submit" class="btn btn-primary p8_button_1"><i class="fa fa-check-circle" aria-hidden="true"></i> Send Request</button>
+							<button type="button" data-dismiss="modal" class="btn btn-primary"><i class="fa fa-close" aria-hidden="true"></i> Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#connection').select2({
+            minimumInputLength: 2,
+            placeholder: "Select User",
+            dropdownParent: $("#myModal")
+        });
+    });
+</script>

@@ -1,0 +1,538 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+			<!-- Sidebar nav connections Starts -->
+			<%- partial('../includes/sidebar-nav-connections.ejs') %>
+			<!-- Sidebar nav connections Ends -->
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 no-padding connections">
+                <div class="p16_main1000 connections-list">
+                    <div class="p16_main1001">
+                        <div class="p16_section_title">Pending Received Invitations (<span class="pending_receive_invitation_count"><%=totalrequestreceived%></span>)</div>
+                        <ul class="p16_1010 list_connection">
+                            <%
+                            if(pendingrecives.length > 0){
+                            for(var _index=0; _index < pendingrecives.length; _index++) {
+                                var _pendingrecive = pendingrecives[_index].user_id;
+
+                                var UserImage2 = '/themes/frontend/images/default-user.png';
+                                if(_pendingrecive.profile_image &&  _pendingrecive.profile_image!=''){
+                                    UserImage2 = '/uploads/users/'+_pendingrecive.profile_image;
+                                }
+
+                                var profile_slug2 ='/profile/';
+                                 var displayname2 ='';
+                                if(typeof _pendingrecive.company_id!='undefined' && typeof _pendingrecive.company_id.slug!='undefined'){
+                                    if(_pendingrecive.company_id.slug!=''){
+                                         profile_slug2='/company/'+_pendingrecive.company_id.slug;
+                                    }
+                                }else{
+                                    if(typeof _pendingrecive.slug!='undefined' && _pendingrecive.slug!=''){
+                                        profile_slug2='/profile/'+_pendingrecive.slug+"/wall";
+                                    }
+                                }
+
+                                if(typeof _pendingrecive.company_id!='undefined' && typeof _pendingrecive.company_id.company_name!='undefined' && _pendingrecive.company_id.company_name!='')
+                                {
+                                    displayname2 = _pendingrecive.company_id.company_name;
+                                }
+                                else if(typeof _pendingrecive.name!='undefined' && _pendingrecive.name!=''){
+                                    displayname2=_pendingrecive.name;
+                                }   
+
+                                var position2='';
+                                if(typeof _pendingrecive.userexperiences[0]!='undefined' && typeof _pendingrecive.userexperiences[0]['title']!='undefined'){
+                                    position2 = _pendingrecive.userexperiences[0]['title'];
+                                }
+                            %>
+                            <li class="first received_request_li">
+                                <div class="p16_1011">
+                                    <a href="<%=profile_slug2%>"><img src="<%=UserImage2%>" width="55" height="55" alt="<%=_pendingrecive.name%>"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=profile_slug2%>" class="p16_1014"><%=displayname2%></a></div>
+                                        <div class="p16_1015"><%=position2%> <%=typeof _pendingrecive.location == 'undefined' ? '' : _pendingrecive.location%></div>
+                                        <div class="p16_1016">
+                                        <%
+                                            if(typeof _pendingrecive.receiverequest!='undefined' && typeof _pendingrecive.receiverequest[0]['createdAt']!='undefined' && _pendingrecive.receiverequest[0]['createdAt']!=''){
+                                        %>
+                                        Received <%=DateDifferentService.time_ago_full(_pendingrecive.receiverequest[0]['createdAt'])%> ago
+                                        <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="p16_1021">
+                                        <button type="button" class="p16_1022 btnaccept" value="<%=_pendingrecive.id%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                        <button type="button" class="p16_1023 btnreject" value="<%=_pendingrecive.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </li>
+                            <% } } else { %>
+                            <li class="first">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% }
+                            if(totalrequestreceived > 3){
+                            %>
+                            <li class="a-center last" id="get_more_pending_notification">
+                                <input type="hidden" name="request_page_no" class="request_page_no" value="1">
+                                <a href="javascript:void(0);" class="p16_1031">More</a>
+                            </li>
+                            <% } %>
+                        </ul>
+                    </div>
+
+                    <div class="p16_main1002">
+                        <div class="p16_section_title">Pending Sent Invitations (<span class="pending_sent_invitation_count"><%=totalsentrequest%></span>)</div>
+                        <ul class="p16_1010 list_connection2">
+                        <%
+                            if(pendingsent.length > 0){
+
+                            for(var _index=0; _index < pendingsent.length; _index++) {
+                                var _pendingsent = pendingsent[_index].to_user_id;
+                                var requestInfo  = pendingsent[_index];
+
+                                var UserImage1 = '/themes/frontend/images/default-user.png';
+                                if(_pendingsent.profile_image &&  _pendingsent.profile_image!=''){
+                                    UserImage1 = '/uploads/users/'+_pendingsent.profile_image;
+                                }
+
+                                var profile_slug1 ='/profile/';
+                                 var displayname1 ='';
+                                if(typeof _pendingsent.company_id!='undefined' && typeof _pendingsent.company_id.slug!='undefined'){
+                                    if(_pendingsent.company_id.slug!=''){
+                                         profile_slug1='/company/'+_pendingsent.company_id.slug;
+                                    }
+                                }else{
+                                    if(typeof _pendingsent.slug!='undefined' && _pendingsent.slug!=''){
+                                        profile_slug1='/profile/'+_pendingsent.slug+"/wall";
+                                    }
+                                }
+
+                                if(typeof _pendingsent.company_id!='undefined' && typeof _pendingsent.company_id.company_name!='undefined' && _pendingsent.company_id.company_name!='')
+                                {
+                                    displayname1 = _pendingsent.company_id.company_name;
+                                }
+                                else if(typeof _pendingsent.name!='undefined' && _pendingsent.name!=''){
+                                    displayname1=_pendingsent.name;
+                                }   
+
+                                var position='';
+                                if(typeof _pendingsent.userexperiences[0]!='undefined' && typeof _pendingsent.userexperiences[0]['title']!='undefined'){
+                                    position = _pendingsent.userexperiences[0]['title'];
+                                }
+
+                                var company_name ='';
+                                if(typeof _pendingsent.userexperiences[0]!='undefined' && typeof _pendingsent.userexperiences[0]['company_id']!='undefined' && typeof _pendingsent.userexperiences[0]['company_id']['company_name']!='undefined'){
+                                    company_name = ' at '+_pendingsent.userexperiences[0]['company_id']['company_name'];
+                                }
+                            %>
+                            <li class="first pending_sent_li">
+                                <div class="p16_1011">
+                                    <a href="<%=profile_slug1%>"><img src="<%=UserImage1%>" width="55" height="55" alt="Michele Show"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=profile_slug1%>" class="p16_1014"><%=displayname1%></a></div>
+                                        <div class="p16_1015"><%=position%> <%=company_name%></div>
+                                        <div class="p16_1016">
+                                        <%
+                                        if(typeof requestInfo.createdAt!='undefined' && requestInfo.createdAt!=''){
+                                        %>
+                                        Invited <%=DateDifferentService.time_ago_full(requestInfo.createdAt)%> ago
+                                        <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="p16_1021">
+                                        <button type="button" class="p16_1023 cancelsent" value="<%=_pendingsent.id%>" data-toggle="tooltip" title="Cancel Sent Request" data-placement="left"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </li>
+                            <% } }else{ %>
+                            <li class="first">
+                                <div class="p16_1011">
+                                    <p>No data found</p>
+                                </div>
+                            </li>
+                            <% } 
+                            if(totalsentrequest > 3){
+                            %>
+                            <li class="a-center last" id="get_more_sent_invitation">
+                                <input type="hidden" name="sent_page_no" class="sent_page_no" value="1">
+                                <a href="javascript:void(0);" class="p16_1031">More</a>
+                            </li>
+                            <% } %>
+                        </ul>
+                    </div>
+                    
+                    <div class="p16_main1003">
+                        <div class="p16_section_title">People you may know (<span class="peopleyouknow_count"><%=totalpeople%></span>)</div>
+
+                        <ul class="p16_2000 a-center list_connection3">
+                            <%
+                            if(peopleyouknow.length > 0){
+                            for(var _index=0; _index < peopleyouknow.length; _index++) {
+                                var _peopleyouknow = peopleyouknow[_index];
+                            
+
+                                var UserImage = '/themes/frontend/images/default-user.png';
+                                if(_peopleyouknow.profile_image &&  _peopleyouknow.profile_image!=''){
+                                    UserImage = '/uploads/users/'+_peopleyouknow.profile_image;
+                                }
+
+                                var profile_slug ='/profile/';
+                                var displayname ='';
+                                var company_id='';
+                                if(typeof _peopleyouknow.company_id!='undefined' && typeof _peopleyouknow.company_id.slug!='undefined'){
+                                    company_id = _peopleyouknow.company_id.id; 
+                                    if(_peopleyouknow.company_id.slug!=''){
+                                         profile_slug='/company/'+_peopleyouknow.company_id.slug;
+                                    }
+                                }else{
+                                    if(typeof _peopleyouknow.slug!='undefined' && _peopleyouknow.slug!=''){
+                                        profile_slug='/profile/'+_peopleyouknow.slug+"/wall";
+                                    }
+                                }
+
+                                if(typeof _peopleyouknow.company_id!='undefined' && typeof _peopleyouknow.company_id.company_name!='undefined' && _peopleyouknow.company_id.company_name!='')
+                                {
+                                    displayname = _peopleyouknow.company_id.company_name;
+                                }
+                                else if(typeof _peopleyouknow.name!='undefined' && _peopleyouknow.name!=''){
+                                    displayname=_peopleyouknow.name;
+                                }   
+                            %>
+                            <li class="p16_2000_li col-lg-4 col-md-4 col-sm-6 col-xs-12 first">
+                                <div class="p16_2001">
+                                    <a href="<%=profile_slug%>"><img src="<%=UserImage%>" width="90" height="90" alt="<%=_peopleyouknow.name%>"></a>
+                                    <div class="p16_2002">
+                                        <div class="p16_2003 name"><a href="<%=profile_slug%>" class="p16_2004"><%=displayname%></a></div>
+                                        <div class="p16_2005 designation">
+                                        <% if(typeof _peopleyouknow.userexperiences[0]!='undefined' && typeof _peopleyouknow.userexperiences[0]['title']!='undefined'){%>
+                                            <%=_peopleyouknow.userexperiences[0]['title']%>
+                                        <% } %>
+                                        </div>
+                                        <div class="p16_2007 location_city"><%=typeof _peopleyouknow.location == 'undefined' ? '' : _peopleyouknow.location%></div>
+                                    </div>
+                                    <div class="p16_2010">
+                                        <% if(company_id==''){%>
+                                        <form method="post" class="userknown">
+                                            <input type="hidden" name="to_user_id" value="<%=_peopleyouknow.id%>">
+                                            <button type="submit" class="p16_2011 btn-primary">Connect</button>
+                                        </form>
+                                        <% }else{%>
+                                            <button type="button" class="p16_2011 btn-primary btnfollow" value="<%=company_id%>">&nbsp;&nbsp;Follow&nbsp;&nbsp;</button>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </li>
+                            <% } } else { %>
+                            <li class="col-lg-4 col-md-4 col-sm-6 col-xs-12">No data found</li>
+                            <% } %>
+                        </ul>
+
+                        <% if(totalpeople > 9) {%>
+                        <div class="a-center last p16_2030" id="get_more_invitation">
+                            <input type="hidden" name="invitation_page" class="invitation_page_no" value="1">
+                            <a href="javascript:void(0);" class="p16_1031 get_more_invitation">More</a>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/9MH75NNRfsw?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                    <br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/J7_eU3TXbLA?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    /* Pagination*/
+
+    $(document).on("click","#get_more_pending_notification",function(){
+        var pages = $('.request_page_no').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('.request_page_no').val(page_no);
+        $.ajax({
+            type: "GET",
+            url: "/load_more_request/"+page_no,
+            success: function (data) {
+                console.log(data);
+                if(data.pendingrecives!=undefined && data.pendingrecives==false){
+                    $('#get_more_pending_notification').hide();
+                }else{
+                    $(data).insertBefore('#get_more_pending_notification');
+                }
+            }
+        });
+    });
+
+    $(document).on("click","#get_more_sent_invitation",function(){
+        var pages = $('.sent_page_no').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('.sent_page_no').val(page_no);
+        $.ajax({
+            type: "GET",
+            url: "/load_more_sent/"+page_no,
+            success: function (data) {
+                console.log(data);
+                if(data.pendingsent!=undefined && data.pendingsent==false){
+                    $('#get_more_sent_invitation').hide();
+                }else{
+                    $(data).insertBefore('#get_more_sent_invitation');
+                }
+            }
+        });
+    });
+
+    $(document).on("click",".get_more_invitation",function(){
+        var pages = $('.invitation_page_no').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('.invitation_page_no').val(page_no);
+
+        $.ajax({
+            type: "GET",
+            url: "/load_more_invitation/"+page_no,
+            success: function (data) {
+                console.log(data);
+                if(data.peopleyouknow!=undefined && data.peopleyouknow==false){
+                    $('#get_more_invitation').hide();
+                }else{
+                    $('.list_connection3').append(data);
+                }
+            }
+        });
+    });
+
+
+    $(document).on("click",".btnaccept",function(){
+        var parents = $(this).parents('li');
+        var user_id = $(this).val();
+        $.ajax({
+            url: '/acceptRequest/'+user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+					user_id = results.user_id;
+					send_notification(user_id);
+                    $.bootstrapGrowl(results.message, {type: 'success', delay:500});
+                    parents.remove();
+                    setTimeout(function() { location.reload(); }, 500);
+
+                    var pending_count=0;
+                    pending_count=$('.pending_receive_invitation_count').html();
+                    if(pending_count>0){
+                        pending_count = parseInt(pending_count)-parseInt(1);
+                    }
+                    $('.pending_receive_invitation_count').html(pending_count);
+                    if(pending_count==0)
+                    {
+                        $('.list_connection').html('<li class="p16_2000_li"><div class="p16_2001"><p>No data found</p></div></li>');
+                    }
+                    
+                    var li_counts = $('.received_request_li').length;
+                    	var pages = $('.request_page_no').val();
+				        var page_no = parseInt(pages)+parseInt(1);
+                        $('.request_page_no').val(page_no);
+                        if(li_counts<1){
+                            $.ajax({
+                                type: "POST",
+                                url: "/load_more_request",
+                                data : {'no_of_record' :li_counts},
+                                success: function (data) {
+                                $('.received_request_li').remove();
+                                $(data).insertBefore('#get_more_pending_notification');
+                                
+                                }
+                            });
+                        }
+
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 1000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click",".btnreject",function(){
+        var parents = $(this).parents('li');
+        var user_id = $(this).val();
+        $.ajax({
+            url: '/rejectRequest/'+user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $.bootstrapGrowl(results.message, {type: 'success', delay:500});
+                    parents.remove();
+                    setTimeout(function() { location.reload(); },500);
+
+                    var pending_count=0;
+                    pending_count=$('.pending_receive_invitation_count').html();
+                    if(pending_count>0){
+                        pending_count = parseInt(pending_count)-parseInt(1);
+                    }
+                    $('.pending_receive_invitation_count').html(pending_count);
+                    if(pending_count==0)
+                    {
+                        $('.list_connection').html('<li class="p16_2000_li"><div class="p16_2001"><p>No data found</p></div></li>');
+                    }
+
+                    var li_counts = $('.received_request_li').length;
+                    	var pages = $('.request_page_no').val();
+				        var page_no = parseInt(pages)+parseInt(1);
+                        $('.request_page_no').val(page_no);
+                        if(li_counts<1){
+                            $.ajax({
+                                type: "POST",
+                                url: "/load_more_request",
+                                data : {'no_of_record' :li_counts},
+                                success: function (data) {
+                                $('.received_request_li').remove();
+                                $(data).insertBefore('#get_more_pending_notification');
+                                
+                                }
+                            });
+                        }
+                    }
+                    else{
+                        $.bootstrapGrowl(results.message, {type: 'danger', delay:1000});
+                    }
+            }
+        });
+    });
+
+    $(document).on("click",".cancelsent",function(){
+        var parents = $(this).parents('li');
+        var to_user_id = $(this).val();
+        $.ajax({
+            url: '/cancelsentRequest/'+to_user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    var pending_count=0;
+                    var people_count =0;
+                    pending_count=$('.pending_sent_invitation_count').html();
+                    people_count =$('.peopleyouknow_count').html();
+
+                    if(pending_count>0){
+                        pending_count = parseInt(pending_count)-parseInt(1);
+                    }
+                    people_count = parseInt(people_count)+parseInt(1);
+
+                    $('.pending_sent_invitation_count').html(pending_count);
+                    $('.peopleyouknow_count').html(people_count);
+                    if(pending_count==0)
+                    {
+                        $('.list_connection2').html('<li class="p16_2000_li"><div class="p16_2001"><p>No data found</p></div></li>');
+                    }
+
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 500});
+                    parents.remove();
+                    setTimeout(function() { location.reload(); },500);
+
+                    var li_counts = $('.pending_sent_li').length;
+                    	var pages = $('.sent_page_no').val();
+				        var page_no = parseInt(pages)+parseInt(1);
+                        $('.sent_page_no').val(page_no);
+                        if(li_counts<1){
+                            $.ajax({
+                                type: "POST",
+                                url: "/load_more_sent",
+                                data : {'no_of_record' :li_counts},
+                                success: function (data) {
+                                $('.pending_sent_li').remove();
+                                $(data).insertBefore('#get_more_sent_invitation');
+                                
+                                }
+                            });
+                        }
+                   
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 1000});
+                }
+            }
+        });
+    });
+
+    // $(".userknown").submit(function(event) {
+    $(document).on("submit", ".userknown", function (event) {
+        event.preventDefault();
+        var formData = new FormData( this );
+        console.log(formData);
+        var parents = $(this).parents('li');
+        $.ajax({
+            url: '/sendRequest',
+            method: 'POST',
+            data:  formData,
+            mimeType:"multipart/form-data",
+            processData: false,
+            contentType: false,
+            success: function(results)
+            {
+                var json_obj = jQuery.parseJSON( results );
+                if(json_obj.status == 'OK'){
+					user_id = json_obj.user_id;
+					send_notification(user_id);
+                    $.bootstrapGrowl(json_obj.message, {type: 'success', delay: 500});
+                    parents.remove();
+
+                    var pending_count=0;
+                    var people_count =0;
+                    pending_count=$('.pending_sent_invitation_count').html();
+                    people_count =$('.peopleyouknow_count').html(); 
+                    pending_count = parseInt(pending_count)+parseInt(1);
+                    
+                    if(people_count>0){
+                        people_count = people_count-parseInt(1);
+                    }
+
+                    $('.pending_sent_invitation_count').html(pending_count);
+                    $('.peopleyouknow_count').html(people_count);
+
+                    if(people_count==0){
+                        $('.list_connection3').html('<li class="p16_2000_li"><div class="p16_2001"><p>No data found</p></div></li>');
+                    }
+
+                    setTimeout(function() { location.reload(); },500);
+                }
+                else{
+                    $.bootstrapGrowl(json_obj.message, {type: 'danger', delay: 1000});
+                }
+            }
+        });
+    });
+
+     $(document).on("click",".btnfollow",function(){
+        var parents = $(this).parents('li');
+        var company_id = $(this).val();
+        $.ajax({
+            url: '/followCompany/'+company_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 1000});
+                    parents.remove();
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 1000});
+                }
+            }
+        });
+    });
+</script>

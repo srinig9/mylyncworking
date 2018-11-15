@@ -1,0 +1,1283 @@
+<style>
+#parent #popup { display: none; }
+#parent:hover #popup { display: block; }
+</style>
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                <div class="p7_main_container">
+                    <div class="p7_201">
+                        <div class="tabs_panel">
+                            <% if(typeof req.user.company_id!='undefined' && req.user.company_id!=''){%>
+                            <% } else {%>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="active"><a href="#contact" aria-controls="Contact" role="tab" data-toggle="tab">Contacts</a></li>
+                                <li><a href="#identification" aria-controls="Identification" role="tab" data-toggle="tab">Identity</a></li>
+                                <li><a href="#education" aria-controls="Education" role="tab" data-toggle="tab">Education</a></li>
+                                <li><a href="#experience" aria-controls="Experience" role="tab" data-toggle="tab">Experience</a></li>
+                                <li><a href="#project" aria-controls="Project" role="tab" data-toggle="tab">Projects</a></li>
+                                <li><a href="#other_docs" aria-controls="Other_docs" role="tab" data-toggle="tab">Other Docs</a></li>
+                            </ul>
+                            <% } %>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+								<!-- Contact Data tab start -->
+                                <div role="tabpanel" class="tab-pane active" id="contact">
+                                    <div class="p7_i102">
+                                        <div class="page_section_title p7_section_title">
+                                            <h3>Contact Info</h3>
+                                        </div>
+                                        <div class="p7_section_content">
+                                            <div class="row no-margin">
+                                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                                    <div class="form-group">
+                                                        <label class="label" for="">Email</label>
+                                                        <%
+                                                            var readonly='';
+                                                            var email_val='';
+                                                            var email_btn='Verify';
+                                                            var phone_val='';
+                                                            var phone_read='';
+                                                            var phone_btn = 'Verify';
+                                                            var dial_disable = '';
+                                                            var is_email_verify=0;
+                                                            var is_phone_verify=0;
+
+                                                            if(typeof userverify!='undefined'){
+                                                                if(typeof userverify.email!='undefined' && userverify.email!=''){
+                                                                    email_val = userverify.email;
+                                                                    if(userverify.is_email_verify==1){
+                                                                        readonly = '';
+                                                                        is_email_verify=1;
+                                                                    }
+                                                                    email_btn = 'Verify';
+                                                                }
+                                                                if(typeof userverify.phone!='undefined' && userverify.phone!=''){
+                                                                    phone_val = userverify.phone;
+                                                                    phone_btn = 'Verify';
+                                                                    if(userverify.is_phone_verify==1){
+                                                                        is_phone_verify=1;
+                                                                    }
+                                                                }
+                                                            }
+                                                            %>
+                                                        <input type="hidden" value="<%=is_email_verify%>" name="verify_email_flag" id="verify_email_flag">
+
+                                                        <input type="email" name="email" <%=readonly%> id="verify_email" placeholder="Email" class="p7_input form-control email_verify_field" value="<%=email_val%>" required="required">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                                    <p>&nbsp;</p>
+                                                    <% if(typeof userverify!='undefined' && typeof userverify.is_email_verify!='undefined' && userverify.is_email_verify==0) {%>
+                                                        <a href="javscript:;" id="verify_email_btn" class="btn btn-primary btn-primary-b30"><%=email_btn%></a> &nbsp; <a href="javascipt:;" data-target="#email_otpModal" data-toggle="modal" class="text_underline">I have OTP</a> &nbsp;
+                                                    <% } else if(typeof userverify!='undefined' && typeof userverify.is_email_verify!='undefined' && userverify.is_email_verify==1) { %>
+                                                        <span class="green-checked email_verify_check"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                        <a href="javscript:;" id="verify_email_reset" style="display:none;" class="btn btn-primary show_verify_button btn-primary-b30"><%=email_btn%></a>
+                                                    <% }else{ %>
+                                                        <a href="javscript:;" id="verify_email_btn" class="btn btn-primary btn-primary-b30"><%=email_btn%></a>
+                                                        &nbsp; <a href="javascipt:;" data-target="#email_otpModal" data-toggle="modal" class="text_underline">I have OTP</a> &nbsp;
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                            <div class="row no-margin">
+                                                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                                    <div class="form-group">
+                                                        <label class="label" for="">Phone</label><br>
+                                                        <div class="row">
+                                                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                                                        <select <%=dial_disable%> class="form-control" name="dial_code" id="dial_code">
+                                                            <option value="">Country Code</option>
+                                                            <%
+                                                            if(typeof dial_code!='undefined' && dial_code.length>0){
+                                                                _.each(dial_code,function(code){ 
+                                                                    var selected='';
+                                                                    var dial_final = '';
+                                                                    if(typeof userverify!='undefined' && typeof userverify.dial_code!='undefined' && userverify.dial_code==code.dial_code){
+                                                                    selected = 'selected'; 
+                                                                }
+                                                                //dial_final = code.dial_code.replace("+", "");
+                                                                dial_final = code.name + " (" + code.dial_code + ")";
+                                                            %>
+                                                            <option <%=selected%> value="<%=code.dial_code%>"><%=dial_final%></option>
+                                                            <% }) 
+                                                            }%>
+                                                        </select>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-6 col-md-8 col-lg-8">
+                                                        <input type="hidden" value="<%=is_phone_verify%>" name="verify_phone_flag" id="verify_phone_flag">
+                                                        <input  type="tel" name="phone" id="verify_phone" placeholder="Phone" <%=phone_read%> class="p7_input form-control phone_verify_field" value="<%=phone_val%>" required="required">
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                                    <p>&nbsp;</p>
+                                                    <% if(typeof userverify!='undefined' && typeof userverify.is_phone_verify!='undefined' && userverify.is_phone_verify==0) {%>
+                                                        <a href="javascript:;" id="verify_phone_btn" class="btn btn-primary btn-primary-b30"><%=phone_btn%></a> &nbsp; 
+                                                        <a href="javascipt:;" data-target="#otpModal" data-toggle="modal" class="text_underline">I have OTP</a>
+                                                        &nbsp;
+                                                    <% } else if(typeof userverify!='undefined' && typeof userverify.is_phone_verify!='undefined' && userverify.is_phone_verify==1) { %>
+                                                        <span class="green-checked phone_verify_check"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                        <a href="javascript:;" id="verify_phone_reset" class="btn btn-primary show_verify_phone_button btn-primary-b30"><%=phone_btn%></a> &nbsp;
+                                                    <% }else{%>
+                                                        <a href="javascript:;" id="verify_phone_btn" class="btn btn-primary btn-primary-b30"><%=phone_btn%></a> &nbsp; 
+                                                        <a href="javascipt:;" data-target="#otpModal" data-toggle="modal" class="text_underline">I have OTP</a>
+                                                        &nbsp;
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Contact Data tab end -->
+
+								<!-- Identification Data tab start -->
+                                <div role="tabpanel" class="tab-pane" id="identification">
+                                    <!-- <div class="p7_i101">
+										<ul class="blue_dots">
+                                            <li>All documents must be high resolution, color image files.</li>
+                                            <li>Allowed file type extensions are: JPEG, JPG, PNG.</li>
+                                            <li>Files must be at least 98KB and at most 3MB.</li>
+                                            <li>Image dimensions can be a minimum of 350px x 350px and maximum of 4096px x 4096px.</li>
+                                        </ul>
+                                    </div> -->
+                                    <div class="p7_i102">
+                                        <div class="page_section_title p7_section_title">
+                                             <h3>Personal Information</h3>
+                                            <span style="margin-left: 100px;" class="pull-right">&nbsp; &nbsp;
+                                            <button type="button" class="btn btn-primary btn-primary-sw identity_popup" id="identity_info">Add Identity</button>&nbsp; &nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-primary btn-primary-sw identity_popup" id="identity_dob">Add Date of Birth</button>&nbsp; &nbsp;&nbsp;
+                                            <button type="button" class="btn btn-primary btn-primary-sw identity_popup" id="identity_address">Add Address</button>
+                                            </span>
+                                        </div>
+                                        <div class="p7_section_content">
+                                            <div class="p6_pro_1000">
+                                                <div class="p6_section_content p6_project_li">
+                                                <% if(typeof userVerifyDatas!='undefined' && userVerifyDatas.length>0){
+                                                        _.each(userVerifyDatas,function(identity){
+                                                            if(typeof identity.legal_name!='undefined' || typeof identity.first_name!='undefined' || identity.last_name!='undefined'){
+
+                                                            var legal_name='';
+                                                            var first_name= '';
+                                                            var last_name = '';
+                                                            if(typeof identity.legal_name!='undefined' && identity.legal_name!=''){
+                                                                legal_name = identity.legal_name; 
+                                                            }
+                                                            if(typeof identity.first_name!='undefined' && identity.first_name!=''){
+                                                                first_name = identity.first_name; 
+                                                            }
+
+                                                            if(typeof identity.last_name!='undefined' && identity.last_name!=''){
+                                                                last_name = identity.last_name; 
+                                                            }
+
+                                                            if(first_name!='' || last_name!=''){
+                                                                legal_name = first_name+' '+last_name;
+                                                            }
+
+                                                    %> 
+                                                    <div class="p6_sc_1001">
+                                                        <a class="p6_sc_1002 project_img" href="/profile" target="_blank"><span class="first-letter">
+                                                            <%=legal_name.charAt(0).toUpperCase()%>
+                                                        </span></a>
+                                                        <div class="p6_sc_1003">
+                                                            <div class="p6_sc_1004 designation"><a href="/profile"><%=legal_name%></a>
+                                                                 <div class="user-profile-verification">
+                                                                     <a href="javascript:;" class="show_verify_data_popup action_recomm_111" data-id="<%=identity.id%>">Get Verified</a>
+                                                                        <%
+                                                                        if(typeof identity.verify_request_id!='undefined' && identity.verify_request_id.length>0){
+                                                                            var verifyUserData = '';
+                                                                            verifyUserData = identity.verify_request_id;
+                                                                            var count=0;
+                                                                            var count2=0;
+
+                                                                            _.each(verifyUserData,function(vdata){ 
+                                                                                var verify_flag=0;
+                                                                                if(typeof vdata.txnno!='undefined' && vdata.txnno!=''){
+                                                                                    verify_flag=1;
+                                                                                }
+
+                                                                                if(typeof vdata.user_id!='undefined'){
+                                                                                    var UserImage = '/themes/frontend/images/default-user.png';
+                                                                                    if(typeof vdata.user_id.profile_image!='undefined' && vdata.user_id.profile_image!=''){
+                                                                                        UserImage = sails.config.appUrlwPort+'/uploads/users/'+vdata.user_id.profile_image;
+                                                                                    }
+                    
+                                                                                    var user_slug = '/';
+                                                                                    if(typeof vdata.user_id.slug!='undefined' && vdata.user_id.slug!=''){
+                                                                                        user_slug = '/profile/'+vdata.user_id.slug;
+                                                                                    }
+
+                                                                        %>
+                                                                    <% if(verify_flag==1){
+                                                                            count=count+1;
+                                                                          if(count==1){%>
+                                                                            <span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                            <span style="font-size: 12px; font-weight: normal;">Verified by </span>
+                                                                            <% } %>
+                                                                                <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                            
+                                                                            <% }else{ 
+                                                                                count2=count2+1;
+                                                                                %>
+                                                                                <% if(count2==1){%>
+                                                                                    &nbsp;&nbsp;<span style="font-size: 12px; font-weight: normal;">Requested to </span>
+                                                                                    <% } %>
+                                                                                    <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                                <% } 
+
+                                                                                 }
+                                                                            });%>
+                                                                    <% }%>
+                                                                </div>
+                                                            </div>
+                                                            <% 
+                                                                var birthdate='';
+                                                                var doc_country=0;
+                                                                var issue_dates=0;
+                                                                if(typeof identity.dob!='undefined' && identity.dob!=''){
+                                                                    birthdate = identity.dob;
+                                                                }
+                                                            %>
+                                                            <% if(typeof identity.address_line_1!='undefined' && identity.address_line_1!=''){%>
+                                                                <div class="p6_1006 period">Address : <%=identity.address_line_1%></div>
+                                                            <% } %>
+
+                                                            <% if(typeof identity.city!='undefined' && identity.city!=''){%>
+                                                                <div class="p6_1006 period">City : <%=identity.city%></div>
+                                                            <% } %>
+                                                            
+                                                            <% 
+                                                            var passport_flag=0
+                                                            if(typeof identity.issue_place!='undefined' && identity.issue_place!=''){
+                                                                passport_flag=1;
+                                                            }
+                                                            if(typeof identity.doc_country!='undefined' && typeof identity.doc_country.name!='undefined' && identity.doc_country.name!='' && passport_flag==0){
+                                                            doc_country=1;
+                                                            %>
+                                                                <div class="p6_1006 period">Country : <%=identity.doc_country.name%></div>
+                                                            <% } %>
+
+                                                            <% if(typeof identity.issue_country!='undefined' && identity.issue_country!='' && doc_country==0){
+                                                            var label = 'Country';
+                                                            if(passport_flag==1){
+                                                                label = 'Issuing Country';
+                                                            }
+                                                            %>
+                                                                <div class="p6_1006 period"><%=label%> : <%=identity.issue_country%></div>
+                                                            <% } %>
+
+                                                            <% if(typeof identity.country!='undefined' && identity.country!='' && doc_country==0){%>
+                                                                <div class="p6_1006 period">Country : <%=identity.country%></div>
+                                                            <% } %>
+                                                            
+                                                             <% if(typeof identity.issue_date!='undefined' && identity.issue_date!=''){
+                                                             issue_dates=1;
+                                                                var issueDate='';
+                                                                issueDate =identity.issue_date;
+                                                                
+                                                                if(issueDate.length<11){
+                                                                    issueDate =issueDate.replace("/", "-");
+                                                                    issueDate = moment(issueDate,'DD-MM-YYYY').format('DD-MMM-YYYY');
+                                                                }
+                                                             %>
+                                                                <div class="p6_1006 period">Issuance Date : <%=issueDate%></div>
+                                                            <% } %>
+
+                                                            <% if(birthdate!='' && issue_dates==0){
+                                                                var bdate='';
+
+                                                                 if(birthdate.length<11){
+                                                                    birthdate=birthdate.replace("/", "-");
+                                                                    bdate = moment(birthdate,'DD-MM-YYYY').format('DD-MMM-YYYY');
+                                                                }else{
+                                                                        bdate = birthdate;
+                                                                }
+                                                            %>
+                                                                <div class="p6_1006 period">Dob : <%=bdate%></div>
+                                                            <% } %>
+                                                           
+                                                            <% if(typeof identity.doc_type_id!='undefined' && typeof identity.doc_type_id.title!='undefined'){
+                                                            var doc_title = '';
+                                                            doc_title = identity.doc_type_id.title+' No : ';
+                                                            if(typeof identity.doc_num!='undefined' && identity.doc_num!=''){
+                                                            %>
+                                                                <div class="p6_1006 period"><%=doc_title%><%=identity.doc_num%></div>
+                                                            <% }
+                                                            } %>
+
+                                                            <% if(typeof identity.birth_place!='undefined' && identity.birth_place!=''){%>
+                                                                <div class="p6_1006 period">Birth Place : <%=identity.birth_place%></div>
+                                                            <% } %>
+                                                        </div>
+                                                        <button type="button" class="p6_sc_1099" onclick="edit_identity_popup('<%=identity.id%>')"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+                                                    </div>
+                                                    <%   }
+                                                        });
+                                                    }else{ %>
+                                                    <div class="p6_sc_1001"> No Identity added yet!</div>
+                                                    <% }%>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+								<!-- Identification Data tab end -->
+								
+								<!-- Education Data tab start -->
+                                <div role="tabpanel" class="tab-pane" id="education">
+                                    <div class="p7_i102">
+                                        <div class="page_section_title p7_section_title">
+                                            <h3>Education</h3>
+                                            <button type="button" class="btn btn-primary btn-primary-sw pull-right educations_popup" id="add">Add</button>
+                                        </div>
+                                        <div class="p7_section_content">
+                                            <div class="p6_pro_1000">
+                                                <div class="p6_section_content p6_edu_li">
+                                                <% 
+                                                if(typeof userInfo!='undefined' && userInfo.length>0){
+                                                    for(var i=0; i<userInfo.length; i++) {
+                                                        var user_info = '';
+                                                        user_info = userInfo[i];
+                                                    %>
+                                                    <div class="p6_sc_1001 education_verify_block">
+                                                    <a class="p6_sc_1002 project_img" href="" target="_blank"><img src="<%=sails.config.appUrlwPort%>/themes/frontend/images/education_icon.png" alt="Education" height="70" width="70" /></a>
+                                                        <div class="p6_sc_1003">
+                                                            <div class="p6_sc_1004 designation"><%=user_info.school%>
+                                                                <div class="user-profile-verification">
+                                                                        <% if(typeof user_info.educationdocs!='undefined'){
+                                                                            if(user_info.educationdocs.length>0){
+                                                                                %>
+                                                                                <a href="javascript:;" class="show_verify_data_popup action_recomm_111" data-id="<%=user_info.educationdocs[0].id%>">Get Verified</a>
+                                                                                <%
+                                                                                if(typeof user_info.educationdocs[0].verify_request_id!='undefined' && user_info.educationdocs[0].verify_request_id.length>0){
+                                                                                    var verifyUserData = '';
+                                                                                    verifyUserData = user_info.educationdocs[0].verify_request_id;
+                                                                                    var count=0;
+                                                                                    var count2=0;
+                                                                                    _.each(verifyUserData,function(vdata){ 
+                                                                                        var verify_flag=0;
+                                                                                        if(typeof vdata.txnno!='undefined' && vdata.txnno!=''){
+                                                                                            verify_flag=1;
+                                                                                        }
+                                                                                        count=count+1;
+                                                                                        if(typeof vdata.user_id!='undefined'){
+                                                                                            var UserImage = '/themes/frontend/images/default-user.png';
+                                                                                            if(typeof vdata.user_id.profile_image!='undefined' && vdata.user_id.profile_image!=''){
+                                                                                                UserImage = sails.config.appUrlwPort+'/uploads/users/'+vdata.user_id.profile_image;
+                                                                                            }
+                            
+                                                                                            var user_slug = '/';
+                                                                                            if(typeof vdata.user_id.slug!='undefined' && vdata.user_id.slug!=''){
+                                                                                                user_slug = '/profile/'+vdata.user_id.slug;
+                                                                                            }
+                                                                                    %>
+                                                                                    <% if(verify_flag==1){ %>
+                                                                                    <% if(count==1){%>
+                                                                                    <span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                                    <span style="font-size: 12px; font-weight: normal;">Verified by </span>
+                                                                                    <% } %>
+                                                                                        <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                                    
+                                                                                    <% }else{ 
+                                                                                        count2=count2+1;
+                                                                                        %>
+                                                                                        <% if(count2==1){%>
+                                                                                            &nbsp;&nbsp;<span style="font-size: 12px; font-weight: normal;">Requested to </span>
+                                                                                            <% } %>
+                                                                                            <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                                        <% } %>
+                                                                                        <%
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            }
+                                                                        }%>
+                                                                    </div>
+                                                            </div>
+                                                            <div class="p6_1005 Branch">
+                                                                <%
+                                                                    var degree_field='';
+                                                                    if(typeof user_info.degree!='undefined' && user_info.degree!=''){
+                                                                        degree_field+=user_info.degree; 
+                                                                    }
+
+                                                                    if(typeof user_info.study_field!='undefined' && user_info.study_field!=''){
+                                                                        if(degree_field!=''){
+                                                                        degree_field+=', '+user_info.study_field;
+                                                                        }else{
+                                                                            degree_field+=user_info.study_field;
+                                                                        }
+                                                                    }
+                                                                %>
+                                                                <%=degree_field%>
+                                                            </div>
+                                                            <div class="p6_1006 period">
+                                                            <%
+                                                                var from_year   ='';
+                                                                var to_year     ='';
+                                                                if(typeof user_info.from_year!='undefined' && user_info.from_year!=''){
+                                                                    from_year=user_info.from_year;
+                                                                }
+                                                                if(typeof user_info.to_year!='undefined' && user_info.to_year!=''){
+                                                                    to_year=user_info.to_year;
+                                                                }
+                                                            %>
+                                                            <% if(from_year!=''){ %> <%=from_year%> 
+                                                            <% } %>
+                                                            <% if(to_year!=''){ %>- <%=to_year%>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" onclick="edit_education('<%=user_info.id%>')" class="p6_sc_1099"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+                                                </div>
+                                                <% }
+                                                }else{ %>
+                                                <div class="p6_sc_1001"> No Education added yet!</div>
+                                                <% }%>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+								<!-- Education Data tab end -->
+								
+								<!-- Experience Data tab start -->
+                                <div role="tabpanel" class="tab-pane" id="experience">
+                                    <!-- <div class="p7_i101">
+                                        <ul class="blue_dots">
+                                            <li>All documents must be high resolution, color image files.</li>
+                                            <li>Allowed file type extensions are: JPEG, JPG, PNG.</li>
+                                            <li>Files must be at least 98KB and at most 3MB.</li>
+                                            <li>Image dimensions can be a minimum of 350px x 350px and maximum of 4096px x 4096px.</li>
+                                            <li>Proof of residence document must contain name, address and be dated less than 3 months ago.</li>
+                                            <li>For languages such as Russian, Chinese, Thai, Hebrew, etc. that use non-Latin characters a notrized translation of your proof of residence document will greatly speed up processing time. Japanese documents do not required a notarized translation.</li>
+                                        </ul>
+                                    </div> -->
+                                    <div class="p7_i103">
+                                        <div class="page_section_title p7_section_title">
+                                            <h3>Experience</h3>
+                                            <button type="button" class="btn btn-primary btn-primary-sw pull-right experience_popup" id="add">Add</button>
+                                        </div>
+                                        <div class="p7_section_content">
+                                                <div class="p6_pro_1000">
+                                                        <div class="p6_section_content p6_exp_li">
+                                                        <% 
+                                                        if(typeof userexp!='undefined' && userexp.length>0){
+                                                            for(var i=0; i<userexp.length; i++) {
+                                                                var company_name="";
+                                                                var image_letter='';
+                                                                var user_data='';
+                                                                user_data = userexp[i]; 
+                                                                if(typeof user_data.company_id!='undefined' && typeof user_data.company_id.company_name!="undefined"){
+                                                                        company_name=user_data.company_id.company_name;
+                                                                }
+                                                                if(company_name!=''){
+                                                                    image_letter=company_name;
+                                                                }else{
+                                                                    image_letter=user_data.title;
+                                                                }
+                                
+                                                            %>
+                                                            <div class="p6_sc_1001 experience_verify_block">
+                                                                <a class="p6_sc_1002 project_img" href="" target="_blank"><span class="first-letter">
+                                                                <%=image_letter.charAt(0).toUpperCase()%>
+                                                                </span></a>
+                                                                <div class="p6_sc_1003">
+                                                                    <div class="p6_sc_1004 designation"><%=user_data.title%>
+                                                                        <div class="user-profile-verification">
+                                                                            <% if(typeof user_data.experiencedocs!='undefined'){
+                                                                                if(user_data.experiencedocs.length>0){
+                                                                                    %>
+                                                                                    <a href="javascript:;" class="show_verify_data_popup2 action_recomm_111" data-id="<%=user_data.experiencedocs[0].id%>">Get Verified</a>
+                                                                                    <%
+                                                                                    if(typeof user_data.experiencedocs[0].verify_request_id!='undefined' && user_data.experiencedocs[0].verify_request_id.length>0){
+                                                                                        var verifyUserData = '';
+                                                                                        verifyUserData = user_data.experiencedocs[0].verify_request_id;
+                                                                                        var count=0;
+                                                                                        var count2=0;
+                                                                                        _.each(verifyUserData,function(vdata){ 
+                                                                                            var verify_flag=0;
+                                                                                            if(typeof vdata.txnno!='undefined' && vdata.txnno!=''){
+                                                                                                verify_flag=1;
+                                                                                            }
+                                                                                            count = count+1;
+                                                                                            
+                                                                                            if(typeof vdata.user_id!='undefined'){
+                                                                                                var UserImage = '/themes/frontend/images/default-user.png';
+                                                                                                if(typeof vdata.user_id.profile_image!='undefined' && vdata.user_id.profile_image!=''){
+                                                                                                    UserImage = sails.config.appUrlwPort+'/uploads/users/'+vdata.user_id.profile_image;
+                                                                                                }
+                                                                                                var user_slug = '/';
+                                                                                                
+                                                                                                if(typeof vdata.user_id.slug!='undefined' && vdata.user_id.slug!=''){
+                                                                                                    user_slug = '/profile/'+vdata.user_id.slug;
+                                                                                                }
+                                
+                                                                                            %>
+                                                                                            <% if(verify_flag==1){ %>
+                                                                                                <% if(count==1){%>
+                                                                                                <span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                                                <span style="font-size: 12px; font-weight: normal;">Verified by </span>
+                                                                                                <% } %>
+                                                                                                    <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                                                <% }else{ 
+                                                                                                    count2=count2+1;
+                                                                                                    %>
+                                                                                                        <% if(count2==1){%>
+                                                                                                        &nbsp;&nbsp;<span style="font-size: 12px; font-weight: normal;">Requested to </span>
+                                                                                                        <% } %>
+                                                                                                        <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                                                
+                                                                                                <% } %>
+                                                                                            <%
+                                                                                            }
+                                                                                        });
+                                                                                    }
+                                                                                }
+                                                                            }%>
+                                                                    </div>
+                                                                    </div>
+                                                                    <div class="p6_1005 Branch">
+                                                                    <%=company_name%>
+                                                                    </div>
+                                                                    <div class="p6_1006 period">
+                                                                    <%
+                                                                    var from_year   ='';
+                                                                    var year_to = '';
+                                                                    var actual_month='';
+                                                                    var to_actual_month='';
+
+                                                                    if(typeof user_data.from_year!='undefined' && user_data.from_year!=''){
+                                                                        from_year=user_data.from_year;
+                                                                        if(typeof user_data.from_month!='undefined'){
+                                                                            mon = user_data.from_month;
+                                                                            if(user_data.from_month.length>2){
+                                                                                    actual_month= moment().month(mon).format("MM");
+                                                                                    from_year+='-'+actual_month;
+                                                                            }else{
+                                                                                actual_month=user_data.from_month;
+                                                                                from_year+='-'+actual_month
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    %>
+                                                                    <% if(from_year!=''){ %> 
+                                                                        <%=DateDifferentService.getMonth(actual_month)%> 
+                                                                        <%=user_data.from_year%>
+                                                                    <% } %>
+                                                                    
+                                                                    <% if(typeof user_data.to_year!='undefined' && user_data.to_year!=''){ 
+                                                                        if(typeof user_data.to_month!='' && user_data.to_month!=''){
+                                                                            year_to=user_data.to_year;
+
+                                                                            if(user_data.to_month.length>2){
+                                                                                    to_actual_month= moment().month(user_data.to_month).format("MM");
+                                                                                    year_to+='-'+to_actual_month;
+                                                                            }else{
+                                                                                to_actual_month=user_data.to_month;
+                                                                                year_to+='-'+actual_month
+                                                                            }
+                                
+                                                                    %>-
+                                                                        <%=DateDifferentService.getMonth(to_actual_month)%>
+                                                                        <%=user_data.to_year%>
+                                                                            <% }else{%>&nbsp;- Present 
+                                                                            <%}
+                                                                    }else{ %> 
+                                                                        - Present 
+                                                                    <% } %>
+                                                                    <span class="blue_dot_mid"> <%=DateDifferentService.calculateDateDiff(from_year,year_to) %></span></div>
+                                                                    <div class="p6_1007 loction"><%=user_data.location%></div>
+                                                                    
+                                                                </div>
+                                                                
+                                                                    <button type="button" class="p6_sc_1099" onclick="edit_experience('<%=user_data.id%>')"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+                                                                
+                                                            </div>
+                                                            <% }
+                                                        }else{ %>
+                                                        <div class="p6_sc_1001">No Experience added yet!</div>
+                                                        <% } %>
+                                
+                                                        </div>
+                                                    </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Experience Data tab end -->
+                                
+                                <!-- Project Data tab start -->
+                                <div role="tabpanel" class="tab-pane" id="project">
+                                    <div class="p7_i103">
+                                        <div class="page_section_title p7_section_title">
+                                            <h3>Project</h3>
+                                            <button type="button" class="btn btn-primary btn-primary-sw pull-right project_popup" id="add">Add</button>
+                                        </div>
+                                        <div class="p7_section_content">
+                                            <div class="p6_pro_1000">
+                                                <div class="p6_section_content p6_project_li">
+                                                    <% 
+                                                    if(typeof user_project!='undefined' && user_project.length>0){
+                                                        for(var i=0; i<user_project.length; i++) {
+                                                            var projects = user_project[i];
+                                                    %>
+                                                    <div class="p6_sc_1001">
+                                                        <a class="p6_sc_1002 project_img" href="" target="_blank"><span class="first-letter">
+                                                            <%=projects.title.charAt(0).toUpperCase()%>
+                                                        </span></a>
+                                                        <div class="p6_sc_1003">
+                                                            <div class="p6_sc_1004 designation"><%=projects.title%>
+                                                                <div class="user-profile-verification">
+                                                                        <% if(typeof projects.projectdocs!='undefined'){
+                                                                            if(projects.projectdocs.length>0){
+                                                                                %>
+                                                                                <a href="javascript:;" class="show_verify_data_popup3 action_recomm_111" data-id="<%=projects.projectdocs[0].id%>">Get Verified</a>
+                                                                                <%
+                                                                                if(typeof projects.projectdocs[0].verify_request_id!='undefined' && projects.projectdocs[0].verify_request_id.length>0){
+                                                                                    var verifyUserData = '';
+                                                                                    verifyUserData = projects.projectdocs[0].verify_request_id;
+                                                                                    var count=0;
+                                                                                    var count2=0;
+                                                                                    _.each(verifyUserData,function(vdata){ 
+                                                                                        var verify_flag=0;
+                                                                                        if(typeof vdata.txnno!='undefined' && vdata.txnno!=''){
+                                                                                            verify_flag=1;
+                                                                                        }
+                                                                                        count = count+1;
+                                                                                        
+                                                                                        if(typeof vdata.user_id!='undefined'){
+                                                                                            var UserImage = '/themes/frontend/images/default-user.png';
+                                                                                            if(typeof vdata.user_id.profile_image!='undefined' && vdata.user_id.profile_image!=''){
+                                                                                                UserImage = sails.config.appUrlwPort+'/uploads/users/'+vdata.user_id.profile_image;
+                                                                                            }
+                                                                                            var user_slug = '/';
+                                                                                            
+                                                                                            if(typeof vdata.user_id.slug!='undefined' && vdata.user_id.slug!=''){
+                                                                                                user_slug = '/profile/'+vdata.user_id.slug;
+                                                                                            }
+                                                                                        %>
+                                                                                        <% if(verify_flag==1){ %>
+                                                                                            <% if(count==1){%>
+                                                                                            <span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                                            <span style="font-size: 12px; font-weight: normal;">Verified by </span>
+                                                                                            <% } %>
+                                                                                                <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                                            <% }else{ 
+                                                                                                count2=count2+1;
+                                                                                                %>
+                                                                                                <% if(count2==1){%>
+                                                                                                &nbsp;&nbsp;<span style="font-size: 12px; font-weight: normal;">Requested to </span>
+                                                                                                <% } %>
+                                                                                                <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                                            <% } %>
+                                                                                        <%
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            }
+                                                                        }%>
+                                                                </div>
+                                                            </div>
+                                                            <div class="p6_1005 company">
+                                                                <% if(typeof projects.project_url!='undefined'){ %>
+                                                                <a href="<%=projects.project_url%>" target="_blank"><%=projects.project_url%></a>
+                                                                <% } %>
+                                                            </div>
+                                                            <div class="p6_1006 period">
+                                                            <%
+                                                                var start_time   ='';
+                                                                var end_time     ='';
+                                                                var company_info ='';
+                                                                var company_location='';
+                        
+                                                                if(typeof projects.company_id!='undefined' && typeof projects.company_id.company_name!='undefined'){
+                                                                    if(projects.company_id.company_name!=''){
+                                                                        company_info= projects.company_id.company_name;
+                                                                    }
+                                                                }
+                        
+                                                                if(typeof projects.location!='undefined' && typeof projects.location!=''){
+                                                                    if(company_info!=''){
+                                                                        company_location=', '+projects.location;
+                                                                    }else{
+                                                                        company_location=projects.location;
+                                                                    }
+                                                                }
+                                                            if(company_info!='' || company_location!=''){
+                                                            %>
+                                                                <%=company_info%> <%=company_location%><br/>
+                        
+                                                            <%
+                                                            }
+
+                                                            var from_actual_month='';
+                                                            var to_actual_month='';
+                                                                
+                                                                if(typeof projects.from_year!='undefined' && projects.from_year!=''){
+                                                                
+                                                                    if(typeof projects.from_month!='undefined' && projects.from_month!=''){
+                                                                        start_time=projects.from_year;
+                                                                        if(projects.from_month.length>2){
+                                                                            from_actual_month= moment().month(projects.from_month).format("MM");
+                                                                            start_time+='-'+from_actual_month;
+                                                                            }else{
+                                                                                from_actual_month=projects.from_month;
+                                                                                start_time+='-'+from_actual_month
+                                                                            }
+                                                                %>
+                                                                <%=DateDifferentService.getMonth(from_actual_month)%>
+                                                                <%=projects.from_year%>
+                                                                <% }
+                                                                }   
+                                                                if(typeof projects.to_year!='undefined' && projects.to_year!=''){
+                                                                        if(typeof projects.to_month!='' && projects.to_month!=''){
+                                                                            end_time=projects.to_year;
+
+                                                                            if(projects.to_month.length>2){
+                                                                                to_actual_month= moment().month(projects.to_month).format("MM");
+                                                                                end_time+='-'+to_actual_month;
+                                                                            }else{
+                                                                                to_actual_month=projects.to_month;
+                                                                                end_time+='-'+to_actual_month
+                                                                            }
+                                                                        %> -
+                                                                            <%=DateDifferentService.getMonth(to_actual_month)%>
+                                                                            <%=projects.to_year%>
+                                                                        <%
+                                                                        }
+                                                                    }
+                                                                %>
+                                                                <% if(start_time!=''){ %>
+                                                                <span class="blue_dot_mid"><%=DateDifferentService.calculateDateDiff(start_time,end_time)%></span>
+                                                                <% } %>
+                                                            </div>
+                                                            <div class="p6_1007 description"><p>
+                                                                <% if(typeof projects.description!='undefined'){%>
+                                                                <%=projects.description%>
+                                                                <% } %>
+                                                            </p></div>
+                                                        </div>
+                                                        <button type="button" class="p6_sc_1099" onclick="edit_project('<%=projects.id%>')"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+                                                    </div>
+                                                <% }
+                                                }else{ %>
+                                                <div class="p6_sc_1001">No Project added yet!</div>
+                                                <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Project Data tab End -->
+
+                                  <!-- Other Docs Data tab start -->
+                                <div role="tabpanel" class="tab-pane" id="other_docs">
+                                    <div class="p7_i103">
+                                        <div class="page_section_title p7_section_title">
+                                            <h3>Documents</h3>
+                                            <button type="button" class="btn btn-primary btn-primary-sw pull-right other_docs_popup" id="add">Add</button>
+                                        </div>
+                                        <div class="p7_section_content">
+                                            <div class="p6_pro_1000">
+                                                
+                                               <div class="p6_section_content p6_project_li">
+                                                <% if(typeof verifyOtherDocsData!='undefined' && verifyOtherDocsData.length>0){
+                                                    var legal_name = req.user.name;
+                                                        _.each(verifyOtherDocsData,function(other_docs){
+                                                    %> 
+                                                    <div class="p6_sc_1001">
+                                                        <a class="p6_sc_1002 project_img" href="/profile" target="_blank"><span class="first-letter">
+                                                            <%=legal_name.charAt(0).toUpperCase()%>
+                                                        </span></a>
+                                                        <div class="p6_sc_1003">
+                                                            <div class="p6_sc_1004 designation">
+                                                                 <div class="user-profile-verification">
+                                                                     <a href="javascript:;" class="show_verify_data_popup action_recomm_111" data-id="<%=other_docs.id%>">Get Verified</a>
+                                                                        <%
+                                                                        if(typeof other_docs.verify_request_id!='undefined' && other_docs.verify_request_id.length>0){
+                                                                            var verifyUserData = '';
+                                                                            verifyUserData = other_docs.verify_request_id;
+                                                                            var count=0;
+                                                                            var count2=0;   
+
+                                                                            _.each(verifyUserData,function(vdata){ 
+                                                                                var verify_flag=0;
+                                                                                if(typeof vdata.txnno!='undefined' && vdata.txnno!=''){
+                                                                                    verify_flag=1;
+                                                                                }
+
+                                                                                if(typeof vdata.user_id!='undefined'){
+                                                                                    var UserImage = '/themes/frontend/images/default-user.png';
+                                                                                    if(typeof vdata.user_id.profile_image!='undefined' && vdata.user_id.profile_image!=''){
+                                                                                        UserImage = sails.config.appUrlwPort+'/uploads/users/'+vdata.user_id.profile_image;
+                                                                                    }
+                    
+                                                                                    var user_slug = '/';
+                                                                                    if(typeof vdata.user_id.slug!='undefined' && vdata.user_id.slug!=''){
+                                                                                        user_slug = '/profile/'+vdata.user_id.slug;
+                                                                                    }
+
+                                                                        %>
+                                                                    <% if(verify_flag==1){
+                                                                            count=count+1;
+                                                                          if(count==1){%>
+                                                                            <span class="checked"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                                                            <span style="font-size: 12px; font-weight: normal;">Verified by </span>
+                                                                            <% } %>
+                                                                                <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                            
+                                                                            <% }else{ 
+                                                                                count2=count2+1;
+                                                                                %>
+                                                                                <% if(count2==1){%>
+                                                                                    &nbsp;&nbsp;<span style="font-size: 12px; font-weight: normal;">Requested to </span>
+                                                                                    <% } %>
+                                                                                    <a href="<%=user_slug%>" title="<%=vdata.user_id.name%>"><img src="<%=UserImage%>" width="19" height="19" class="img-circle"></a>
+                                                                                <% } 
+
+                                                                                 }
+                                                                            });%>
+                                                                    <% }%>
+                                                                </div>
+                                                            </div>
+                                                            <% 
+                                                                var other_doc_info='';
+                                                                var other_doc_type = '';
+                                                                if(typeof other_docs.other_doc_info!='undefined' && other_docs.other_doc_info!=''){
+                                                                    other_doc_info = other_docs.other_doc_info;
+                                                                }
+                                                                 
+                                                                if(typeof other_docs.doc_type_id!="undefined" && typeof other_docs.doc_type_id.title!="undefined"){
+                                                                    if(other_docs.doc_type_id.title!=''){
+                                                                        other_doc_type = other_docs.doc_type_id.title;
+                                                                    }
+                                                                }
+                                                            %>
+                                                            <% if(other_doc_type!=''){%>
+                                                                <div class="p6_1006 period"><b>Document Type :</b> <%=other_doc_type%></div>
+                                                            <% } %>
+                                                            <% if(other_doc_info!=''){%>
+                                                                <div class="p6_1006 period">Document Detail : <%=other_doc_info%></div>
+                                                            <% } %>
+                                                        </div>
+                                                        <button type="button" class="p6_sc_1099" onclick="edit_otherdocs_popup('<%=other_docs.id%>')"><i class="fa fa-edit" aria-hidden="true"></i> </button>
+                                                    </div>
+                                                    <%   
+                                                        });
+                                                    }else{ %>
+                                                    <div class="p6_sc_1001"> No Other Docs added yet!</div>
+                                                    <% }%>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Others Data tab End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>	
+			<!-- Sidebar nav verification Starts -->
+            <%- partial('../includes/sidebar-nav-verification.ejs') %>
+            <!-- Sidebar nav verification Ends -->			
+        </div>
+    </div>
+    <!-- Select verifier user Modal pop up -->
+    <%- include send-authenticate-popup.ejs %>
+
+    <%- include otp_popup.ejs %>
+    <%- include email_otp_popup.ejs %>
+    <%- include ../user/popups/education.ejs %>
+    <%- include ../user/popups/experience.ejs %>
+    <%- include ../user/popups/project.ejs %>
+
+    <!-- Select verifier user Modal pop up -->
+    <%- include verify_authentication_popup.ejs %>
+
+    <%- include identity_popup.ejs %>
+
+    <%- include other_docs_popup.ejs %>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="/themes/frontend/js/otp_request.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/ajax_functions.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/send-request-authenticate.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/verify_authentication_popup.js"></script>
+
+<script type="text/javascript"> 
+	
+	function activaTab(tab){
+		$('.nav-tabs a[href="#' + tab + '"]').tab('show');
+	};
+	
+    $(document).ready(function(){
+		var url_tab_type = window.location.hash.substr(1);
+		if(url_tab_type!='') {
+			activaTab(url_tab_type);
+		}
+		
+		/* Selected file name display */
+		$(".input-upload-button").on("change", function() {
+            var upload_html='';
+
+            upload_html="<b>Selected File:</b> <span class='upload_file_name'>" + this.files[0].name+" </span>";
+            upload_html+="<input type='hidden' name='upload_file_name' value='"+this.files[0].name+"' />";
+
+			$(this).parent().find(".file_name").html(upload_html);
+		});
+
+        $(".general_block").hide();
+        $(".address_block").hide();
+        $(".general_block_upload").show();
+        $(".birth_block").hide();
+        $("#documenttype").on("change", function() {
+            selected_value = $(this).find('option[value="'+this.value+'"]').data('value')
+            if(selected_value == "Passport" || selected_value == "Driving License" || selected_value == "ID Card") {
+                $(".general_block").show();
+                $(".address_block").hide();
+                $(".general_block_upload").show();
+                $(".birth_block").hide();
+            } else if(selected_value == "Utility Bill" || selected_value == "Bank Statement" || selected_value == "Credit Card Statement" || selected_value == "Residency Proof") {
+                $(".general_block").hide();
+                $(".address_block").show();
+                $(".general_block_upload").show();
+                $(".birth_block").hide();
+            }  else if(selected_value == "Birth Certificate") {
+                $(".general_block").hide();
+                $(".address_block").hide();
+                $(".general_block_upload").hide();
+                $(".birth_block").show();
+            } else {
+                $(".general_block").hide();
+                $(".address_block").hide();
+                $(".general_block_upload").show();
+                $(".birth_block").hide();
+            }
+        });
+    });
+
+    /* Ajax call, Identification tab only for now */
+    $(".ajax-call-form").submit(function(event) {
+        event.preventDefault();
+        var formData = new FormData( this );
+        var ajax_url = '';
+        ajax_url = '/save-verified';
+        var form_id    = '#form_identity_info';
+
+        if($("form#form_identity_info #id").val()!='')
+        {
+            ajax_url = '/update-verify-data';
+
+            var old_string = '';
+            var new_string = '';
+            var docUrl     = '';
+
+            var del_doc=$(form_id+' #identity_del_doc').val();
+
+            old_string = $(form_id+' .old_identity_string').val();
+
+            if(del_doc==0){
+                docUrl=$.trim($(form_id+" #identity_doc_url").html());
+                if($(form_id+" #identity_doc_url").html()==''){
+                    docUrl=$.trim($(form_id+" .upload_file_name").html());
+                }
+            }
+
+            var docType =   $.trim($(form_id+' #doc_type_id').val());
+            var comment =   $.trim($(form_id+' #comment').val());
+            
+            var name_str='';
+            var first_name  =$.trim($(form_id+' #legal_first_name').val());
+            var last_name   =$.trim($(form_id+' #legal_last_name').val());
+            var legal_name  =$.trim($(form_id+' #legal_name').val());
+            var doc_num     =$.trim($(form_id+' #documentnum').val());
+
+            var identity_flag=0;
+            var address_flag=0;
+            var dob_flag=0;
+
+            
+            if($(form_id+' #identity_info_val').is(':checked')){
+                identity_flag=1;
+
+                var check_dob  =$.trim($(form_id+' #identity_dob_month').val())+'-'+$.trim($(form_id+' #identity_dob_date').val())+'-'+$.trim($(form_id+' #identity_dob_year').val());
+            
+                var issuedate  =$.trim($(form_id+' #issuedate').val());
+                var expirydate  =$.trim($(form_id+' #expirydate').val());
+
+                if(issuedate!=''){
+                    issuedate = moment(issuedate).format('MM-DD-YYYY');
+                }
+
+                if(expirydate!=''){
+                    expirydate = moment(expirydate).format('MM-DD-YYYY');
+                }
+
+                if(Getverify_Checkdate(check_dob,issuedate,expirydate,msg=1)==false){
+                    return false;
+                }
+            }
+
+            if($(form_id+' #identity_dob_val').is(':checked')){
+                dob_flag=1;
+            }
+
+            if($(form_id+' #identity_address_val').is(':checked')){
+                address_flag=1;
+                legal_name = $.trim($(form_id+' #identity_login_user').val());
+            }
+
+            var issueCountry = '';
+            var issue_place ='';
+
+            var issue_date  =$.trim($(form_id+' #issuedate').val());
+            var expiry_date =$.trim($(form_id+' #expirydate').val());
+
+            if(issue_date!=''){
+                issue_date = moment(issue_date).format('DD-MM-YYYY');
+            }
+            if(expiry_date!=''){
+                expiry_date = moment(expiry_date).format('DD-MM-YYYY');
+            }
+
+            var dob = '';
+            var country     ='';
+            var birth_place='';
+            
+            if(identity_flag==1){
+                issue_place =$.trim($(form_id+' #passport_identity_issue_place').val());
+                issueCountry=$.trim($(form_id+' #passport_identity_country').val());
+                dob         =$.trim($(form_id+' #identity_dob_date').val())+'-'+$.trim($(form_id+' #identity_dob_month').val())+'-'+$.trim($(form_id+' #identity_dob_year').val());
+            }
+        
+            if(address_flag==1){
+                docType='';
+                country=$.trim($(form_id+' #identity_country').val());
+            }
+            if(dob_flag==1){
+                birth_place =$.trim($(form_id+' #birth_place').val());
+                docType     ='';
+                dob         =$.trim($(form_id+' #dob_date').val())+'-'+$.trim($(form_id+' #dob_month').val())+'-'+$.trim($(form_id+' #dob_year').val());
+            }
+
+            var address_1   =$.trim($(form_id+' #addressline1').val());
+            var address_2   =$.trim($(form_id+' #addressline2').val());
+            var city        =$.trim($(form_id+' #locality').val());
+            var state       =$.trim($(form_id+' #administrative_area_level_1').val());
+            var zip         =$.trim($(form_id+' #zipcode').val());
+            var doc_country =$.trim($(form_id+' #doc_country').val());
+            var gender      =$.trim($(form_id+' #identity_gender').val());
+            name_str        = legal_name;
+
+            if(first_name!='' || last_name!=''){
+                name_str=first_name+last_name;
+            }else{
+                name_str=legal_name;
+            }
+
+            new_string = docType+name_str+doc_num+issueCountry+issue_place+issue_date;
+            new_string+= expiry_date+dob+birth_place+address_1+address_2+city+state;
+            new_string+= country+zip+doc_country+gender+comment+docUrl;
+
+            //console.log('OLD==>'+old_string);
+            //console.log('NEW==>'+new_string);
+            
+            if($(form_id+" #is_verify_flag").val()==1){
+                if(old_string!=new_string){
+                    $.confirm({content:"Any verification on this record will be lost. Do you want to continue edit?",
+                        header: "Confirmation",
+                        confirm:function () {
+                            
+                        },
+                        cancel:function () {
+                            return false;
+                        }
+                    });                    
+                    // if (confirm('Any verification on this record will be lost. Do you want to continue edit?')) {
+                    // }else{
+                    //     return false;
+                    // }
+                }
+            }
+        }
+        else{
+
+            //add time check date validation
+            if($(form_id+' #identity_info_val').is(':checked')){
+                var check_dob='';
+                var issuedate='';
+                var expirydate='';
+
+                check_dob  =$.trim($(form_id+' #identity_dob_month').val())+'-'+$.trim($(form_id+' #identity_dob_date').val())+'-'+$.trim($(form_id+' #identity_dob_year').val());
+            
+                issuedate  =$.trim($(form_id+' #issuedate').val());
+                expirydate  =$.trim($(form_id+' #expirydate').val());
+                if(issuedate!=''){
+                    issuedate = moment(issuedate).format('MM-DD-YYYY');
+                }
+                if(expirydate!=''){
+                    expirydate = moment(expirydate).format('MM-DD-YYYY');
+                }
+
+                if(Getverify_Checkdate(check_dob,issuedate,expirydate,msg=1)==false){
+                    return false;
+                }
+            }
+        }
+
+        var redirect_url= "#identification";
+        store_verify_data(formData,ajax_url,redirect_url);
+    });
+
+     $(".other-ajax-call-form").submit(function(event) {
+        event.preventDefault();
+        var formData = new FormData( this );
+        var ajax_url = '';
+        ajax_url = '/save-verified';
+        var form_id ='#form_other_docs';
+
+        if($(form_id+" .other_doc_type_option").val()==''){
+            $.bootstrapGrowl('Document Type is require', {type: 'danger', delay: 1000});
+            return false;
+        }
+
+        if($("form#form_other_docs #id").val()!=''){
+            ajax_url = '/update-verify-data';
+
+            var old_string = '';
+            var new_string = '';
+            var docUrl     = '';
+            var del_doc=$(form_id+' #other_docs_del_doc').val();
+            
+            old_string = $(form_id+' .old_other_docs_string').val();
+
+            if(del_doc==0){
+                docUrl=$.trim($(form_id+" #identity_doc_url").html());
+                if(docUrl==''){
+                    docUrl=$.trim($(form_id+" .upload_file_name").html());
+                }
+            }
+
+            //docType+'-'+otherDoc+'-'+comment+'-'+docUrl;
+            new_string  = $.trim($(form_id+" .other_doc_type_option").val())+'-'+$.trim($(form_id+" #other_doc_info").val())+'-';
+            new_string += $.trim($(form_id+" #comment").val())+'-'+docUrl;
+
+            if($(form_id+" #is_verify_flag").val()==1){
+                if(old_string!=new_string){
+                    $.confirm({content:"Any verification on this record will be lost. Do you want to continue edit?",
+                        header: "Continue",
+                        confirm:function () {
+                            var url = "/deleteFeed/"+feed_id;
+                            window.location.href = url;
+                        },
+                        cancel:function () {
+                            return false;
+                        }
+                    });                    
+                    // if (confirm('Any verification on this record will be lost. Do you want to continue edit?')) {
+                    // }else{
+                    //     return false;
+                    // }
+                }
+            }
+        }
+
+        var redirect_url= "#other_docs";
+        store_verify_data(formData,ajax_url,redirect_url);
+    });
+
+
+function store_verify_data(formData,ajax_url,redirect_url){
+     ajaxindicatorstart('LOADING');
+    $.ajax({
+        url: ajax_url,
+        method: 'POST',
+        data:  formData,
+        mimeType:"multipart/form-data",
+        processData: false,
+        contentType: false,
+        enctype: 'multipart/form-data',
+        success: function(results)
+        {
+            var json_obj = jQuery.parseJSON( results );
+            if(json_obj.status=='OK'){
+                $.bootstrapGrowl('Record save successfully', {type: 'success', delay: 1000});
+                setTimeout(function() {
+                    ajaxindicatorstop();
+                    var current_url = window.location.pathname;
+                    window.location = current_url + redirect_url;
+                    location.reload();
+                }, 3500);
+
+            }else{
+                ajaxindicatorstop();
+                $.bootstrapGrowl(json_obj.msg, {type: 'danger', delay: 1500});
+            }
+        }
+    });
+}
+    /* Not used for now
+	function showMyModalSetTitle(myRecID) {
+        $.get("/getVerifyData/" + myRecID, function (res) {
+            var type = res[0].type;
+            type = type.substr(0, 1).toUpperCase() + type.substr(1);
+            $('#myModalTitle').html('<h3>' + res[0].username + " - " + type + '</h3>');
+            $("#myDataHTML").html(res[1]);
+            $("#myDataId").val(res[0].id);              
+            $('#myModal').modal('show');    
+            $("#verifiers").html(res[2]);
+        });
+    }
+    function saveData(fieldName) {
+        var data = document.getElementById(fieldName).value;
+         $.get("/saveData/" + data + "/" + fieldName, function (res) {
+            // document.getElementById("email").value = res[0];
+         });
+    }
+    function saveAddress() {
+        var data = { addressline1: document.getElementById('addressline1').value, 
+                    addressline2: document.getElementById('addressline2').value, 
+                    city: document.getElementById('city').value, 
+                    zipcode: document.getElementById('zipcode').value, 
+                    state: document.getElementById('state').value, 
+                    country: document.getElementById('country').value
+        };
+        var data = JSON.stringify(data);
+        $.get("/saveData/" + data + "/" + "Address", function (res) {
+            // document.getElementById("email").value = res[0];
+        });
+    }
+    function saveDocument() {
+        var doctype = document.getElementById('documenttype').value;
+        var data = { 
+                    documentid: document.getElementById('documentid').value, 
+                    issuecountry: document.getElementById('issuecountry').value, 
+                    issuedate: document.getElementById('issuedate').value, 
+                    expirydate: document.getElementById('expirydate').value, 
+        };
+        
+        var data = JSON.stringify(data);
+        $.get("/saveData/" + data + "/" + doctype, function (res) {
+            // document.getElementById("email").value = res[0];
+        });
+    }
+    function sendVerifyData() {
+        //var data = document.getElementById(fieldName).value;
+        var mydataId = document.getElementById('myDataId').value;
+        var myVerifier = document.getElementById('verifier').value;
+        var myVerifierName = $("select[name='verifier'").find('option:selected').text()
+        $.get("/sendVerifyData/" + mydataId + "/" + myVerifier + "/" + myVerifierName, function (res) {
+            // document.getElementById("email").value = res[0];
+        });
+    } */
+</script>
+
+<script type="text/javascript" src="/themes/frontend/js/identity_otherdocs.js"></script>
+<script type="text/javascript" src="/themes/frontend/js/verification-history.js"></script>

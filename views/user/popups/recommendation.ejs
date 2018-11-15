@@ -1,0 +1,35 @@
+<div id="edit_recommedation" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Ask for Recommendation</h4>
+				</div>
+				<form method="post" class="form-group" id="form_recommedation">
+				<input type="hidden" name="recommended_id" value="<%=user.id%>">
+				<div class="modal-body">
+					<div id="form-errors"></div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								<select name="user_id" class="form-control" required="true">
+									<option value=""> Select User</option>
+									<% 
+									if(typeof recommend!='undefined' && recommend.length>0){
+										for(var i=0; i < recommend.length; i++) { %>
+										<option value="<%=recommend[i].id%>"><%=recommend[i].name%></option>
+										<% }
+									} %>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary mBottom0">Send</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>

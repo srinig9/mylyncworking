@@ -1,0 +1,116 @@
+<%
+if(comments.length > 0){
+for(var _index=0; _index < comments.length; _index++) {
+    var _comment = comments[_index];
+
+    var comment_user_slug='/profile';
+    var userimage = '/themes/frontend/images/default-user.png';
+
+    var display_name = '';
+    if(typeof _comment.user_id.company_id!='undefined' && typeof _comment.user_id.company_id.slug!='undefined' && _comment.user_id.company_id.slug!=''){
+        comment_user_slug = '/company/'+_comment.user_id.company_id.slug;
+    }else{
+        if(typeof _comment.user_id!='undefined' && typeof _comment.user_id.slug!='undefined' && _comment.user_id.slug!=''){
+        comment_user_slug ='/profile/'+_comment.user_id.slug+"/wall";
+        }
+    }
+
+   if(typeof _comment.user_id.company_id!='undefined' && typeof _comment.user_id.company_id.company_name!='undefined' && _comment.user_id.company_id.company_name!=''){
+        display_name = _comment.user_id.company_id.company_name;
+    }else{
+         display_name = _comment.user_id.name;
+    }
+
+     if(typeof _comment.user_id!='undefined' && typeof _comment.user_id.profile_image!='undefined' && _comment.user_id.profile_image!=''){
+            userimage = '/uploads/users/'+_comment.user_id.profile_image;
+        }
+
+%>
+
+<% if(_comment.parent_id){ %>
+
+<div class="comment-wrap ember-mode comment-reply" owner_id="<%- (typeof owner_id != 'undefined') ? owner_id : '' %>" style="display: block;">
+    <div class="photo">
+        <div class="avatar" style="background-image: url('<%=userimage%>')">
+        </div>
+    </div>
+    <div class="comment-block">
+        <p class="comment-user"><a href="<%=comment_user_slug%>"><%=display_name%></a></p>
+        <p class="comment-text"><%=_comment.comments%></p>
+        <div class="p6_comment_count pull-left">
+            <a href="javascript:;"  class="btncommentlike" data-cid="<%=_comment.id%>">Like</a> 
+            &nbsp;&nbsp;&nbsp;&nbsp; 
+            <a href="javascript:;" class="btncommentreply">Reply</a> 
+            &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+            <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes">0</span></a>
+            &nbsp;&nbsp;&nbsp;&nbsp; 
+            <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> 0</a>
+        </div>
+
+        <div class="bottom-comment">
+            <div class="comment-date">
+                <%=DateDifferentService.time_ago(_comment.createdAt)%>
+                <div class="bottom-comment-action dropdown_selection">
+                    <!-- <a href="javascript:;" class="btneditComment" data-comment_id="<%=_comment.id%>" data-text="reply"><i class="fa fa-pencil"></i></a>
+                    <a href="javascript:;" class="deleteComment" data-comment_id="<%=_comment.id%>" data-text="reply"><i class="fa fa-trash"></i></a> -->
+                    <div class="dropdown p51_feed_post_more_info">
+                        <button data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                        <ul class="dropdown-menu p51_feed_share_world">
+                            <li><a href="javascript:;" class="btneditComment" data-comment_id="<%=_comment.id%>" data-text="reply"><i class="fa fa-pencil"></i>&nbsp;Edit</a></li>
+                            <li><a href="javascript:;" class="deleteComment" data-comment_id="<%=_comment.id%>" data-text="reply"><i class="fa fa-trash"></i>&nbsp;Delete</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% } else{ %>
+
+<div class="comment-wrap main-comment" owner_id="<%- (typeof owner_id != 'undefined') ? owner_id : '' %>" style="display:block">
+    <div class="photo">
+        <div class="avatar" style="background-image: url('<%=userimage%>')"></div>
+    </div>
+    <div class="comment-block">
+        <p class="comment-user"><a href="<%=comment_user_slug%>"><%=display_name%></a></p>
+        <p class="comment-text"><%=_comment.comments%></p>
+        <div class="bottom-comment">
+            <div class="comment-date"><%=DateDifferentService.time_ago(_comment.createdAt)%></div>
+        </div>
+        <div class="p6_comment_count pull-left">
+            <a href="javascript:;" class="btncommentlike" data-cid="<%=_comment.id%>">Like</a> 
+            &nbsp;&nbsp;&nbsp;&nbsp; 
+            <a href="javascript:;" class="btncommentreply">Reply</a> 
+            &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+            <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes">0</span></a> 
+            &nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> 0</a>
+        </div> 
+
+        <form method="post" class="form-comment formReply commentForm" style="display: none;">
+            <div class="form-group">
+                <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                <input name="parent_id" value="<%=_comment.id%>" class="parent_id" type="hidden">
+                <input name="feed_id" value="" type="hidden">
+                <button type="submit" class="send-comment" value="replyform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+            </div>
+        </form>
+        <div class="bottom-comment">
+            <div class="comment-date">
+                <%=DateDifferentService.time_ago(_comment.createdAt)%>
+                <div class="bottom-comment-action dropdown_selection">
+                    <!-- <a href="javascript:;" class="btneditComment" data-comment_id="<%=_comment.id%>" data-text="main"><i class="fa fa-pencil"></i></a>
+                    <a href="javascript:;" class="deleteComment" data-comment_id="<%=_comment.id%>" data-text="main"><i class="fa fa-trash"></i></a> -->
+                    <div class="dropdown p51_feed_post_more_info">
+                        <button data-toggle="dropdown" class="dropdown-toggle"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                        <ul class="dropdown-menu p51_feed_share_world">
+                            <li><a href="javascript:;" class="btneditComment" data-comment_id="<%=_comment.id%>" data-text="main"><i class="fa fa-pencil"></i>&nbsp;Edit</a></li>
+                            <li><a href="javascript:;" class="deleteComment" data-comment_id="<%=_comment.id%>" data-text="main"><i class="fa fa-trash"></i>&nbsp;Delete</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<% } } } %>

@@ -1,0 +1,70 @@
+<div id="other_docs_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title other_docs_modal_title">Add Document</h4>
+            </div>
+            <form method="post" id="form_other_docs" class="other-ajax-call-form form-group" accept-charset="UTF-8">
+                <input type="hidden" id="id" name="id">
+                <input type="hidden" id="tab_type" name="tab_type" value="other_docs">
+                <input type="hidden" id="other_docs_del_doc" name="identity_del_doc" value="0">
+                <input type="hidden" id="old_other_docs_string" class="old_other_docs_string" name="old_identity_string" value="">
+                <input type="hidden" id="is_verify_flag" name="is_verify_flag" value="0" class="is_verify_flag">
+
+                <div class="myfileuploads"></div>
+                    <div class="modal-body">
+                        <div id="form-errors"></div>
+                        <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="doc_type">Document Type</label>
+                                    <select name="doc_type_id" id="doc_type_id" class="form-control other_doc_type_option" required="">
+                                        <option value=""></option>
+                                        <%  if(typeof doc_type_other!='undefined' && doc_type_other.length>0){
+                                            _.each(doc_type_other,function(doc_type){ 
+                                            %>
+                                            <option value="<%=doc_type.id%>"><%=doc_type.title%></option>
+                                        <% }) 
+                                        }%>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="text_info">&nbsp;</label>
+                                    <input type="text" name="other_doc_info" id="other_doc_info" class="form-control other_doc_info">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea name="comment" class="form-control comment_data" id="comment" rows="2" placeholder="Write Description"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="form-group identity_general_block_url" style="display:none">
+                                        <a href="#" id="identity_doc_url_link" target="_blank"><i class="fa fa-download" aria-hidden="true"></i> <span id="identity_doc_url"></span></a>
+                                        <a href="javascript:;" class="other_del_doc" title="Delete document"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                </div>
+                                <div class="form-group input-upload identity_general_block_upload pull-right">
+                                    <input type="file" name="doc_file" class="other_doc_id input-upload-button">
+                                    <div class="upload-file-text">
+                                        <i class="fa fa-cloud-upload" aria-hidden="true"></i> Drag and drop file here<br>or<br><span>Browse files</span>
+                                    </div>
+                                    <span class="file_name"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-primary pull-left" title="Delete Other Docs" onclick="delete_other_docs()"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    <button type="submit" class="btn btn-primary mBottom0">Save</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

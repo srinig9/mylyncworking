@@ -1,0 +1,269 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <%- include ./company-left-sidebar.ejs %>
+
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                <div class="p11_1103">
+                    <div class="section_title">
+                        <h3>User Administration 
+                            <button type="button" class="btn btn-primary btn-primary-sw meet_team_popup pull-right">Add</button>
+                        </h3>
+                    </div>
+                    <div class="p11_content">
+                        <% if(my_team.length > 0){ %>
+                        <table id="complete_history" class="table table-bordered" cellspacing="0" width="100%">
+                            <thead>
+                                <tr role="row">
+                                    <th>&nbsp;</th>
+                                    <!-- <th>&nbsp;</th> -->
+                                    <th>Name</th>
+                                    <th>Super User</th>
+                                    <th>User Admin</th>
+                                    <th>Allow to Verify</th>
+                                    <th>Allow to Post Job</th>
+                                    <th>Allow Download</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%
+                                var i = 1;
+                                
+                                _.each(my_team,function(_followers){
+                                    var name = "";
+                                    if(typeof _followers.user_id!='undefined'){
+                                        userInfo= _followers.user_id;
+                                        name = userInfo.name;
+                                    }
+                                    var team_id     = '';
+                                    if(typeof _followers!='undefined' && typeof _followers.id!='undefined'){
+                                        team_id     = _followers.id;
+                                    }
+                                %>
+                                <tr class="odd">
+                                    <td><%=i%></td>
+                                    <!-- <td><input type="checkbox" name=""></td> -->
+                                    <td><%=name%></td>
+                                    <td><%=(_followers.super_user)?"Yes":"No"%></td>
+                                    <td><%=(_followers.user_admin)?"Yes":"No"%></td>
+                                    <td><%=(_followers.allow_verify)?"Yes":"No"%></td>
+                                    <td><%=(_followers.allow_job_post)?"Yes":"No"%></td>
+                                    <td><%=(_followers.download)?"Yes":"No"%></td>
+                                    <td>
+                                        <% if(_followers.is_mainuser){%>
+                                        &nbsp;
+                                        <% } else {%>
+                                        <a href="javascript:;" onclick="edit_team_member('<%=team_id%>')"><i class="fa fa-pencil"></i></a> &nbsp; 
+                                        <a href="javascript:;" data-id='<%=team_id%>' class="btnRemoveMember"><i class="fa fa-trash"></i></a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <% i++; }) %>
+                            </tbody>
+                        </table>
+                        <% } else{ %>
+                        No record found.
+                        <% } %>
+                    </div>
+                </div>        
+            </div>
+        </div>
+    </div>
+</div>
+<%- include meet_team_popup.ejs %>
+<script src="/themes/frontend/js/searchUsers.js"></script>
+<script type="text/javascript">
+     $(".meet_team_popup").click(function(){
+        $('#form_team_member')[0].reset();
+        $('#form_team_member #team_id').val('');
+        $('.team_member_title').html('Add Team Member');
+        $('.team_select2').val(null).trigger('change');
+        $("#allow_verify,allow_job_post").prop('checked', false);
+        $('.team_select2').attr("disabled", false);
+        $('#meet_team_member').modal('show');
+
+        $('#form_team_member #search_user_id').val('');
+        $('#form_team_member #display_status').val(0);
+
+    });
+
+    $('.team_select2').select2({
+        minimumInputLength: 2,
+        dropdownParent: $("#meet_team_member"),
+        //allowClear: true,
+    });
+
+
+    $('form#form_team_member').submit(function (event) {
+        var ajax_url    = '/company-team-member';
+        var source_id   = '#meet_team_member';
+        var form_id     = '#form_team_member';
+        var main_id     = $('#form_team_member #team_id').val();
+
+        if(main_id!=''){
+            ajax_url    = "/update-team-member";
+        }
+        
+        StoreModalData(ajax_url,source_id,form_id);
+        event.preventDefault();
+    });
+
+    function edit_team_member(id){
+
+        var ajax_url='/get-team-member-data/'+id;
+        var target_id='form#form_team_member';
+        $('#meet_team_member').modal('show');
+        $('.team_member_title').html('Edit Team Member');
+
+        $('.team_select2').attr("disabled", true);
+
+        $(target_id+' #display_status').val(0);
+        
+
+        //$('#edit_education').modal('show');
+        //$('.edu_title').html('Edit Education');
+
+
+        fill_Team_Member(ajax_url,target_id);
+    }
+
+    function fill_Team_Member(ajax_url,target_id){
+        $.getJSON(ajax_url,function (json) {
+             $(target_id+' #searchUserbox').val('');
+
+            $.each(json, function (key, value) {
+                $(target_id+" select[name=" + key + "]").val(value);
+                $(target_id+' input[name="' + key + '"]').val(value);
+                $(target_id+' textarea[name="' + key + '"]').val(value);
+
+                if(key=="user_id"){
+                    if(value!=''){
+                        $('.team_select2').val(value).trigger('change');
+                    }else{
+                        $('.team_select2').val(null).trigger('change');
+                    }
+                }
+
+                if(key=="display_status"){
+                    if(value==''){
+                         $(target_id+' #display_status').val(0);
+                    }
+                }
+
+                if(key=="user_name"){
+                    if(value!=''){
+                        $(target_id+' #searchUserbox').val(value)
+                    }
+                }
+                if(key=="allow_job_post"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+                if(key=="allow_verify"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+                if(key=="super_user"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+                if(key=="user_admin"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+                if(key=="download"){
+                    if(value==1){
+                        $(target_id+" input[name=" + key + "]").prop('checked', true);
+                    }else{
+                        $(target_id+" input[name=" + key + "]").prop('checked', false);
+                    }
+                }
+
+            });
+        });
+    }
+
+    $(document).on("click",".btnRemoveMember",function(){
+        var self_this = $(this);
+        var team_id = $(this).data('id');
+        
+        $.confirm({content:"Are sure you want to remove?",
+            header: "Delete",
+            confirm:function () {
+                if(team_id==''){
+                    $.bootstrapGrowl('ID is require', {type: 'danger', delay: 1000});
+                    return false
+                }
+                $.ajax({
+                    url: '/remove-team-member/'+team_id,
+                    method: 'GET',
+                    success: function(results)
+                    {
+                        if(results.status=='OK'){
+                            $.bootstrapGrowl(results.msg, {type: 'success', delay: 1000});
+                           setTimeout(function() { location.reload(); }, 1500);
+                        }else{
+                            $.bootstrapGrowl(results.msg, {type: 'danger', delay: 1000});
+                        }
+                    },
+                    error: function (err) {
+                      $.bootstrapGrowl('Internal server error', {type: 'danger', delay: 1000});
+                    }
+                });
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+
+
+    function StoreModalData(ajax_url,source_id,form_id){
+        var form = $(form_id)[0]; // You need to use standard javascript object here
+        var formData = new FormData(form);
+        $.ajax({
+            type: "POST",
+            url: ajax_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: 'multipart/form-data',
+            success: function (result) {
+                if(result.status=='OK'){
+                    $(source_id).modal('hide');
+                    $.bootstrapGrowl(result.msg, {type: 'success', delay: 1000});
+                    setTimeout(function() { location.reload(); }, 1200);
+                }else{
+                    if(typeof result.statusDescription!='undefined'){
+                        $.bootstrapGrowl(result.statusDescription.summary, {type: 'danger', delay: 1000});
+                    }else{
+                        if(typeof result.msg!='undefined'){
+                            $.bootstrapGrowl(result.msg, {type: 'danger', delay: 1000});
+                        }
+                    }
+                }
+            },
+            error: function (err) {
+             console.log(err);
+            }
+        });
+    }    
+</script>

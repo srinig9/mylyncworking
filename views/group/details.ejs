@@ -1,0 +1,538 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p51_sidebar first">
+                    <div class="p51_title_container hidden">
+                        <span class="p51_title_icon"><i class="fa fa-check-circle" aria-hidden="true"></i></span> Verification <span class="open"></span>
+                    </div>
+                    <div class="p51_content">
+                        <div class="p51_user_info">
+                            <div class="p51_user_img">
+                                <% 
+                                    if(group.group_icon == '') { 
+                                        var  group_icon = "/themes/frontend/images/p32_placeholder.jpg";
+                                    } else { 
+                                        var  group_icon = "/uploads/groups/"+group.group_icon;
+                                    }
+                                %>
+
+                                <img src="<%=group_icon%>" alt="Best friends" width="95" height="95">
+                            </div>
+                            <div class="p51_user_name">
+                                <%=group.group_name%>
+                            </div>
+                            <div class="p51_user_total_lynked">
+                                <span class="lynked_bal"><%=group.groupusers.length%> members</span> 
+                                <span class="p51_user_info_i"><i class="fa fa-users" aria-hidden="true"></i></span>
+                            </div>
+                            <% if(is_member == 0) {%>
+                            <button type="submit" class="btn btn-primary p31_message btnjoinGroup" value="<%=group.id%>"><i class="fa fa-plus" aria-hidden="true"></i> Join</button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="p51_sidebar">
+                    <div class="p51_title_container">
+                        <span class="p51_title_icon"><i class="fa fa-users" aria-hidden="true"></i></span> MEMBERS <span class="open"></span>
+                    </div>
+                    <div class="p51_content">
+                        <div class="group-members">
+                            <% 
+                                if(group.groupusers.length > 0) { 
+                                    var groupusers = group.groupusers;
+                                    _.each(groupusers, function (groupuser) {
+
+                                        var profile_image = "/themes/frontend/images/default-user.png";
+
+                                        if(typeof groupuser.user_id.profile_image!="undefined" &&  groupuser.user_id.profile_image!=""){
+                                            profile_image = "/uploads/users/"+groupuser.user_id.profile_image;
+                                        }
+
+                                        var slugUrl ="/profile";
+                                        if(typeof groupuser.user_id.slug!="undefined" && typeof groupuser.user_id.slug!=""){
+                                            slugUrl = slugUrl+"/"+groupuser.user_id.slug;
+                                        }
+                            %>
+                            <a href="<%=slugUrl%>" title="<%=groupuser.user_id.name%>">
+                                <img class="img-circle" src="<%=profile_image%>" alt="<%=groupuser.user_id.name%>" width="55" height="55">
+                            </a>
+                            <% }) %>
+                            <% } %>
+                            <!-- <p class="text-center"><a href="" title="see all"><u>See all</u></a></p> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 feed_main_container no-padding">
+				<% var groupusers = group.groupusers
+				var is_member = 0;
+				_.each(groupusers, function (groupuser) {
+					if(groupuser.user_id.id == req.user.id){
+						is_member = is_member+1;
+					}
+				})
+				if(is_member > 0) { %>
+                <div class="p51_feed">
+                    <div class="p51_feed_title">Create Post and earn rewards </div>
+                    <div class="p51_feed_post">
+                        <form action="/createFeed/" method="POST" id="createFeed">
+                            <div class="myfileuploads"></div>
+                            <textarea name="feed_details" id="feed_details" cols="30" rows="4" placeholder="Share an article, photo video or idea..."></textarea>
+                            <div id="displayImages"></div>
+                            <div class="p51_feed_post_action dropdown_selection">
+                                <a href="/blogs/create"><button type="button" class="p51_fw12 pull-left">Write blog</button></a>
+                                <div class="dropdown">
+                                    <button type="button" data-toggle="dropdown" class="dropdown-toggle p51_fw12">Share with &nbsp; <i class="fa fa-globe" aria-hidden="true"></i></button>
+                                    <ul class="dropdown-menu p51_feed_share_world">
+                                        <li><button class="p51_feed_share1" type="button"><i class="fa fa-globe" aria-hidden="true"></i> Public</button></li>
+                                        <li><button class="p51_feed_share2" type="button"><i class="fa fa-users" aria-hidden="true"></i> Friends</button></li>
+                                        <li><button class="p51_feed_share3" type="button"><i class="fa fa-lock" aria-hidden="true"></i> Only me</button></li>
+                                    </ul>
+                                </div>
+                                <input type="hidden" name="group_id" id="group_id" value="<%=group.id%>">
+                                <input type="hidden" name="redirect" id="redirect" value="<%=req.originalUrl%>">
+                                <input type="hidden" name="privacy" id="privacy" value="1">
+                                <div class="image-upload">
+                                    <label for="file-input" class="p51_feed_video_share_button marlr8">
+                                        <i class="fa fa-camera" aria-hidden="true"></i>
+                                    </label>
+                                    <input name="avatar" id="file-input" type="file" multiple="multiple" />
+                                </div>
+                                <input type="submit" class="btn btn-primary p51_feed_post_share_button" value="POST">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <% } %>
+
+                <%
+                if(group.groupfeeds.length > 0){
+                    var feeds = group.groupfeeds;
+                    for(var _index=0; _index < feeds.length; _index++) {
+                        var _feed = feeds[_index];
+                %>
+                <div class="list_connection">
+                <!-- Display Only blog data -->
+                    <div class="feed_list p51_feed post" data-id="<%=_feed.id%>">
+                        <div class="p51_feed_post">
+                            <div class="p51_feed_post_user_block dropdown_selection">
+                                <div class="dropdown p51_feed_post_more_info">
+                                    <button class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                                    <ul class="dropdown-menu p51_feed_fpa">
+                                        <li><button class="p51_feed_fpa1" type="button">It's spam</button></li>
+                                        <li><button class="p51_feed_fpa2" type="button">Annoying</button></li>
+                                        <li><button class="p51_feed_fpa3" type="button">Hide now</button></li>
+                                    </ul>
+                                </div>
+
+                                <div class="p51_feed_post_user_info">
+                                    <a href="javascript:;">
+                                        <img class="p51_feed_post_user_img" src="/themes/frontend/images/default-user.png" alt="<%=_feed.user_id.name%>">
+                                    </a>
+                                    <div class="p51_feed_post_user_feed_info">
+                                        <div class="fmc5002">
+                                            <a href="/profile"><%=_feed.user_id.name%></a>
+                                        </div>
+                                        <div class="fmc5003">1 Week &nbsp; <i class="fa fa-globe" aria-hidden="true"></i></div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="p51_feed_post_feeds">
+                                <br>
+                                <%-_feed.feed_details%>
+                                <%
+                                if(_feed.feedmedias.length > 0 ){
+                                    var feedmedias =  _feed.feedmedias;
+                                    for(var _mindex=0; _mindex < feedmedias.length; _mindex++) {
+                                        var _media = feedmedias[_mindex];
+
+                                %>
+                                <div class="feed-images">
+                                    <img src="<%=sails.config.appUrlwPort%>/uploads/feeds/<%=_media.image%>" class="img-responsive" width="150">
+                                </div>
+                                <% } } %>
+                            </div>
+
+                            <div class="p51_feed_post_feed_not">
+                                <div class="pull-left p51_feed_pfn1 p51_feed_pfn3"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="total_likes"> &nbsp; <%=_feed.totalLikes%> Likes</span></div>
+
+                                <div class="pull-left p51_feed_pfn1 p51_feed_pfn2"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="total_dislikes"> &nbsp; <%=_feed.totaldislikes%> Disikes</span></div>
+
+                                <div class="pull-right p51_feed_pfn2 total_comments"><%=_feed.feedcomments.length%> Comments</div>
+                                <div class="pull-right p51_feed_pfn3">0 Shares</div>
+                            </div>
+
+                            <div class="p51_feed_post_action bloglist">
+                                <button type="button" class="p51_feed_world_share_lynked"><img src="/themes/frontend/images/color-logo.svg" class="" alt="share with lynked" width="25" height="25"><span class=""> &nbsp; 55 Lynk ($0)</span> &nbsp; <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+
+                                <button type="button" class="active-action p51_fw12 marlr8 btnlike <% if(_feed.isliked==1){ %> active <% } %>" title="Like"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Like</span></button>
+
+                                <button type="button" class="active-action p51_fw12 btndislike <% if(_feed.isdisliked==1){ %> active <% } %>" title="Dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Dislike</span></button>
+
+                                <button type="button" class="p51_fw12 marlr8 btncomment" title="Comment"><i class="fa fa-comment" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Comment</span></button>
+
+                                <button type="button" class="p51_fw12" title="Share"><i class="fa fa-share" aria-hidden="true"></i><span class="hidden-xs hidden-sm hidden-md hidden-lg"> &nbsp; Share</span></button>
+
+                                <div class="row">
+                                    <div class="">
+                                        <div class="comment-form">
+                                        <div class="comments mycomments">
+                                        <% if(_feed.feedcomments.length > 3 ){ %>
+                                        <a href="javascript:;" class="see-more">
+                                            <i class="fa fa-repeat"></i> Load Previous Comments
+                                        </a>
+                                        <% } %>
+
+                                            <% 
+                                            if(_feed.feedcomments.length > 0 ){
+                                                var feedcomments =  _feed.feedcomments;
+                                                for(var _cindex=0; _cindex < feedcomments.length; _cindex++) {
+                                                    var _feedcomment = feedcomments[_cindex];
+
+                                            %>
+                                            <div class="comment-wrap" data-fid="<%=_feedcomment.feed_id%>">
+                                                <div class="photo">
+                                                    <div class="avatar" style="background-image: url('/themes/frontend/images/default-user.png')"></div>
+                                                </div>
+                                                <div class="comment-block">
+                                                    <p class="comment-user"><a href="/"><%=_feedcomment.user_id.name%></a></p>
+                                                    <p class="comment-text"><%=_feedcomment.comments%></p>
+                                                    <div class="p6_comment_count pull-left">
+                                                        <a href="javascript:;" class="btncommentlike" data-cid="<%=_feedcomment.id%>">Like</a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                        <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                        <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_feedcomment.commentlikes.length%></span></a> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> <%=_feedcomment.commentreply.length%></a>
+                                                    </div>
+                                                    <% 
+                                                    if(_feedcomment.commentreply.length > 0 ){
+                                                        var commentreply =  _feedcomment.commentreply;
+                                                        for(var _crindex=0; _crindex < commentreply.length; _crindex++) {
+                                                            var _commentreply = commentreply[_crindex];
+
+                                                    %>
+                                                    <div class="comment-wrap ember-mode" style="display: block;">
+                                                        <div class="photo">
+                                                            <div class="avatar" style="background-image: url('/themes/frontend/images/default-user.png')">
+                                                            </div>
+                                                        </div>
+                                                        <div class="comment-block">
+                                                            <p class="comment-user"><a href="http://local.lynked.world/profile/anil"><%=_commentreply.user_id.name%></a></p>
+                                                            <p class="comment-text"><%=_commentreply.comments%></p>
+                                                            <div class="p6_comment_count pull-left">
+                                                                <a href="javascript:;"  class="btncommentlike" data-cid="<%=_commentreply.id%>">Like</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;" class="btncommentreply">Reply</a> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-thumbs-up" aria-hidden="true"></i> <span class="totalcomtlikes"><%=_commentreply.commentlikes.length%></span></a>
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <a href="javascript:;"><i class="fa fa-comment" aria-hidden="true"></i> 0</a>
+                                                            </div>
+                                                            <div class="bottom-comment">
+                                                                <div class="comment-date">1 Week</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } } %>
+                                                    
+                                                    <form method="post" class="form-comment formReply commentForm" style="display: none;">
+                                                        <div class="form-group">
+                                                            <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                            <input name="parent_id" value="<%=_feedcomment.id%>" class="parent_id" type="hidden">
+                                                            <input name="feed_id" value="" type="hidden">
+                                                            <button type="submit" class="send-comment" value="replyform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                        </div>
+                                                    </form>
+
+
+
+                                                    <div class="bottom-comment">
+                                                        <div class="comment-date">10 Mins </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } } %>
+                                        </div>
+                                            <form method="post" class="form-comment commentForm">
+                                                <div class="form-group">
+                                                    <textarea name="comments" id="comments" class="form-control post_comment" placeholder="Add a comment..."></textarea>
+                                                    <input name="parent_id" class="parent_id" value="" type="hidden">
+                                                    <input name="feed_id" value="<%=_feed.id%>" type="hidden">
+                                                    <button type="submit" class="send-comment" value="mainform"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } } else { %>
+                <div class="p51_feed post">
+                    <div class="p51_feed_post">
+                        <div class="p51_feed_post_user_block dropdown_selection">
+                            <p>No data found</p>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <!-- <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a> -->
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/JxoVkItOSW4?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style type="text/css">
+    .comment-wrap { display: none; }
+</style>
+
+<script type="text/javascript">
+
+    $(document).on("click",".btnjoinGroup",function(){
+        var group_id = $(this).val();
+        $.confirm({content:"Are you sure to join group?",
+            header: "Delete",
+            confirm:function () {
+                $.ajax({
+                    url: '/joingroup/'+group_id,
+                    method: 'GET',
+                    success: function(results)
+                    {
+                        if(results.status=="OK")
+                        {
+                            location.reload();
+                        }
+                        else
+                        {
+                            $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                        }
+                    }
+                });
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+
+
+    $("#file-input").on("change", function(e) {
+        var files = e.target.files,
+            filesLength = files.length;
+        for (var i = 0; i < filesLength; i++) {
+            var f = files[i]
+            var fileReader = new FileReader();
+            fileReader.onload = (function(e) {
+                var file = e.target;
+                
+                var html = '<span class="pip">';
+                html += '<div class="col-md-3"><img class="imageThumb img-responsive img-thumbnail" src="'+e.target.result+'" title="'+file.name+'">';
+                html += '<span class="remove p51_feed_video_share_button"><i class="fa fa-trash"></i></span></div></span>';
+                $("#displayImages").append(html);
+                $(document).on("click",".remove",function(e){
+                    $(this).parents(".pip").remove();
+                });
+            });
+            fileReader.readAsDataURL(f);
+        }
+    });
+
+    // Display comment pagination
+    $(function(){
+        $( ".mycomments" ).each(function( index ) {
+            $(this).children(".comment-wrap").slice(-3).show();
+        });
+        
+        $(".see-more").click(function(e){ // click event for load more
+            e.preventDefault();
+            var done = $('<div class="see-more=done">done</div>');
+            $(this).siblings(".comment-wrap:hidden").slice(-3).show(); // select next 5 hidden divs and show them
+            if($(this).siblings(".comment-wrap:hidden").length == 0){ // check if any hidden divs
+                $(this).replaceWith(''); // if there are none left
+            }
+        });
+    });
+
+    // Like Comment
+    $(document).on("click",".btncommentlike",function(){
+        comment_id = $(this).data('cid');
+        var parents = $(this).parents(".comment-wrap");
+        feed_id = parents.data('fid');
+        $.ajax({
+            url: '/likecomment/'+feed_id+'/'+comment_id+'/1',
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    parents.find('.totalcomtlikes').text(results.totallikes);
+                    // parents.find('.btndislike').removeClass("active");
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    // Accept Request from other user
+    $(document).on("click",".btnaccept",function(){
+        var parents = $(this).parents('li');
+        var user_id = $(this).val();
+        $.ajax({
+            url: '/acceptRequest/'+user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                console.log(results);
+                if(results.status=='OK'){
+					user_id = results.user_id;
+					send_notification(user_id);
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                    parents.remove();
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+    
+    // Reject Request from other user
+    $(document).on("click",".btnreject",function(){
+        var parents = $(this).parents('li');
+        var user_id = $(this).val();
+        $.ajax({
+            url: '/rejectRequest/'+user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                    parents.remove();
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+    
+    // Dislike / undislike feed
+    $(document).on("click",".btndislike",function(){
+        var parents = $(this).parents('.feed_list');
+        var feed_id = parents.data('id');
+        $.ajax({
+            url: '/like/'+feed_id+'/2',
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    parents.find('.btnlike').removeClass("active");
+                    parents.find('.total_likes').text(" "+results.totalLikes+" Likes");
+                    parents.find('.total_dislikes').text(" "+results.totalDislikes+" Dislikes");
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    // Like / Unlike feed
+    $(document).on("click",".btnlike",function(){
+        var parents = $(this).parents('.feed_list');
+        var feed_id = parents.data('id');
+        $.ajax({
+            url: '/like/'+feed_id+'/1',
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    parents.find('.btndislike').removeClass("active");
+                    parents.find('.total_likes').text(" "+results.totalLikes+" Likes");
+                    parents.find('.total_dislikes').text(" "+results.totalDislikes+" Dislikes");
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    // Send request
+    $(".userknown").submit(function(event) {
+        event.preventDefault();
+        var formData = new FormData( this );
+        var parents = $(this).parents('.peopleyouknow');
+        $.ajax({
+            url: '/sendRequest',
+            method: 'POST',
+            data:  formData,
+            mimeType:"multipart/form-data",
+            processData: false,
+            contentType: false,
+            success: function(results)
+            {
+                var json_obj = jQuery.parseJSON( results );
+                if(json_obj.status){
+					user_id = json_obj.user_id;
+					send_notification(user_id);
+                    $.bootstrapGrowl(json_obj.message, {type: 'success', delay: 2000});
+                    parents.remove();
+                } else {
+                    $.bootstrapGrowl(json_obj.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    // Comment on feed
+    $(".commentForm").submit(function(event) {
+        event.preventDefault();
+        var this_self = $(this);
+        var formData = new FormData( this );
+        var parents = $(this).parents('.list_connection');
+        $.ajax({
+            url: '/feedComment',
+            method: 'POST',
+            data:  formData,
+            mimeType:"multipart/form-data",
+            processData: false,
+            contentType: false,
+            success: function(results)
+            {
+                if($(this_self).hasClass('formReply')){
+                    $(this_self).before(results);
+                }
+                else{
+                    parents.find(".mycomments").append(results);
+                }
+                console.log(results);
+                parents.find('textarea[name="comments"]').val("");
+            }
+        });
+    });
+
+    // Open comment reply form
+    $(document).on("click",".btncommentreply", function(){
+        $(this).parents('.comment-wrap').find('.formReply').css("display","block");
+    });
+</script>

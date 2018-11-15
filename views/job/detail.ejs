@@ -1,0 +1,492 @@
+<% 
+ var cover_image = '/themes/frontend/images/company-profile.jpg';
+ var profile_image = '';
+ var company_slug = 'javascript:;';
+ var company_name = '';
+ var job_slug     = '';
+ var share_url    = '';
+
+ if(typeof Job.slug!='undefined' && Job.slug!=''){
+        job_slug   = sails.config.appUrlwPort+'/jobs/'+Job.slug;
+        share_url  ='jobs/'+Job.slug;
+    }
+
+ if(typeof Job.company_id == 'undefined'){
+    if(typeof Job.user_id.cover_image != 'undefined' && Job.user_id.cover_image != ''){
+        cover_image = sails.config.appUrlwPort + sails.config.profile_image_url + Job.user_id.cover_image;
+    }
+    if(typeof Job.user_id.profile_image != 'undefined' && Job.user_id.profile_image != ''){
+        profile_image = sails.config.appUrlwPort + sails.config.profile_image_url + Job.user_id.profile_image;
+    }
+    if(typeof Job.user_id.slug != 'undefined') {
+        company_slug = sails.config.appUrlwPort+'/profile/'+Job.user_id.slug+'/wall' ;
+    }
+    company_name = Job.user_id.name;
+ } else {
+    if(typeof Job.company_id.user_companydata.cover_image != 'undefined' && Job.company_id.user_companydata.cover_image != ''){
+        cover_image = sails.config.appUrlwPort + sails.config.profile_image_url + Job.company_id.user_companydata.cover_image;
+    }
+    if(typeof Job.company_id.user_companydata.profile_image != 'undefined' && Job.company_id.user_companydata.profile_image != ''){
+        profile_image = sails.config.appUrlwPort + sails.config.profile_image_url + Job.company_id.user_companydata.profile_image;
+    }
+    if(typeof Job.company_id.slug != 'undefined') {
+        company_slug = sails.config.appUrlwPort+'/company/'+Job.company_id.slug+'/wall' ;
+    } 
+    company_name = Job.company_id.company_name;
+ }
+
+var owner_job_flag=0;
+var owner_id='';
+if(typeof Job.user_id!='undefined' && typeof Job.user_id.id!='undefined'){
+    if(Job.user_id.id!=''){
+        owner_id = Job.user_id.id;
+    }
+    if(Job.user_id.id==req.user.id){
+        owner_job_flag=1;
+    }else{
+        owner_job_flag=0;
+    }
+}
+%>
+<div class="main-container p11_main_container">
+    <div class="p11_company_profile">
+        <div id="p11_user_id" class="p11_bg">
+            <div class="p11_bg_container">
+                <img id="" alt="Background Image" src="<%-cover_image %>" style="left:0;top:-119.93142857142857px;width:100%;" class="">
+            </div>
+        </div>
+    </div>
+    <div class="container jobDetail feed_list" data-id="<%- Job.id %>">
+        <div class="row p51_feed_post">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                <div class="p11_container p11_profile sepb20">
+                    <% if(profile_image == ''){ %>
+                        <a style="position: absolute;" class="p11_1002 p13_1002 project_img" href="<%- job_slug %>" target="_blank"><span class="first-letter">
+                            <%=company_name[0].toUpperCase()%>
+                        </span></a>
+                    <% } else { %>
+                    <a href="<%- job_slug %>" class="p11_1002 p13_1002"><img src="<%- profile_image %>" alt="name" height="150" width="150" /></a>
+                    <% } %>
+                    <div class="p11_1005 p13_1005 dropdown_selection">
+                        <div class="p11_1005_r2">
+                            <% if(Job.jobBookmarks.length > 0) {  %>
+                                <button type="button" class="bookmark"><i class="fa fa-bookmark" job_id="<%- Job.id %>" aria-hidden="true"></i></button>
+                            <% } else { %>
+                                <button type="button" class="bookmark"><i class="fa fa-bookmark-o" job_id="<%- Job.id %>" aria-hidden="true"></i></button>
+                            <% } %>
+                            <button type="button" class="" onclick="copyShareURL('<%=share_url%>')"><i class="fa fa-share" aria-hidden="true"></i></button>
+                            <button type="button" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></button>
+                            <ul class="dropdown-menu p51_feed_fpa">
+                                <% if(owner_job_flag==1){%>
+                                    <li><button class="p51_feed_fpa1" style="font-size:13px;" type="button"><a title="Job Edit" href="/job/edit/<%=Job.id%>">Edit my job</a></button></li>
+                                    <li><button class="p51_feed_fpa2" style="font-size:13px;" type="button" onclick="job_delete('<%=Job.id%>')">Delete my job</button></li>
+                                <% }else{ %>
+                                 <li><button class="p51_feed_fpa1 btnSpam" style="font-size:13px;" type="button">Hide this job</button></li>
+                                        <li class="dropdown-submenu"><button style="font-size:13px;" class="p51_feed_fpa2" type="button">Report this post</button>
+                                            <ul class="dropdown-menu">
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's spam</button></li>
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's fake or scam</button></li>
+                                                <li><button class="p51_feed_fpa3 btnSpam" type="button">It's abusive or harmful</button></li>
+                                            </ul>
+                                        </li>
+                                        <li><button class="p51_feed_fpa3 blockuser" style="font-size:13px;" data-user_id="<%=owner_id%>" type="button">Block this user</button></li>
+                                <% } %>
+                            </ul>
+                        </div>
+                        <div class="p11_1005_r3">
+                            <a href="<%- job_slug %>" title="<%- Job.title %>"><div class="p11_1010"><%- Job.title %></div> </a>
+                            <div class="p11_1011"><a href="<%=company_slug%>"><%- company_name %></a></div>
+                            <% if(Job.location != undefined && Job.location != '') { %>
+                            <div class="p11_1012"><i class="fa fa-map-marker blue" aria-hidden="true"></i> <%- Job.location %></div>
+                            <% } %>
+                            <div class="p11_1012 p13_1012">
+                                <table>
+                                    <% if((typeof Job.experience_id != 'undefined' && typeof Job.experience_id.title != 'undefined') || (typeof Job.job_type_id != 'undefined' && typeof Job.job_type_id.title != 'undefined')){ %>
+                                    <tr>
+                                        <% if(typeof Job.experience_id != 'undefined' && typeof Job.experience_id.title != 'undefined') { %>
+                                        <td><i class="fa fa-sticky-note" aria-hidden="true"></i></td>
+                                        <td><%- Job.experience_id.title %></td>
+                                        <% } %>
+                                        <% if(typeof Job.job_type_id != 'undefined' && typeof Job.job_type_id.title != 'undefined'){ %>
+                                        <td><i class="fa fa-briefcase" aria-hidden="true"></i></td>
+                                        <td><%- Job.job_type_id.title %></td>
+                                        <% } %>
+                                    </tr>
+                                    <% } %>
+                                    <tr>
+                                        <% if(typeof Job.salary_id != 'undefined' && typeof Job.salary_id.title != 'undefined') { %>
+                                        <td><i class="fa fa-dollar" aria-hidden="true"></i></td>
+                                        <td><%- Job.salary_id.title %></td>
+                                        <% } %>
+                                        <% if(typeof Job.job_type_id != 'undefined' && typeof Job.job_type_id.title != 'undefined' && typeof Job.experience_id != 'undefined' && typeof Job.experience_id.title != 'undefined') { %>
+                                        <td></td>
+                                        <td></td>
+                                        <% } %>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="p11_1005_r4">
+                            <button type="button" class="btn btn-primary btn-primary-b30 btnEasyApply" data-toggle="modal">Instant Apply</button>
+                        </div>
+                        <div class="p13_1020">
+                            <span class="f-left"><i class="fa fa-clock-o" aria-hidden="true"></i> Be one of the first 10 applicants</span>
+                            <span class="f-right">Posted <%- DateDifferentService.calculateFullDateDiff(Job.createdAt,'') %> ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p11_1103">
+                    <div class="section_title"><h3>Job Description</h3></div>
+                    <div class="p11_content p11_content_13_no_padd">
+                        <div class="p11_content_13">
+                                <%- Job.feed_details %>
+                            <div class="clear">&nbsp;</div>
+                        </div>
+                        <div class="p11_content_13">
+                            <div class="clear">&nbsp;</div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <div class="p11_content_34">
+                                        <% if(typeof Job.jobSkills !='undefined' && Job.jobSkills.length > 0){%>
+                                        <strong>Desired Skills and Experience</strong>
+                                        <ul class="blue_dots">
+                                            <% _.each(Job.jobSkills,function(skill){%>
+                                            <li><%=skill.skill_id.title%></li>
+                                            <% }) %>
+                                        </ul>
+                                        <% } %>
+                                        <div class="clear">&nbsp;</div>
+                                        <% if(Job.industrie_id != undefined && Job.industrie_id.name != undefined) { %>
+                                            <strong>Industry</strong>
+                                            <ul class="blue_dots"><li><%- Job.industrie_id.name %> </li></ul>
+                                            <div class="clear">&nbsp;</div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                <% if((Job.contact_job_poster != undefined && Job.contact_job_poster == 1) || Job.company_id == 'undefined') {
+                                %>
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <div class="p11_content_34">
+                                        <strong>Contact the job poster</strong>
+                                        <div class="contact_job_poster">
+                                            <a  href="<%- (job_userInfo.slug != undefined && job_userInfo.slug != '') ? './profile/'+job_userInfo.slug : 'javascript:;' %>" class="p11_1002">
+                                                <img src="<%- (job_userInfo.profile_image != undefined && job_userInfo.profile_image != '') ? '/uploads/users/'+job_userInfo.profile_image : '/themes/frontend/images/default-user.png' %>" alt="name" height="90" width="90" />
+                                            </a>
+                                            <div class="p11_1005">
+                                                <div class="p11_1005_r3">
+                                                    <div class="p11_1010"><%- job_userInfo.name %></div>
+                                                    <div>
+                                                        <%
+                                                            var myposition='';
+                                                            var mycompany = '';
+                                                            if(typeof job_userInfo.userexperiences!='undefined' && job_userInfo.userexperiences.length>0){
+
+                                                                if(typeof job_userInfo.userexperiences[0].title!='undefined' && job_userInfo.userexperiences[0].title!=''){
+                                                                    myposition=job_userInfo.userexperiences[0].title;
+                                                                }
+
+                                                                if(typeof job_userInfo.userexperiences[0].company_id!='undefined' && typeof  job_userInfo.userexperiences[0].company_id.company_name!='undefined'){
+                                                                    mycompany=job_userInfo.userexperiences[0].company_id.company_name;
+                                                                }
+                                                            }
+                                                        %>
+                                                        <%=myposition%><br><%=mycompany%>
+                                                </div>
+                                                    <div class="p11_1012"><%- (job_userInfo.location != undefined) ? job_userInfo.location : '' %></div>
+                                                    <button type="button" class="btn btn-primary btn-primary-b30">Connect</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                            </div>
+                            <div class="clear">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+                <% if(typeof Job.company_id != 'undefined') { %>
+                <div class="p11_1103">
+                    <div class="section_title section_title_button"><div class="stb1">
+                            <% if(profile_image == ''){ %>
+                                <a style="position: absolute;" class="p11_1002 p13_1002 project_img" href="<%- company_slug %>" target="_blank"><span class="first-letter">
+                                    <%=company_name[0].toUpperCase()%>
+                                </span></a>
+                            <% } else { %>
+                            <a href="<%- company_slug %>" class="p11_1002 p13_1002"><img src="<%- profile_image %>" alt="name" height="150" width="150" /></a>
+                            <% } %>
+                        <div class="p11_fhvgj">
+                            <h3><%- (typeof Job.company_id != 'undefined' && Job.company_id.company_name != undefined) ? Job.company_id.company_name : '' %></h3>
+                            <div><%- (typeof Job.company_id != 'undefined' && Job.company_id.company_name != undefined) ? Job.company_id.company_name : '' %> 
+                                <span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i></span> 
+                                <%- company_follow_count %> Followers
+                            </div>
+                        </div>
+                    </div><div class="stb2"><button type="button" class="btn btn-primary btn-primary-sw">Follow</button></div></div>
+                    <div class="p11_content p11_content_13_no_padd">
+                        <div class="p11_content_13">
+                            <div class="p11_content_34">
+                                <strong>About us</strong>
+                                <%- (typeof Job.company_id != 'undefined' && Job.company_id.about_me != undefined) ? Job.company_id.about_me : '' %>
+                            </div>
+                            <div class="clear">&nbsp;</div>
+                            <div class="p11_content_34">
+                                <strong>Know more about us</strong>
+                                <% if(typeof Job.company_id != 'undefined' && Job.company_id.website != undefined){%>
+                                    <div>
+                                    <%	var company_website_ht = Job.company_id.website;
+                                    var company_url=company_website_ht.split(",");
+                                    var counter=0;
+                                    for(var i = 0; i < company_url.length; i++){
+                                        counter=counter+1;
+                                        var web_url='';
+                                        var my_length = company_url.length;
+                                        web_url = company_url[i];
+                                        web_url = web_url.trim();
+                                        if(web_url!=''){
+                                            if(!/^(f|ht)tps?:\/\//i.test(web_url)) { company_website_ht = "http://" + web_url; } %>
+                                            <a href="<%- (typeof company_website_ht !="undefined") ? company_website_ht : "javascript:;" %>" target="_blank">
+                                                <%=web_url%>
+                                            </a>
+                                            <% if(counter!=my_length){ %>,<% } %>
+                                        <% } 
+                                    } %>
+                                </div>
+                                <% } %>
+                                <% if(typeof Job.company_id != 'undefined' && Job.company_id.email != undefined){%>
+                                <div>Mail: <a href="mailto:<%- Job.company_id.email %>"><%- Job.company_id.email %></a></div>
+                                <% } %>
+                                <% if(typeof Job.company_id != 'undefined' && Job.company_id.skype != undefined){%>
+                                <div>Skype: <%- Job.company_id.skype %></div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <% if(typeof Job.company_id != 'undefined' && Job.company_id.slug != undefined){%>
+                        <div class="p11_content_13 a-center">
+                            <a href="/company/<%- Job.company_id.slug %>">Load More &nbsp;&nbsp; <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="p11_1103">
+                    <div class="section_title"><h3>Meet the team</h3></div>
+                    <% 
+                    if(typeof my_team!='undefined' && my_team.length>0) { 
+                    %>
+                    <div class="p11_content a-center">
+                        <div class="slider_container owl-top-narrow p16_main1003">
+                                <ul id="slider_11" class="owl-carousel owl-theme">
+                                        <% 
+                                         _.each(my_team,function(_followers){
+                                                follow_user_id = _followers.user_id.id;
+        
+                                                var message     = 0;
+                                                var recReq      = 0;
+                                                var sentReq     = 0;
+                                                var unfollow    = 0;
+                                                var headline    = '';
+                                                var address     = '';
+                                                var company     = '';
+                                                var userInfo    = '';
+                                                var exp         = '';
+                                                var slug        = '/profile';
+                                                var follower_image = '/themes/frontend/images/default-user.png';
+        
+                                                if(typeof _followers.user_id!='undefined'){
+                                                    userInfo= _followers.user_id;
+                                                    if(typeof userInfo.headline!='undefined' && userInfo.headline!=''){
+                                                        headline = userInfo.headline;
+                                                    }
+                                                    if(typeof userInfo.address!='undefined' && userInfo.address!=''){
+                                                        address = userInfo.address;
+                                                    }
+        
+                                                    if(typeof userInfo.userexperiences!='undefined' && userInfo.userexperiences.length>0){
+                                                        exp = userInfo.userexperiences[0];
+        
+                                                        if(typeof exp.title!='undefined' && exp.title!=''){
+                                                            headline = exp.title;
+                                                        }
+                                                        if(typeof exp.company_id!='undefined' && exp.company_id.company_name!='undefined'){
+                                                            company = exp.company_id.company_name;
+                                                        }
+                                                    }
+                                                    
+                                                    if(typeof userInfo.profile_image!='undefined' &&  userInfo.profile_image!=''){
+                                                        follower_image = '/uploads/users/'+userInfo.profile_image;
+                                                    }
+                                                    if(typeof userInfo.slug!='undefined' &&  userInfo.slug!=''){
+                                                        slug = '/profile/'+userInfo.slug;
+                                                    }
+                                                }
+        
+                                                if(typeof connections!='undefined'){
+                                                    _.each(connections, function (connection) {
+                                                        if(follow_user_id == user_id){
+                                                            unfollow = unfollow+1;
+                                                        }else{
+                                                            if((connection.user_id == user_id && connection.to_user_id == follow_user_id) || (connection.to_user_id == user_id && connection.user_id == follow_user_id)){
+                                                                if(connection.status==1){
+                                                                    message = message+1;
+                                                                }else if(connection.status==0 && connection.to_user_id==user_id){
+                                                                    recReq = recReq+1;
+                                                                }else if(connection.status==0 && connection.user_id==user_id){
+                                                                    sentReq = sentReq+1;
+                                                                }
+                                                            }
+                                                        }
+                                                    })
+                                                }
+        
+                                            message = message;
+                                            recReq = recReq;
+                                            sentReq = sentReq;
+                                            unfollow = unfollow;
+                                        %>
+                                        <li class="p16_2000_li item">
+                                            <div class="p16_2001">
+                                                <a href="<%=slug%>"><img src="<%=follower_image%>" width="90" height="90" alt="<%=_followers.user_id.name%>"></a>
+                                                <div class="p16_2002">
+                                                    <div class="p16_2003 name"><a href="<%=slug%>" class="p16_2004"><%=_followers.user_id.name%></a></div>
+                                                    <div class="p16_2005 designation"><%=headline%></div>
+                                                    <div class="p16_2006 company"><%=company%></div>
+                                                    <div class="p16_2007 location_city"><%=address%></div>
+                                                </div>
+                                                <div class="p16_2010">
+                                                    <% if(message > 0) {%>
+                                                    <button type="submit" class="p16_2011 btn-primary">Message</button>
+                                                    <% }else if(recReq > 0){ %>
+                                                        <button type="button" class="p16_1022 btnaccept" value="<%=_followers.user_id.id%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                                        <button type="button" class="p16_1023 btnreject" value="<%=_followers.user_id.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                                    <% }else if(sentReq > 0){ %>
+                                                        <button type="button" class="p16_1023 cancelsent" value="<%=_followers.user_id.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                                    <% } else if(unfollow > 0) { %>
+                                                        <button type="button" class="p16_2011 btn-primary actionbtnfollow" value="<%=_followers.user_id.id%>">Unfollow</button>
+                                                    <% }else {%>
+                                                    <form method="post" class="userknown">
+                                                        <input name="to_user_id" value="<%=_followers.user_id.id%>" type="hidden">
+                                                        <button type="submit" class="p16_2011 btn-primary">Connect</button>
+                                                    </form>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <% }) %>
+                                    </ul>
+                        </div>
+                    </div>
+                    <% } else { %>
+                    <div class="p11_content a-center">
+                        <p>No member found</p>
+                    </div>
+                    <% } %>
+                </div>
+                <% } %>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 no-left_p-sm sept20">
+                <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                  <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/V8EuriMb-d4?rel=0" height="300" allowfullscreen ></iframe>
+                </div><br>
+
+                <div class="people_viewed first">
+                    <div class="section_title"><h3>People also viewed</h3></div>
+                    <div class="people_viewed_content">
+                        <% if(typeof PeopleAlsoViewedJobs != 'undefined') { 
+                            _.each(PeopleAlsoViewedJobs,function(PeopleAlsoViewedJob) { %>
+                        <div class="people_viewed_li first">
+                            <% if(typeof PeopleAlsoViewedJob.company_id != 'undefined') {
+                                if(typeof PeopleAlsoViewedJob.company_id.companydata[0].profile_image != 'undefined'){ %>
+                                <a class="p12_f301" href="<%- sails.config.appUrlwPort+"/jobs/"+PeopleAlsoViewedJob.slug %>">
+                                    <img class="p12_f302" src="<%- sails.config.appUrlwPort+sails.config.profile_image_url+PeopleAlsoViewedJob.company_id.companydata[0].profile_image %>" alt="<% if(typeof PeopleAlsoViewedJob.company_id != 'undefined' && typeof PeopleAlsoViewedJob.company_id.company_name != 'undefined') { %><%- PeopleAlsoViewedJob.company_id.company_name %><% } %>" width="65" height="65">
+                                </a>
+                                <% } else { %>
+                                <a class="p6_sc_1002 project_img" href="" target="_blank">
+                                    <span class="first-letter">
+                                        <%=PeopleAlsoViewedJob.company_id.company_name[0].toUpperCase()%>
+                                    </span>
+                                </a>
+                                <% } 
+                            } else { 
+                                if(typeof PeopleAlsoViewedJob.user_id.profile_image != 'undefined') { %>
+                                    <a class="p12_f301" href="<%- sails.config.appUrlwPort+"/jobs/"+PeopleAlsoViewedJob.slug %>">
+                                        <img class="p12_f302" src="<%- sails.config.appUrlwPort+sails.config.profile_image_url+PeopleAlsoViewedJob.user_id.profile_image %>" width="65" height="65">
+                                    </a>
+                                <% } else { %>
+                                    <a class="p6_sc_1002 project_img" href="" target="_blank">
+                                        <span class="first-letter">
+                                            <%=PeopleAlsoViewedJob.user_id.name[0].toUpperCase()%>
+                                        </span>
+                                    </a>
+                                <% } 
+                             } %>
+                            <div class="people_viewed_li2">
+                                <div class="p11_1010"><a href="<%- sails.config.appUrlwPort+"/jobs/"+PeopleAlsoViewedJob.slug %>"><%-PeopleAlsoViewedJob.title %></a></div>
+                                <% if(typeof PeopleAlsoViewedJob.company_id != 'undefined' && typeof PeopleAlsoViewedJob.company_id.company_name != 'undefined') { %>
+                                    <div class="p11_1011"><%- PeopleAlsoViewedJob.company_id.company_name %></div>
+                                <% } if(typeof PeopleAlsoViewedJob.location != 'undefined' && PeopleAlsoViewedJob.location != '') { %>
+                                <div class="p11_1012"><i class="fa fa-map-marker blue" aria-hidden="true"></i> <%- PeopleAlsoViewedJob.location %> </div>
+                                <% } %>
+                                <!--<div class="p11_1013"><i class="fa fa-clock-o blue" aria-hidden="true"></i> 2 weeks ago</div>-->
+                            </div>
+                        </div>
+                        <% });
+                    } else { %>
+                        <div class="people_viewed_li first">
+                            No Data found
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Easy Apply Popup -->
+<%- include popup/easyApply.ejs %>
+<!-- End Easy Apply Popup -->
+<script src="/themes/frontend/js/like_comment.js"></script>
+<script src="/js/job.js"></script>
+
+<script type="text/javascript">
+
+    function job_delete(id){
+
+        var ajax_url = '/job/delete/'+id;
+        $.confirm({content:"Are you sure to delete the job?",
+            header: "Delete",
+            confirm:function () {
+                if(id==''){
+                    $.bootstrapGrowl('ID can not blank', {type: 'danger', delay: 1000});
+                }
+
+                $.ajax({
+                    type: "GET",
+                    url: ajax_url,
+                    data: {status:1},
+                    cache: false,
+                    success: function(result){
+                        if(result.status=="OK"){
+                            $.bootstrapGrowl(result.msg, {type: 'success', delay:700});
+                            setTimeout(function() {window.location.href='/jobs/myjob'; }, 1000);
+                        }else{
+                            $.bootstrapGrowl(result.msg, {type: 'danger', delay: 1000});
+                        }
+                    }
+                });
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        $(document).on("click",".dropdown-submenu button", function(e){
+            $(this).next('ul').toggle();
+            e.stopPropagation();
+            e.preventDefault();
+        });
+    });
+</script>
+    

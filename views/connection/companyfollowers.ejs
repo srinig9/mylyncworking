@@ -1,0 +1,191 @@
+<%
+    var requestSearch = "";
+    if(typeof req.param("search")!="undefined"){
+        requestSearch = req.param("search");
+    }
+
+    var profile_image = "/themes/frontend/images/default-user.png";
+
+    if(typeof userInfo!="undefined" && typeof userInfo.profile_image!="undefined" &&  userInfo.profile_image!=""){
+        profile_image = "/uploads/users/"+userInfo.profile_image;
+    }
+
+    var slugUrl ="/profile";
+    if(typeof userInfo!="undefined" && typeof userInfo.slug!="undefined" && typeof userInfo.slug!=""){
+            slugUrl = userInfo.slug;
+    }
+
+    var login_user_id = (typeof req.user != 'undefined' && req.user!='') ? req.user.id : 0;
+    var profile_privacy = 0;
+%>
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+			<!-- Sidebar nav connections Starts -->
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p51_sidebar first">
+                    <div class="p51_title_container hidden"><span class="p51_title_icon"><i class="fa fa-check-circle" aria-hidden="true"></i></span> Verification <span class="open"></span></div>
+                    <div class="p51_content">
+                        <div class="p51_user_info">
+                            <div class="p51_user_img"><a href="<%=slugUrl%>"><img src="<%=profile_image%>" alt='<%=userInfo.name%>' width="95" height="95" /></a></div>
+                            <div class="p51_user_name">
+                                <a href="<%=slugUrl%>">
+                                    <% if(typeof userInfo!='undefined' && typeof userInfo.name!='undefined' && typeof userInfo.name!=''){
+                                    %>
+                                        <%=userInfo.name%>
+                                    <% } else { %>
+                                        <%=userInfo.name%>
+                                    <% } %>
+                                </a>
+                            </div>
+                            <% var user_position = "";
+                            var user_company = "";
+                            if(typeof userInfo!="undefined" && typeof userInfo.userexperiences[0]!="undefined") {
+                                var experience = userInfo.userexperiences[0];
+                                if(typeof experience["title"]!="undefined"){
+                                    user_position = experience["title"];
+                                }
+                                if( typeof experience["company_id"] != "undefined" && typeof experience["company_id"]["company_name"] != "undefined" ) {
+                                    if(experience["company_id"]["company_name"] != "") {
+                                        if(user_position != "") {
+                                            //user_company = " <br/> "+experience["company_id"]["company_name"];
+                                            user_company = experience["company_id"]["company_name"];
+                                        } else {
+                                            user_company = experience["company_id"]["company_name"];
+                                        }
+                                    }
+                                }
+                            } 
+                            if(user_position != "") { %>
+                                <div class="p51_user_designation"><%=user_position%></div>
+                            <% } %>
+
+                            <% if(profile_privacy==0) {%>
+                                <% if(user_company != "") { %>
+                                    <div class="p51_user_company"><%=user_company%></div>
+                                <% } %>
+                                <div class="p51_user_location"><%=typeof userInfo.location == "undefined" ? "" : userInfo.location%></div>
+                                <% var my_income = 0;
+                                if(typeof userInfo != "undefined" && typeof userInfo.wallet != "undefined") {
+                                    my_income = userInfo.wallet;
+                                } %>
+                                <div class="p51_user_total_lynked"><a href="/blogs"><span class="lynked_bal">Blog (<% if(typeof userInfo!='undefined' && typeof userInfo.blogCount!='undefined'){ %><%=userInfo.blogCount %><% } %>)</span></a><span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i> </span><a href="/wallet"><span class="lynked_bal"> LBD ($<%=my_income.toFixed(2)%>)</span></a> <a href="/rewards"><span class="p51_user_info_i"><i class="fa fa-info-circle" aria-hidden="true"></i></span></a></div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p16_sidebar">
+                    <div class="p16_sidebar_1001"><% if(typeof total_connection != 'undefined'){ %><%=total_connection%><% } else { %>0<% } %></div>
+                    <div class="p16_sidebar_1002"><%=userInfo.name%> Followers</div>
+                    <!-- <div class="p16_sidebar_1003"><a href="/connections/list">View All</a></div> -->
+                    <div class="p16_sidebar_1004">
+                        <a href="/connections/list">
+                            <img src="/themes/frontend/images/request1.jpg" alt="" class="social-connections-profile-img img-circle">
+                            <img src="/themes/frontend/images/request2.jpg" alt="" class="social-connections-profile-img img-circle">
+                            <img src="/themes/frontend/images/user.jpg" alt="" class="social-connections-profile-img img-circle">
+                            <img src="/themes/frontend/images/user1.jpg" alt="" class="social-connections-profile-img img-circle">
+                            <img src="/themes/frontend/images/request4.jpg" alt="" class="social-connections-profile-img img-circle">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 no-padding myconnection">
+                <div class="p16_main1000">
+                    <div class="p16_main1001">
+						<div class="p16_section_title">
+							Followers
+						</div>                    	
+						<ul class="p16_1010">
+                        	<% 
+                    		if(followdata.length > 0 ){
+                                _.each(followdata,function(_follower){
+
+                                    var userimage =  '/themes/frontend/images/default-user.png';
+                                    var slug_url  = '/profile';
+                                    var displayname='';
+                                    var my_position =  '';
+                                    var my_company = '';
+                                    var feedUser = '';
+
+                                    if(typeof _follower.user_id!='undefined'){
+
+                                        feedUser =_follower.user_id;
+                                        if(typeof feedUser.profile_image!='undefined' && feedUser.profile_image != ''){
+                                            userimage = '/uploads/users/'+feedUser.profile_image;
+                                        }
+
+                                        if(typeof feedUser.company_id!='undefined' && typeof feedUser.company_id.slug!='undefined' && feedUser.company_id.slug!=''){
+                                            slug_url = '/company/'+feedUser.company_id.slug+'/wall';
+                                        }else{
+                                            if(typeof feedUser.slug!='undefined' && feedUser.slug!=''){
+                                                slug_url = '/profile/'+feedUser.slug+'/wall';
+                                            }
+                                        }
+
+                                       if(typeof feedUser.company_id!='undefined' && typeof feedUser.company_id.company_name!='undefined' && feedUser.company_id.company_name!=''){
+                                            displayname = feedUser.company_id.company_name;
+                                        }else{
+                                             displayname = feedUser.name;
+                                        }
+                                    
+                                        if(typeof feedUser.userexperiences!='undefined' && feedUser.userexperiences.length>0){
+
+                                            if(typeof feedUser.userexperiences[0]['title']!='undefined' && feedUser.userexperiences[0]['title']!=''){
+                                                my_position = feedUser.userexperiences[0]['title'];
+                                            }
+
+                                            if(typeof feedUser.userexperiences[0]['company_id']!='undefined' && typeof feedUser.userexperiences[0]['company_id']['company_name']!='undefined'){
+                                                
+                                                if(feedUser.userexperiences[0]['company_id']['company_name']!=''){
+                                                    if(my_position!=''){
+                                                        my_company = ' at '+feedUser.userexperiences[0]['company_id']['company_name'];
+                                                    }else{
+                                                        my_company = feedUser.userexperiences[0]['company_id']['company_name'];
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                            %>
+                            <li class="first">
+                                <div class="p16_1011">
+                                    <a href="<%=slug_url%>"><img src="<%=userimage%>" width="65" height="65" alt="<%=displayname%>"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="<%=slug_url%>" class="p16_1014"><%=displayname%></a></div>
+                                        <div class="p16_1015">
+                                            <% if(my_company!='' || my_position!=''){%>
+                                            <span style="font-size:12px;"><%=my_position%> <%=my_company%></span>
+                                            <% } %>                                            
+                                        </div>
+                                        <div class="p16_1016">Followed <%=DateDifferentService.time_ago(_follower.createdAt)%></div>
+                                    </div>
+                                    <!--<div class="p16_1021">
+                                        <button type="button" class="p16_1022"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                        <button type="button" class="p16_1023"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                    </div> -->
+                                </div>
+                            </li>
+                            <% }) }else{ %>
+                            <li class="first">
+                                <div class="p16_1011">No data found</div>
+                            </li>
+                            <% } %>
+                        </ul>
+					</div>
+				</div>            	
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/suvE6ZAPTDQ?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                    <br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/2sEj0_9jlIs?rel=0" height="300" allowfullscreen ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

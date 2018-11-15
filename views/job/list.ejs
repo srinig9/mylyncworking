@@ -1,0 +1,512 @@
+<style type="text/css">
+    .post-job-button button {
+        width: 100%;
+        margin-bottom: 10px;
+        text-align: left;
+        font-size: 18px;
+    }
+    .post-job-button button a {
+        color:#fff;
+    }
+    .gradient-btn {
+        font-family: inherit;
+        background: #025ba2;
+        background-image: -webkit-linear-gradient(right, #006fb1, #025ca3);
+        background-image: -moz-linear-gradient(right, #006fb1, #025ca3);
+        background-image: -ms-linear-gradient(right, #006fb1, #025ca3);
+        background-image: -o-linear-gradient(right, #006fb1, #025ca3);
+        background-image: linear-gradient(to left, #006fb1, #025ca3);
+        padding: 10px 20px 10px 20px;
+        border: solid rgba(198,214,217,0.5) 1px;
+        text-decoration: none;
+        border-radius: 0;
+        color: #fff;
+    }
+    
+    body {
+        margin-bottom:0 !important;
+    }
+    footer {
+        position:relative !important;
+    }
+</style>
+
+<div class="<%- (typeof userData == 'undefined') ? 'middle-content search-job' : 'main-container job-list' %>">
+    <div class="container">
+        <div class="row">
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <!-- <div class="post-job-button">
+                    <button type="button" onclick="location.href='/job-post';" class="gradient-btn"><a href="/job-post"><b><i class="fa fa-pencil-square-o"></i> &nbsp;Post Job</b></a></button>
+                </div> -->
+                <input type="hidden" name="search_job_type_ids" id="search_job_type_ids" value="">
+                <input type="hidden" name="search_job_exp_ids" id="search_job_exp_ids" value="">
+                <input type="hidden" name="is_login" id="is_login" value="<%=(typeof isLogin!='undefined')?isLogin:0%>">
+                <% if(req.user){%>
+                <div class="p51_sidebar first">
+                    <div class="p51_title_container"><span class="p51_title_icon"><i class="fa fa-briefcase" aria-hidden="true"></i></span> 
+                        <a href="<%- sails.config.appUrlwPort %>/jobs">Job</a><span class="open"></span></div>
+                    <div class="p51_content" style="display: none;">
+                        <ul class="p51_sidebar_menu">
+                            <% if(req.user.company_id) {%>
+                            <li class="first"><a href="<%- sails.config.appUrlwPort %>/job-post">Post Job</a></li>
+                            <li class="first"><a href="<%- sails.config.appUrlwPort %>/jobs/receivedapplication">Received Applications</a></li>
+                            <li class="first"><a href="<%- sails.config.appUrlwPort %>/jobs/myjob">Posted Jobs</a></li>
+                            <% } else {%>
+                            <li class="first"><a href="<%- sails.config.appUrlwPort %>/job-post">Post Job</a></li>
+                            <li class="first"><a href="<%- sails.config.appUrlwPort %>/jobs/myapplication">My Applications</a></li>
+                            <li class="first"><a href="<%- sails.config.appUrlwPort %>/jobs/receivedapplication">Received Applications</a></li>
+                            <li class="first"><a href="<%- sails.config.appUrlwPort %>/jobs/myjob">Posted Jobs</a></li>
+                            <li class="last"><a href="<%- sails.config.appUrlwPort %>/jobs/bookmark">Bookmarked Jobs</a></li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+                <% } %>
+
+                <div class="p12_sidebar">
+                    <dl id="p12_filter_container">
+                        <dt class="p12_filter_title odd"><span>Job Type</span></dt>
+                        <dd class="p12_content odd">
+                            <ol id="p12_job_type">
+                                <% _.each(job_types,function(job_type){
+                                    var select = false;
+                                    if(req.param('search_job_type') != undefined && req.param('search_job_type') != '') {
+                                        var arr_search_job_type = req.param('search_job_type').split(',');
+                                        _.each(arr_search_job_type,function(_search_job_type) {
+                                            if(_search_job_type ==  job_type.id){
+                                                select = true;
+                                            }
+                                        });
+                                    }
+                                     %>
+                                <li class="">
+                                    <label>
+                                        <input name="job_type" <%- (select) ? "checked='checked'" : '' %> class="input_check search_job_type" value="<%- job_type.id %>" type="checkbox">
+                                            <%-job_type.title%>
+                                        </label> 
+                                    <span>(<%- (typeof job_type.count != 'undefined') ? job_type.count : '0' %>)</span></li>
+                                <% }); %>
+                            </ol>
+                        </dd>
+                        
+                        <dt class="p12_filter_title odd"><span>Job by Experience</span></dt>
+                        <dd class="p12_content odd">
+                            <ol id="p12_job_experience">
+                                <% _.each(job_experiences,function(job_experience){ 
+                                    var select = false;
+                                    if(req.param('search_job_experience') != undefined && req.param('search_job_experience') != '') {
+                                        var arr_search_job_experience = req.param('search_job_experience').split(',');
+                                        _.each(arr_search_job_experience,function(_search_job_experience) {
+                                            if(_search_job_experience ==  job_experience.id){
+                                                select = true;
+                                            }
+                                        });
+                                    }
+                                    %>
+                                <li class="">
+                                    <label>
+                                        <input name="job_experience" <%- (select) ? "checked='checked'" : '' %> class="input_check search_job_experience" value="<%- job_experience.id %>" type="checkbox">
+                                        <%- job_experience.title %>
+                                    </label> <span>(<%- (typeof job_experience.count != 'undefined') ? job_experience.count : '0' %>)</span>
+                                </li>
+                                <% }); %>                                
+                            </ol>
+                        </dd>
+                        <dt class="p12_filter_title odd"><span>Date Posted</span></dt>
+                        <dd class="p12_content odd">
+                            <ol id="p12_job_posted">
+                                <li class=""><label><input name="tile_type" class="input_check" id="past_24" value="" type="checkbox"><a title="filter_title_here">Past 24 Hours</a></label> <span>(<%=job_post_duration.past24hoursJobs.length%>)</span></li>
+                                <li class=""><label><input name="tile_type" class="input_check" id="past_week" value="" type="checkbox"><a title="filter_title_here">Past Week</a></label> <span>(<%=job_post_duration.pastweekJobs.length%>)</span></li>
+                                <li class=""><label><input name="tile_type" class="input_check" id="past_month" value="" type="checkbox"><a title="filter_title_here">Past Month</a></label> <span>(<%=job_post_duration.pastmonthJobs.length%>)</span></li>
+                                <li class=""><label><input name="tile_type" class="input_check" value="" id="any_job" type="checkbox"><a title="filter_title_here">Any Time</a></label> <span>(<%=(typeof job_post_duration!='undefined' && typeof job_post_duration.all_jobs!='undefined')?job_post_duration.all_jobs:0%>)</span></li>
+                            </ol>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-left jobs-after-login">
+				<div class="p51_feed p12_job_search">
+                    <form method="post" enctype="multipart/form-data" id="job_search">
+                        <div class="p12_f30 row">
+                            <div class="form-group col-md-4">
+                                <input class="form-control" placeholder="Keywords" type="text" id="keywords" name="keywords">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <input class="form-control search_location" placeholder="Location" id="autocomplete" type="text">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <select id="contact_job_poster" class="form-control" name="contact_job_poster">
+                                    <option value="">All</option>
+                                    <option value="1">Contract</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <button type="button" class="btn btn-primary search_btn">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>    
+                <% if(typeof userData != 'undefined') { %>          
+                
+                <div class="job_search_result">
+                    <%- partial('./job_list.ejs') %>
+                </div>
+                <%- partial('./popup/easyApply.ejs') %>
+                <% } else { %>
+                    <%- partial('./without_login_job_header.ejs') %>
+                    <div class="job_search_result">
+                        <%- partial('./without_login_job_list.ejs') %>
+                    </div>
+
+                <% } %>
+                <% 
+                if(typeof isLogin!='undefined' && isLogin==1){
+                    if(typeof Jobs!='undefined' && Jobs.length > 0){%>
+                <div class="p51_p61 a-center load-feed">
+                    <input type="hidden" name="job_page_no" value="1" class="job_page_no">
+                    <a  href="javascript:;" id="load_more_job">Load More</a> 
+                    <span class="load_more refresh"></span> 
+                    <i class="fa fa-spin fa-refresh hide" aria-hidden="true"></i>
+                </div>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/job.js"></script>
+<script src="/themes/frontend/js/like_comment.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.search_btn').click(function(){
+            $('#search_job_type_ids').val('');
+            $('#search_job_exp_ids').val('');
+
+            $('.search_job_type').prop("checked",false);
+            $('.search_job_experience').prop("checked",false);
+             searchJobs();
+        });
+        $("#past_24").click(function(){
+            if ($("#past_24").is(":checked")) {
+                $("#past_24").val(1);
+            }else{
+                $("#past_24").val('');
+            }
+            searchJobs();
+         });
+        $("#past_week").click(function(){
+            if ($("#past_week").is(":checked")) {
+                $("#past_week").val(1);
+            }else{
+                $("#past_week").val('');
+            }
+            searchJobs();
+         });
+        $("#past_month").click(function(){
+            if ($("#past_month").is(":checked")) {
+                $("#past_month").val(1);
+            }else{
+                $("#past_month").val('');
+            }
+            searchJobs();
+         });
+        $("#any_job").click(function(){
+            if ($("#any_job").is(":checked")) {
+                $("#any_job").val(1);
+            }else{
+                $("#any_job").val('');
+            }
+            searchJobs();
+         });
+        $(".search_job_type").click(function(){
+            console.log("---search_job_type-----");
+            var search_job_type = '';
+            $(".search_job_type:checked").each(function(i,v){
+                search_job_type = search_job_type+$(v).val()+',';
+            });
+            search_job_type = search_job_type.slice(0,-1);
+            $("#job_search #search_job_type").val(search_job_type);
+
+            $('#search_job_type_ids').val(search_job_type)
+            searchJobs();
+        }); 
+        $(".search_job_experience").click(function(){
+            console.log("---search_job_experience-----");
+            var search_job_experience = '';
+            $(".search_job_experience:checked").each(function(i,v){
+                search_job_experience = search_job_experience+$(v).val()+',';
+            });
+            search_job_experience = search_job_experience.slice(0,-1);
+            $("#job_search #search_job_experience").val(search_job_experience);
+
+            $('#search_job_exp_ids').val(search_job_experience);
+            searchJobs();
+        });
+    });
+
+function filter_parameter(){
+    var data_para       = {};
+    var ajax_url        = '/search-jobs-ajax';
+    var search_type_ids = $('#search_job_type_ids').val();
+    var search_exp_ids  = $('#search_job_exp_ids').val();
+    var keywords        = $('#keywords').val();
+    var search_location = $('.search_location').val();
+    var contactJobPoster= $('#contact_job_poster').val();
+
+    //------------Date wise filter----------------//
+    var past_24         = $('#past_24').val();
+    var past_week       = $('#past_week').val();
+    var past_month      = $('#past_month').val();
+    var any_job         = $('#any_job').val();
+    
+
+    if(search_type_ids!=''){
+        data_para.search_job_type =search_type_ids; 
+    }
+    if(search_exp_ids!=''){
+        data_para.search_job_experience =search_exp_ids; 
+    }
+    if(keywords!=''){
+        data_para.keywords =keywords; 
+    }
+    if(search_location!=''){
+        data_para.location =search_location; 
+    }
+    if(contactJobPoster!=''){
+        data_para.contact_job_poster =contactJobPoster; 
+    }
+    if(past_24!=''){
+        data_para.past_24 =past_24; 
+    }
+    if(past_week!=''){
+        data_para.past_week =past_week; 
+    }
+    if(past_month!=''){
+        data_para.past_month =past_month; 
+    }
+    if(any_job!=''){
+        data_para.any_job =any_job; 
+    }
+}
+
+function searchJobs(){
+    ajaxindicatorstart('LOADING');
+    $('.load-feed').show();
+    var data_para       = {};
+    var ajax_url        = '/search-jobs-ajax';
+    var search_type_ids = $('#search_job_type_ids').val();
+    var search_exp_ids  = $('#search_job_exp_ids').val();
+    var keywords        = $('#keywords').val();
+    var search_location = $('.search_location').val();
+    var contactJobPoster= $('#contact_job_poster').val();
+
+    //------------Date wise filter----------------//
+    var past_24         = $('#past_24').val();
+    var past_week       = $('#past_week').val();
+    var past_month      = $('#past_month').val();
+    var any_job         = $('#any_job').val();
+    
+
+    if(search_type_ids!=''){
+        data_para.search_job_type =search_type_ids; 
+    }
+    if(search_exp_ids!=''){
+        data_para.search_job_experience =search_exp_ids; 
+    }
+    if(keywords!=''){
+        data_para.keywords =keywords; 
+    }
+    if(search_location!=''){
+        data_para.location =search_location; 
+    }
+    if(contactJobPoster!=''){
+        data_para.contact_job_poster =contactJobPoster; 
+    }
+    if(past_24!=''){
+        data_para.past_24 =past_24; 
+    }
+    if(past_week!=''){
+        data_para.past_week =past_week; 
+    }
+    if(past_month!=''){
+        data_para.past_month =past_month; 
+    }
+    if(any_job!=''){
+        data_para.any_job =any_job; 
+    }
+    $.ajax({
+        type: "POST",
+        url: ajax_url,
+        data:data_para,
+        success: function (result) {
+            if(result!=undefined && result.length>0){
+                $('.job_search_result').html('');
+                $('.job_search_result').html(result);
+            }  
+            ajaxindicatorstop();
+        },
+        error: function (err) {
+            console.log(err);
+            ajaxindicatorstop();
+        }
+    });
+}
+
+//search location
+    var placeSearch, autocomplete;
+    var componentForm = {
+        locality: 'long_name',
+        administrative_area_level_1: 'long_name',
+        country: 'long_name'
+    };
+
+     function initAutocomplete() {
+        autocomplete = new google.maps.places.Autocomplete(
+        /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+        //{types: ['geocode']});
+        {types: ['(cities)']});
+    }
+
+ function fillInAddress() {
+        // Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+
+        for (var component in componentForm) {
+            document.getElementById(component).value = '';
+            document.getElementById(component).readonly = false;
+        }
+
+        // Get each component of the address from the place details
+        for (var i = 0; i < place.address_components.length; i++) {
+            var addressType = place.address_components[i].types[0];
+            if (componentForm[addressType]) {
+                var val = place.address_components[i][componentForm[addressType]];
+                document.getElementById(addressType).value = val;
+            }
+        }
+    }
+
+    function job_delete(id){
+
+        $.confirm({content:"Are you sure you want to delete the job?",
+            header: "Delete",
+            confirm:function () {
+                 if(id==''){
+                     $.bootstrapGrowl('ID can not blank', {type: 'danger', delay: 1000});
+                 }
+                 var ajax_url = '/job/delete/'+id;
+                 $.ajax({
+                  type: "GET",
+                  url: ajax_url,
+                  data: {status:1},
+                  cache: false,
+                  success: function(result){
+                    if(result.status=="OK"){
+                         $.bootstrapGrowl(result.msg, {type: 'success', delay:700});
+                         setTimeout(function() {window.location.href='/jobs/myjob'; }, 1000);
+                    }else{
+                         $.bootstrapGrowl(result.msg, {type: 'danger', delay: 1000});
+                    }
+                  }
+                });
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    }
+
+     $(document).on("click",".blockuser",function(){
+        var id = $(this).data("user_id");
+        $.confirm({content:"Are you sure to block user?",
+            header: "Block",
+            confirm:function () {
+                var url = "/deleteFeed/"+feed_id;
+                window.location.href = url;
+            },
+            cancel:function () {
+                console.log('confirm')
+            }
+        });
+    });
+
+  $(document).on("click","#load_more_job",function(){
+        var pages = $('input[name="job_page_no"]').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        $('input[name="job_page_no"]').val(page_no);
+        
+        var data_para       = {};
+    var ajax_url        = '/search-jobs-ajax';
+    var search_type_ids = $('#search_job_type_ids').val();
+    var search_exp_ids  = $('#search_job_exp_ids').val();
+    var keywords        = $('#keywords').val();
+    var search_location = $('.search_location').val();
+    var contactJobPoster= $('#contact_job_poster').val();
+
+    //------------Date wise filter----------------//
+    var past_24         = $('#past_24').val();
+    var past_week       = $('#past_week').val();
+    var past_month      = $('#past_month').val();
+    var any_job         = $('#any_job').val();
+    
+
+    if(search_type_ids!=''){
+        data_para.search_job_type =search_type_ids; 
+    }
+    if(search_exp_ids!=''){
+        data_para.search_job_experience =search_exp_ids; 
+    }
+    if(keywords!=''){
+        data_para.keywords =keywords; 
+    }
+    if(search_location!=''){
+        data_para.location =search_location; 
+    }
+    if(contactJobPoster!=''){
+        data_para.contact_job_poster =contactJobPoster; 
+    }
+    if(past_24!=''){
+        data_para.past_24 =past_24; 
+    }
+    if(past_week!=''){
+        data_para.past_week =past_week; 
+    }
+    if(past_month!=''){
+        data_para.past_month =past_month; 
+    }
+    if(any_job!=''){
+        data_para.any_job =any_job; 
+    }
+    
+    data_para.page_no =page_no;
+
+        $.ajax({
+        type: "POST",
+        url: '/load-more-jobs',
+        data:data_para,
+        success: function (data) {
+        if(data.blogs!=undefined && data.blogs==false){
+                $('.load-feed').hide();
+            }else{
+                var isContains = $('.list_connection').text().indexOf('No data found') > -1;
+
+                if(isContains==true){
+                    $('.load-feed').hide();
+                    $('.job_data_empty').hide();
+                }
+                
+                if($('#is_login').val()==1){
+                    $(data).insertBefore('.job_load_more');
+                }else{
+                    $(data).insertBefore('.load_more_job_without_login');
+                }
+
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+});
+</script>

@@ -1,0 +1,173 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+			
+			<!-- Sidebar nav connections Starts -->
+			<%- partial('../includes/sidebar-nav-connections.ejs') %>
+			<!-- Sidebar nav connections Ends -->
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <div class="p16_main1000">
+                    <div class="p16_main1001 connections-list">
+                        <div class="p16_section_title">Unauthorized Followers <span>(<%- count_followdata %>)</span></div>
+                        <ul class="p16_1010 unauthorized_followers">
+                        	<% 
+                    		if(followdata.length > 0 ){
+								for(var _index=0; _index < followdata.length; _index++) {
+									var _follower = followdata[_index];
+                        	%>
+                            <li class="first">
+                                <div class="p16_1011">
+                                    <a href=""><img src="/themes/frontend/images/default-user.png" width="55" height="55" alt="Michele Show"></a>
+                                    <div class="p16_1012">
+                                        <div class="p16_1013"><a href="/profile" class="p16_1014"><%=_follower.user_id.name%></a></div>
+                                        <div class="p16_1015">
+                                            <%=_follower.user_id.headline%>  
+                                            <%=typeof _follower.user_id.address == 'undefined' ? "" : "at " + _follower.user_id.address %>
+                                        </div>
+                                        <div class="p16_1016">Connected 3 minutes ago</div>
+                                    </div>
+                                    <div class="p16_1021">
+                                        <button type="button" class="p16_1022 btnaccept" value="<%=_follower.id%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                        <button type="button" class="p16_1023 btnreject" value="<%=_follower.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </li>
+                            <% } %>
+                            <li class="a-center last" id="get_more_pending_notification"><a href="javascript:;" class="p16_1031 lord_more">More</a></li>
+                        <% } else { %>
+                            <li class="first">
+                                    <div class="p16_1011">
+                                        <p>No data found</p>
+                                    </div>
+                                </li>
+                        <% } %>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p16_main1002 connections-list">
+                    <div class="p16_section_title">Authorized Followers <span>(<%- count_authorized %>)</span></div>
+                    <ul class="p16_1010 authorized_list">
+                <% if(authorized.length > 0 ){
+                    for(var _index1=0; _index1 < authorized.length; _index1++) {
+                        var _authorized = authorized[_index1];
+                        %>
+                        <li class="first">
+                            <div class="p16_1011">
+                                <a href=""><img src="/themes/frontend/images/default-user.png" alt="Michele Show" width="55" height="55"></a>
+                                <div class="p16_1012">
+                                    <div class="p16_1013"><a href="/profile" class="p16_1014"><%=_authorized.user_id.name%></a></div>
+                                    <div class="p16_1015">
+                                        <%=_authorized.user_id.headline%>
+                                        <%=typeof _authorized.user_id.address == 'undefined' ? "" : "at " + _authorized.user_id.address %>
+                                    </div>
+                                    <div class="p16_1016">Connected 3 minutes ago</div>
+                                </div>
+                                <div class="p16_1021">
+                                    <button type="button" class="p16_1023 btnreject" value="<%=_authorized.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </li>
+                        <% } %>
+                        <li class="a-center last" id="get_more_sent_invitation"><a href="javascript:;" class="p16_1031 lord_more">More</a></li>
+                        <% } else { %>
+                        <li class="first">
+                            <div class="p16_1011">
+                                <p>No data found</p>
+                            </div>
+                        </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 no-left_p-sm">
+                <div class="a-center">
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).on("click",".btnaccept",function(){
+        var parents = $(this).parents('li');
+        var self_this = $(this);
+        var follow_id = $(this).val();
+        $.ajax({
+            url: '/company/acceptauthorized/'+follow_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    parents.remove();
+                    window.location.reload();
+                } else {
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click",".btnreject",function(){
+        var parents = $(this).parents('li');
+        var self_this = $(this);
+        var follow_id = $(this).val();
+        $.ajax({
+            url: '/company/rejectauthorized/'+follow_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    parents.remove();
+                    window.location.reload();
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+    var lordMoreFollowList_page = 2;
+    $(document).on("click",".unauthorized_followers .lord_more",function(){
+        var self = this;
+        $.ajax({
+            url: '/company/lordMoreFollowList',
+            method: 'POST',
+            data : {page : lordMoreFollowList_page},
+            success: function(results)
+            {
+                lordMoreFollowList_page = lordMoreFollowList_page + 1;
+                if(results!=''){
+                    li_length = $(".unauthorized_followers").find('li').length ;
+                    $(".unauthorized_followers").find('li').eq(li_length - 2).after(results)
+                } else {
+                    $(self).parents("li").remove();
+                }
+            }
+        });
+    });
+    var lordMoreAuthorizedList_page = 2;
+    $(document).on("click",".authorized_list .lord_more",function(){
+        var self = this;
+        $.ajax({
+            url: '/company/lordMoreAuthorizedList',
+            method: 'POST',
+            data : {page : lordMoreAuthorizedList_page},
+            success: function(results)
+            {
+                lordMoreAuthorizedList_page = lordMoreAuthorizedList_page + 1;
+                if(results!=''){
+                    li_length = $(".authorized_list").find('li').length;
+                    $(".authorized_list").find('li').eq(li_length - 2).after(results)
+                } else {
+                    $(self).parents("li").remove();
+                }
+            }
+        });
+    });
+</script>

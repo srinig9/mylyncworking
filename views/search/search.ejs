@@ -1,0 +1,655 @@
+<% 
+    var user_id = (req.user != undefined && req.user.id != undefined) ?  req.user.id : 0;
+%>
+<style>
+.first-letter {
+    font-size: 30px !important;
+    font-weight: bold !important;
+    line-height: 45px !important;
+    display: inline-block !important;
+    float: left !important;
+    width: 45px !important;
+    height: 45px !important;
+}
+.p32_companies.p32_1010 li {
+    min-height: 119px !important;
+}
+</style>
+<div class="main-container guest-search">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 no-padd-right">
+                <div class="p_31_mc">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sepb20 p32_btn_filter_tabs">
+                            <button class="p32_btn_filter active" data-toggle="portfilter" data-target="all">All  (<%- all_search_result_count %>)</button>
+                            <% if(searchuserscount > 0){ %>
+                            <button class="p32_btn_filter" data-toggle="portfilter" data-target="people">People (<%=searchuserscount%>)</button>
+                            <% } %>
+                            <% if(searchcompaniescount > 0) { %>
+                            <button class="p32_btn_filter" data-toggle="portfilter" data-target="companies">Companies (<%=searchcompaniescount%>)</button>
+                            <% } %>
+                            <% if(jobs.length > 0){ %>
+                                <button class="p32_btn_filter" data-toggle="portfilter" data-target="jobs">Jobs (<%- jobs.length %>)</button>
+                            <% } %>
+                            <% if(blogCount > 0){ %>
+                            <button class="p32_btn_filter last" data-toggle="portfilter" data-target="posts">Posts (<%=blogCount%>)</button>
+                            <% } %>
+                        </div>
+                        <%
+                            if(all_search_result_count==0){
+                                %>
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sepb20">
+                                    <div class="section_title"><h3>No Record Found</h3></div>
+                                    <div class="no-data-found center-block">
+                                        <p><img src="/themes/frontend/images/no-data.png" class="img-responsive center-block"></p>
+                                        <p>No Record Found</p>
+                                    </div>
+                                </div>
+                                <%
+                            }
+                        %>
+                        <% if(searchusers.length > 0){ %>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sepb20 searchusers" data-tag="people">
+                            <div class="section_title"><h3>People</h3></div>
+                            <ul class="p32_1010 p32_peoples">
+                                <%  
+                                    _.each(searchusers,function(_user){
+
+                                    var user_slug   = '/';
+                                    var position    = '';
+                                    var company     = '';
+                                    var profile_img = sails.config.appUrlwPort+'/themes/frontend/images/default-user.png';
+                                    var message_url = '/messages/';
+
+                                    if(typeof _user.slug!='undefined' && _user.slug!=''){
+                                        user_slug ='/profile/'+_user.slug;
+                                        if(req.isAuthenticated()){
+											user_slug += "/wall";
+										}
+                                        
+										message_url = message_url+_user.slug;
+                                    }
+
+                                    if(typeof _user.profile_image!='undefined' &&  _user.profile_image!=''){
+                                        profile_img = sails.config.appUrlwPort+'/uploads/users/'+_user.profile_image;
+                                    }
+
+                                    if(typeof _user.userexperiences!='undefined' && _user.userexperiences.length>0){
+                                        if(typeof _user.userexperiences[0]['title']!='undefined' && _user.userexperiences[0]['title']!=''){
+                                           position=_user.userexperiences[0]['title'];
+                                        }
+                                        
+                                        if(typeof _user.userexperiences[0]['company_id']!='undefined' && _user.userexperiences[0]['company_id']!=''){
+                                            if(typeof _user.userexperiences[0]['company_id']['company_name']!='undefined'){
+                                                company=' at '+_user.userexperiences[0]['company_id']['company_name'];
+                                            }
+                                        }
+                                    }
+                                %>
+                                <li class="first">
+                                    <div class="p32_1011">
+                                        <a href="<%=user_slug%>"><img src="<%=profile_img%>" width="75" height="75" alt="<%=_user.name%>" /> </a>
+                                        <div class="p32_1012">
+                                            <div class="p32_1013 name"><a href="<%=user_slug%>" class="p16_2004"><%=_user.name%></a></div>
+                                            <div class="p32_1014 designation"><%=position%> <%=company%></div>
+                                            <div class="p32_1016 location_city"><%= (_user.address==undefined || _user.address=="") ? "" : _user.address %></div>
+                                        </div>
+                                            <% 
+                                            var checked = '';
+                                            var message = 0;
+                                            var recReq = 0;
+                                            var sentReq = 0;
+                                            _.each(connections, function (connection) {
+                                                if((connection.user_id == user_id && connection.to_user_id == _user.id) || (connection.to_user_id == user_id && connection.user_id == _user.id)){
+                                                    if(connection.status==1){
+                                                        message = message+1;
+                                                    }else if(connection.status==0 && connection.to_user_id==user_id){
+                                                        recReq = recReq+1;
+                                                    }else if(connection.status==0 && connection.user_id==user_id){
+                                                        sentReq = sentReq+1;
+                                                    }
+                                                }
+                                            })
+                                            %>
+
+                                            <% if(typeof req.user !='undefined' && req.user.id !='') {%>
+                                                <% if(message > 0) {%>
+                                                <a href="<%=message_url%>" title="send message" class="btn btn-primary p32_message">Message</a>
+                                                <% }else if(recReq > 0){ %>
+                                                <div class="p16_1021">
+                                                    <button type="button" class="p16_1022 btnaccept" value="<%=_user.id%>"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                                    <button type="button" class="p16_1023 btnreject" value="<%=_user.id%>"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                                </div>
+
+                                                <% }else if(sentReq > 0){ %>
+                                                <div class="p16_1021">
+                                                    <button type="button" class="p16_1023 cancelsent" value="<%=_user.id%>" data-toggle="tooltip" title="Cancel Sent Request" data-placement="left"><i class="fa fa-close" aria-hidden="true"></i></button>
+                                                </div>
+                                                <% } else {%>
+                                                <div class="p16_1021">
+                                                    <form method="post" class="userknown">
+                                                        <input name="to_user_id" value="<%=_user.id%>" type="hidden">
+                                                        <button type="submit" class="btn btn-primary p32_message">Connect</button>
+                                                    </form>
+                                                </div>
+                                                <% } %>
+                                            <% } %>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+                            <% if(searchuserscount > limit){%>
+                                <div class="p51_p61 a-center load-users">
+                                    <input type="hidden" name="users_page_no" value="1" class="users_page_no">
+                                    <a href="javascript:;" id="load_more_users">Load More</a> 
+                                    <span class="load_more refresh"></span> 
+                                    <i class="fa fa-spin fa-refresh hide" aria-hidden="true"></i>
+                                </div>
+                            <% }%>
+                        </div>
+                        <% } %>
+
+                        <% if(searchcompanies.length > 0) { %>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sepb20 searchcompanies" data-tag="companies">
+                            <div class="section_title"><h3>Companies</h3></div>
+                            <ul class="p32_1010 p32_companies">
+                                <%
+                                    _.each(searchcompanies,function(company){
+                                        var img_text='';
+                                        img_text =company.company_name;
+                                        var slug = "javascript:;";
+                                        if(typeof company.slug!='undefined' && company.slug!=''){
+                                            slug = "/company/"+company.slug;
+											if(req.isAuthenticated()){
+												slug += "/wall";
+											}
+                                        }
+                                %>
+                                <li class="first">
+                                    <div class="p32_1011">
+                                        <% if(typeof company.companydata != 'undefined' && company.companydata.length > 0 && typeof company.companydata[0].profile_image != 'undefined') { %>
+                                            <a href="/company/<%- company.slug %>">
+                                                <img src="<%- sails.config.appUrlwPort + sails.config.profile_image_url + company.companydata[0].profile_image %>" alt="<%=img_text%>" />
+                                            </a>
+                                        <% } else { %>
+                                        <a class="p6_sc_1002 project_img" href="/company/<%- company.slug %>" target="_blank">
+                                             <span class="first-letter">
+                                                <%=img_text.charAt(0).toUpperCase()%>
+                                            </span>
+                                        </a>
+                                        <% } %>
+                                        <div class="p32_1012">
+                                            <div class="p32_1013 name"><a href="<%=slug%>" class="p16_2004"><%=company.company_name%></a></div>
+                                            <div class="p32_1016 location_city"><% if(company.companydata.length>0 && typeof company.companydata[0].address!='undefined'){%><%=company.companydata[0].address%><% } %>
+                                                <% if(typeof company.company_size!='undefined'){%>
+                                                    <br><span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                                    <%=company.company_size%>
+                                                <% } %>
+                                            </div>
+                                        </div>
+
+                                        <%
+                                            var follow = 0;
+                                            _.each(company.followers,function(follower){
+                                                if(follower.user_id == user_id){
+                                                    console.log(follower);
+                                                    follow = follow+1;
+                                                }
+                                            })
+                                        %>
+
+                                        <% 
+                                        if(typeof req.user !='undefined' && req.user.id!=''){
+                                            if(follow > 0) { 
+                                        
+                                        %>
+                                        <button type="submit" class="btn btn-primary p32_message btnfollow" value="<%=company.id%>">UnFollow</button>
+                                        <% } else { %>
+                                        <button type="submit" class="btn btn-primary p32_message btnfollow" value="<%=company.id%>">Follow</button>
+                                        <% } } %>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+
+                            <% 
+                            console.log(searchcompaniescount);
+                            if(searchcompaniescount > limit){%>
+                                <div class="p51_p61 a-center load-companies">
+                                    <input type="hidden" name="company_page_no" value="1" class="company_page_no">
+                                    <a href="javascript:;" id="load_more_company">Load More</a> 
+                                    <span class="load_more refresh"></span> 
+                                    <i class="fa fa-spin fa-refresh hide" aria-hidden="true"></i>
+                                </div>
+                            <% }%>
+                        </div>
+                        <% } %>
+                        
+                        <% if(jobscount > 0){ %> 
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sepb20 searchjobs" data-tag="jobs">
+                            <div class="section_title"><h3>Jobs</h3></div>
+                            <ul class="p32_1010 p32_jobs">
+                                <% _.each(jobs,function(Job){ %> 
+                                <li class="first" data-id="<%=Job.id%>">
+                                    <div class="p32_1011">
+                                            <% 
+                                            var job_profile_image = '';
+                                            var job_url = 'javascript:;';
+                                            var user_slug ='javascript:;';
+                                            var display_name = '' ;
+                                            if(typeof Job.slug !='undefined' && Job.slug!=''){
+                                                job_url = '/jobs/'+Job.slug;
+                                            }
+
+                                            if(typeof Job.company_id == 'undefined') {
+
+                                                if(typeof Job.user_id!='undefined' && typeof Job.user_id.name!='undefined'){
+                                                    display_name = Job.user_id.name;
+                                                }
+                                                if(typeof Job.user_id.profile_image != 'undefined' && Job.user_id.profile_image != ''){
+                                                    job_profile_image = sails.config.appUrlwPort + sails.config.profile_image_url + Job.user_id.profile_image;
+                                                }
+                                            } else {
+                                             if(typeof Job.company_id!='undefined' && typeof Job.company_id.company_name!='undefined'){
+                                                    display_name = Job.company_id.company_name;
+                                                }
+
+                                                if(typeof Job.company_id.companydata[0].profile_image != 'undefined' && Job.company_id.companydata[0].profile_image != ''){
+                                                    job_profile_image = sails.config.appUrlwPort + sails.config.profile_image_url + Job.company_id.companydata[0].profile_image;
+                                                }
+                                            }
+                                             %>
+                                        <% if(job_profile_image != ''){ %> 
+                                        <a href="<%=job_url%>">
+                                            <img src="<%-job_profile_image%>" /> 
+                                        </a>
+                                        <% } else { %>
+                                            <a class="p6_sc_1002 project_img" href="<%=job_url%>" target="_blank">
+                                                <span class="first-letter">
+                                                   <%=display_name[0].toUpperCase()%>
+                                               </span>
+                                           </a>
+                                        <% } %>
+                                        <div class="p32_1012">
+                                            <div class="p32_1013 name"><a href="<%=job_url%>" class="p16_2004"><%- Job.title %></a></div>
+                                            <% if(Job.company_id != undefined && Job.company_id.company_name != undefined) { %>
+                                            <div class="p32_1014 company_name"><%- Job.company_id.company_name %></div>
+                                            <% } %>
+                                            
+                                            <div class="p32_1016 location_city">
+                                                <% if(typeof Job.location != 'undefined' && Job.location != '') { %>
+                                                    <%- Job.location + '<br>' %>
+                                                <% } %>
+                                                <% if(typeof Job.experience_id != 'undefined' && typeof Job.experience_id.title != 'undefined'){ %>
+                                                    <%- Job.experience_id.title %>
+                                                <% } %>
+                                                <% if(typeof Job.job_type_id != 'undefined' && typeof Job.job_type_id.title != 'undefined'){ %>
+                                                    <span class="dot_seperator"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                                    <%- Job.job_type_id.title %>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        <% if(typeof req.user !='undefined' && req.user!=''){%>
+                                        <button type="button" class="btn btn-primary p32_message btnEasyApply" data-toggle="modal">Instant Apply</button>
+                                        <% } %>
+                                    </div>
+                                </li>
+                                <% }); %>
+                            </ul>
+                            <% if(jobscount > limit){%>
+                                <div class="p51_p61 a-center load-jobs">
+                                    <input type="hidden" name="job_page_no" value="1" class="job_page_no">
+                                    <a href="javascript:;" id="load_more_job">Load More</a> 
+                                    <span class="load_more refresh"></span> 
+                                    <i class="fa fa-spin fa-refresh hide" aria-hidden="true"></i>
+                                </div>
+                            <% }%>
+                        </div>
+                        <% } %>
+
+                        <% if(blogCount > 0){ %>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sepb20 searchblogs" data-tag="posts">
+                            <div class="section_title"><h3>Posts</h3></div>
+                            <ul class="p32_1010 p32_posts">
+                                <% 
+                                    _.each(blogs,function(postblog) {
+
+                                    var user_slug   = '/';
+                                    var profile_img = sails.config.appUrlwPort+'/themes/frontend/images/default-user.png';
+                                    _user = postblog.user_id;
+
+                                    if(typeof _user.slug!='undefined' && _user.slug!=''){
+                                        user_slug ='/profile/'+_user.slug;
+										if(req.isAuthenticated()){
+											user_slug += "/wall";
+										}
+                                    }
+
+                                    if(typeof _user.profile_image!='undefined' &&  _user.profile_image!=''){
+                                        profile_img = sails.config.appUrlwPort+'/uploads/users/'+_user.profile_image;
+                                    }
+                                %>
+                                <li class="first">
+                                    <div class="p32_1011">
+                                        <a href="<%=user_slug%>">
+                                            <img src="<%=profile_img%>" width="75" height="75" alt="<%=_user.name%>" /> 
+                                        </a>
+                                        <div class="p32_1012">
+                                            <div class="p32_1013 name"><a href="/blogs/<%=postblog.slug%>" class="p16_2004"><%=postblog.title.substring(0,40)%> <%=(postblog.title.length > 40) ? "..." : "" %></a></div>
+                                            <div class="p32_1014 post_by">Post by - <%=postblog.user_id.name%></div>
+                                            <div class="p32_1015 post_date"><%=DateDifferentService.time_ago(postblog.createdAt)%></div>
+                                        </div>
+                                        <a href="/blogs/<%=postblog.slug%>" class="btn btn-primary p32_message">Read More</a>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+                            <% if(blogCount > limit){%>
+                                <div class="p51_p61 a-center load-blogs">
+                                    <input type="hidden" name="blog_page_no" value="1" class="blog_page_no">
+                                    <a href="javascript:;" id="load_more_blog">Load More</a> 
+                                    <span class="load_more refresh"></span> 
+                                    <i class="fa fa-spin fa-refresh hide" aria-hidden="true"></i>
+                                </div>
+                            <% }%>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="a-center">
+                    <!-- <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a>
+                    <a href=""><img class="sepb20 img-full-lg img-full-md img-full-sm" src="/themes/frontend/images/ads-250x250.png" alt="google ad 250x250" width="250" height="250" /></a> -->
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/fRM-2dt-LIs?rel=0" height="300" allowfullscreen ></iframe>
+                    </div><br>
+                    <div class="embed-responsive embed-responsive-16by9" style="height: 300px;">
+                      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/gW6hApb0gpI?rel=0" height="300" allowfullscreen ></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<%
+    var profile_image = '/themes/frontend/images/default-user.png';
+    if(typeof userData != 'undefined' &&  typeof userData.profile_image != 'undefined' &&  userData.profile_image!=''){
+        profile_image = '/uploads/users/'+userData.profile_image;
+    }
+%>
+<% if(req.isAuthenticated()) { %>
+    <!-- Start Easy Apply Popup -->
+    <%- include ../job/popup/easyApply.ejs %>
+    <!-- End Easy Apply Popup -->
+<% } 
+if(!req.isAuthenticated()) {
+%>
+<link type="text/css" href="/themes/frontend/css/local.css" rel="stylesheet">
+<style type="text/css">
+    body {
+        margin-bottom: 0;
+    }
+    footer {
+        position: relative;
+    }
+</style>
+
+<% } %>
+
+<script type="text/javascript">
+    $(document).on("click",".btnaccept",function(){
+
+        var parents = $(this).parents('li');
+        var user_id = $(this).val();
+        $.ajax({
+            url: '/acceptRequest/'+user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+					user_id = results.user_id;
+					send_notification(user_id);
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                    location.reload();
+                } else {
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click",".btnreject",function(){
+        var parents = $(this).parents('li');
+        var user_id = $(this).val();
+        $.ajax({
+            url: '/rejectRequest/'+user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                    location.reload();
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    $(document).on("click",".cancelsent",function(){
+        var parents = $(this).parents('li');
+        var to_user_id = $(this).val();
+        $.ajax({
+            url: '/cancelsentRequest/'+to_user_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    $.bootstrapGrowl(results.message, {type: 'success', delay: 2000});
+                    location.reload();
+                }
+                else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+    // $(".userknown").submit(function(event) {
+    $(document).on("submit", ".userknown", function (event) {
+        event.preventDefault();
+        var formData = new FormData( this );
+        console.log(formData);
+        var parents = $(this).parents('li');
+        $.ajax({
+            url: '/sendRequest',
+            method: 'POST',
+            data:  formData,
+            mimeType:"multipart/form-data",
+            processData: false,
+            contentType: false,
+            success: function(results)
+            {
+                var json_obj = jQuery.parseJSON( results );
+                if(json_obj.status == 'OK'){
+					user_id = json_obj.user_id;
+					send_notification(user_id);
+                    $.bootstrapGrowl(json_obj.message, {type: 'success', delay: 2000});
+                    location.reload();
+                } else {
+                    $.bootstrapGrowl(json_obj.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+
+    $(document).on("click",".btnfollow",function(){
+        var self_this = $(this);
+        var company_id = $(this).val();
+        $.ajax({
+            url: '/followCompany/'+company_id,
+            method: 'GET',
+            success: function(results)
+            {
+                if(results.status=='OK'){
+                    location.reload();
+                }else{
+                    $.bootstrapGrowl(results.message, {type: 'danger', delay: 2000});
+                }
+            }
+        });
+    });
+
+
+    // Apply Job
+    $(document).on("click",".btnEasyApply",function(){
+        var parents = $(this).parents('li');
+        var feed_id = parents.data('id');
+        $.ajax({
+            url: '/getjjobcompanyname/'+feed_id,
+            method: 'GET',
+            success: function(results)
+            {
+                 if(results.status=='OK'){
+                    if(typeof results.response.company_id != 'undefined'){
+                        $(".followtocomp").text("Follow "+results.response.company_id.company_name);
+                        $(".applytocomp").text("Appy to "+results.response.company_id.company_name);
+                        $('input[name="company_id"]').val(results.response.company_id.id);
+                    }else{
+                        $(".followtocomp").text("Follow");
+                        $(".applytocomp").text(results.response.title);
+                    }
+                    $('input[name="job_id"]').val(results.response.id);
+                    
+                }
+            }
+        });
+        $('#myModal').modal('show');
+    });
+
+
+    $(document).on("submit", "#applyingForm", function (event) {
+        event.preventDefault();
+        var formData = new FormData( this );
+        $.ajax({
+            url: '/applyjob',
+            method: 'POST',
+            data:  formData,
+            mimeType:"multipart/form-data",
+            processData: false,
+            contentType: false,
+            success: function(results)
+            {
+                var json_obj = jQuery.parseJSON( results );
+                if(json_obj.status=='OK'){
+                    $("#applyingForm")[0].reset();
+                    $.bootstrapGrowl(json_obj.msg, {type: 'success', delay: 1000});
+                    $('#myModal').modal('hide');
+                }else{
+                    $.bootstrapGrowl(json_obj.msg, {type: 'danger', delay: 1000});
+                }
+            }
+        });
+    });
+
+
+</script>
+<%
+    if(typeof is_login!='undefined' && is_login==0){
+%>
+<script type="text/javascript" defer="">
+    $(document).ready(function(){
+        $(".main-container").css({"padding-top":$('.mainnav-main').height() + 20});
+    });
+ </script>
+ <% } %>
+
+
+ <script type="text/javascript">
+    $(document).on("click","#load_more_users",function(){
+        var pages = $('input[name="users_page_no"]').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        var keyword = "<%=req.param('keyword')%>";
+        $('input[name="users_page_no"]').val(page_no);
+
+        var parents = $(this).parents(".searchusers");
+
+        $.ajax({
+            type: "POST",
+            url: "/load_more_searchusers/?keyword="+keyword+"&page_no="+page_no,
+            success: function (data) {
+                if(data.searchusers!=undefined && data.searchusers==false){
+                    $('.load-users').hide();
+                }else{
+                    parents.find('ul').append(data);
+                }
+            }
+        });
+    });
+
+    $(document).on("click","#load_more_company",function(){
+        var pages = $('input[name="company_page_no"]').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        var keyword = "<%=req.param('keyword')%>";
+        $('input[name="company_page_no"]').val(page_no);
+
+        var parents = $(this).parents(".searchcompanies");
+
+        $.ajax({
+            type: "POST",
+            url: "/load_more_searchcompanies/?keyword="+keyword+"&page_no="+page_no,
+            success: function (data) {
+                if(data.searchcompanies!=undefined && data.searchcompanies==false){
+                    $('.load-companies').hide();
+                }else{
+                    parents.find('ul').append(data);
+                }
+            }
+        });
+    });
+
+    $(document).on("click","#load_more_blog",function(){
+        var pages = $('input[name="blog_page_no"]').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        var keyword = "<%=req.param('keyword')%>";
+        $('input[name="blog_page_no"]').val(page_no);
+        var parents = $(this).parents(".searchblogs");
+
+        $.ajax({
+            type: "POST",
+            url: "/load_more_searchblogs/?keyword="+keyword+"&page_no="+page_no,
+            success: function (data) {
+                if(data.blogs!=undefined && data.blogs==false){
+                    $('.load-blogs').hide();
+                }else{
+                    parents.find('ul').append(data);
+                }
+            }
+        });
+    });
+
+    $(document).on("click","#load_more_job",function(){
+        var pages = $('input[name="job_page_no"]').val();
+        var page_no = parseInt(pages)+parseInt(1);
+        var keyword = "<%=req.param('keyword')%>";
+        $('input[name="job_page_no"]').val(page_no);
+        var parents = $(this).parents(".searchjobs");
+
+        $.ajax({
+            type: "POST",
+            url: "/load_more_jobs/?keyword="+keyword+"&page_no="+page_no,
+            success: function (data) {
+                if(data.jobs!=undefined && data.jobs==false){
+                    $('.load-jobs').hide();
+                }else{
+                    parents.find('ul').append(data);
+                }
+            }
+        });
+    });
+ </script>

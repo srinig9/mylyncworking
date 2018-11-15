@@ -1,0 +1,129 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="max_width1000">
+                    <h1 class="p18_101">Connect with people you know on Lynked</h1>
+                    <p class="p18_102">We found people you know on Lynked. Select people you’d like to connect.</p>
+
+                    <form method="POST" action="/import-connection-not-found" id="invitationForm">
+                        <% _.each(invites,function(invite,index){ %>
+                            <input type="hidden" name="data[<%=index%>][email]" value="<%=invite.email%>">
+                            <input type="hidden" name="data[<%=index%>][name]" value="<%=invite.name%>">
+                        <% }) %>
+                    </form>                    
+
+                    <form action="/bulkSendRequest" method="POST" id="sendrequestForm">
+                        <div class="p18">
+                            <div class="p18_1001">
+                                <div class="p18_1002">
+                                    <label class="input_check_label" for="selectAllConnection">
+                                        <input class="input_check" type="checkbox" value="" checked="checked" name="selectAllConnection" id="selectAllConnection" />
+                                        Deselect all <span class="deselectCount">(0)</span>
+                                    </label>
+                                </div>
+                                <div class="p18_1003">
+                                    
+                                    <button type="button" class="btn btn-primary btn-primary-sw" onclick="submitForm()">Skip</button>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <button type="submit" class="btn btn-primary btn-primary-sw">Connect <span class="inviteCount">(<%=members.length%>)</span></button>
+                                </div>
+                            </div>
+                            <ul class="p18_1010">
+                                <% _.each(members,function(member){ 
+                                    var profile_image = '/themes/frontend/images/default-user.png';
+                                    if(member.profile_image &&  member.profile_image!=''){
+                                        profile_image = '/uploads/users/'+member.profile_image;
+                                    }
+
+                                %>
+                                <li>
+                                    <input type="checkbox" class="input_check checkbox" value="<%=member.id%>" checked="checked" name="to_user_id[]" />
+                                    <div class="p18_1011">
+                                        <img src="<%=profile_image%>" width="65" height="65" alt="">
+                                        <div class="p18_1012">
+                                            <div class="p18_1013"><a href="" class="p18_1014"><%=member.name%></a></div>
+                                            <div class="p18_1015">
+                                                <%= (typeof member.headline !='undefined') ? member.headline : '' %>
+                                                <% if(typeof member.location !='undefined') { %>
+                                                at 
+                                                <%=member.location%>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        var countMember =  "<%=members.length%>";
+        if(countMember==0){
+            $('form#invitationForm').submit();
+        }
+    });
+
+    //select all checkboxes
+    $("#selectAllConnection").change(function(){  //"select all" change
+        $(".checkbox").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+
+        var unchecked = ($('.checkbox').length - $('.checkbox:checked').length);
+        $(".deselectCount").html("("+unchecked+")");
+        $(".inviteCount").html("("+$('.checkbox:checked').length+")");
+    });
+
+    //".checkbox" change
+    $('.checkbox').change(function(){
+        
+        var unchecked = ($('.checkbox').length - $('.checkbox:checked').length);
+        $(".deselectCount").html("("+unchecked+")");
+        $(".inviteCount").html("("+$('.checkbox:checked').length+")");
+        //uncheck "select all", if one of the listed checkbox item is unchecked
+        if(false == $(this).prop("checked")){ //if this item is unchecked
+            $("#selectAllConnection").prop('checked', false); //change "select all" checked status to false
+        }
+        //check "select all" if all checkbox items are checked
+        if ($('.checkbox:checked').length == $('.checkbox').length ){
+            $("#selectAllConnection").prop('checked', true);
+        }
+    }); 
+
+
+    $("#sendrequestForm").submit(function(event) {
+        event.preventDefault();
+        var formData = new FormData( this );
+        $.ajax({
+            url: '/bulkSendRequest',
+            method: 'POST',
+            data:  formData,
+            mimeType:"multipart/form-data",
+            processData: false,
+            contentType: false,
+            success: function(results)
+            {
+                var json_obj = jQuery.parseJSON( results );
+
+                if(json_obj.status=='OK'){
+                    $.bootstrapGrowl(json_obj.message, { type: 'danger', width: 'auto' });
+                    $('form#invitationForm').submit();
+                }else{
+                    $.bootstrapGrowl(json_obj.message, { type: 'danger', width: 'auto' });
+                }
+            }
+        });
+    });
+
+    function submitForm(){
+        $('form#invitationForm').submit();
+    }
+
+</script>

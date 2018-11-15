@@ -1,0 +1,51 @@
+<div class="main-container">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="p9_left_sidebar">
+                    <ul class="p9_ls_1001">
+                        <li class="first active">
+                            <a href="/helps/list">List</a>
+                            <span class="open"></span>
+                        </li>
+                        <li class="">
+                            <a href="/helps/create">Create</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 pull-right">
+                <div class="table-responsive p9_container p9_main_form">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td>Sr No</td>
+                            <td>Question</td>
+                            <td>Status</td>
+                            <td>Action</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% 
+                            if(data.length > 0){ 
+                                var i = 1;
+                                _.each(data,function(helps){
+                        %>
+                        <tr>
+                            <td><%=i%></td>
+                            <td><%=helps.question%></td>
+                            <td><%= (helps.status==1) ? "Enable" : "Disable"%></td>
+                            <td>
+                                <a href="/helps/edit/<%=helps.id%>"><i class="fa fa-pencil"></i></a> 
+                                <!-- <a href="javascript:;" class="deleteHelp" data-id="<%=helps.id%>"><i class="fa fa-trash"></i></a> -->
+                            </td>
+                        </tr>
+                        <% i++; }) } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
