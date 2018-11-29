@@ -58,10 +58,11 @@ module.exports.connections = {
   ***************************************************************************/
   LynkedMongodb: {
     adapter: 'sails-mongo',
-    host: 'localhost',
-    port: 27017,
-    user: '', //optional
-    password: '', //optional
+    url: process.env.MONGODB_URI,
+    //host: 'localhost',
+    //port: 27017,
+    //user: '', //optional
+    //password: '', //optional
     database: 'live_new_lynked' //optional
   },
 
